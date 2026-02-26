@@ -16,12 +16,16 @@ Prototype reference: see `project_memory/prototype-notes.md`
 - Local dev: Docker Compose
 
 ## Folder Structure
-/client        → Vite + React frontend
-/server        → Express API
+/client        → Vite + React frontend (components, hooks, services)
+/server        → Express API (routes, controllers, services)
 /prisma        → Prisma schema and migrations
 /project_memory → PRD, prototype notes, decisions log
 /.agents/skills → Antigravity skill files
 /.antigravityrules → this file
+
+## Key Architectural Patterns
+- **Frontend**: Component-based architecture. Data fetching via a dedicated `/services` layer rather than raw `fetch` calls in components.
+- **Backend**: Layered architecture (Routes → Controllers → Services → Prisma). Routes handle HTTP, Controllers handle request extraction/response formatting, Services handle business logic.
 
 ## Naming Conventions
 - Components: PascalCase (LogCard, WriteView, TurnTranscript)
@@ -39,6 +43,16 @@ Prototype reference: see `project_memory/prototype-notes.md`
 - Author identification uses a 2px vertical spine with the participant's color — not avatars or initials
 - Reactions use symbols: ✦ ◎ ∿ ⌖ — not emoji
 - UI copy: minimal, literary, lowercase preferred. Think literary journal not SaaS dashboard
+
+## Key UI Components & Expected Behavior
+- **LogCard**: Displays title, prompt, participant colors, and "your turn" indicator. On hover: opacity increases and arrow slides in.
+- **WriteZone**: The active input area. The colored spine matching the active user should glow when the input is focused.
+- **Submit Header**: Shows character count (max 600) and turns red when approaching limits. Submit uses typographic treatment.
+
+## User Flows for AI Implementation
+1. **Log Creation**: User clicks "Begin a log" → Selects settings (visibility, turns, prompt) → Invites users (if private) → Starts writing first segment.
+2. **Turn Taking**: User receives notification → Clicks log → Reads transcript (immutable) → Types in WriteZone → Hits Submit → Turn locks.
+3. **Discovery**: User views Feed → Filters by public logs → Clicks log to read → Adds symbol reaction.
 
 ## Testing Strategy
 - Write tests BEFORE implementation (TDD)
@@ -61,6 +75,9 @@ Prototype reference: see `project_memory/prototype-notes.md`
 - Use the Participant model for color assignment (not User.color)
 - Reference `project_memory/decisions.md` before making architecture choices
 - Save new decisions to `project_memory/decisions.md`
+- Prefer libraries like `cors`, `dotenv`, `jsonwebtoken` for standard integrations.
+- **Security**: Ensure all protected API endpoints validate JWTs. Never return full User objects to the client (strip emails/hashed passwords).
+- **Accessibility**: Ensure form inputs have proper contrasting placeholder states, and use semantic HTML structure (header, main, nav).
 
 ## Don'ts
 - Do NOT add new color values outside the 5-color palette
