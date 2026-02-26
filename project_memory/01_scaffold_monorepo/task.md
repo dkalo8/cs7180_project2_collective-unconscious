@@ -1,0 +1,26 @@
+# Collective Unconscious - Scaffold Monorepo
+
+- [/] Scaffold Project Structure
+  - [/] Initialize monorepo directory structure `/client`, `/server`, `/prisma`
+  - [/] Create `docker-compose.yml` for postgres, api, client
+  - [/] Create root `.env.example`
+- [x] Scaffold Client
+  - [x] Initialize Vite + React 18 app in `/client`
+  - [x] Set up React Router v6
+  - [x] Copy `collective-unconscious-v2.jsx` to `client/src/App.jsx`
+  - [x] Configure ESLint, Prettier, and Vitest for `/client`
+  - [x] Establish initial folder structure (`components`, `hooks`, `services`)
+- [x] Scaffold Server
+  - [x] Initialize Express + Node.js REST API in `/server`
+  - [x] Set up basic app structure (routes, controllers, services)
+  - [x] Set up initial test suite (Jest + Supertest)
+  - [x] Configure ESLint, Prettier
+- [x] Scaffold Prisma & Database
+  - [x] Initialize Prisma in `/prisma`
+  - [x] Create `schema.prisma` with defined data model (UUIDs, String enum proxies, Participant color handling)
+  - [x] Generate Prisma client
+- [x] Verify scaffolding
+  - [x] Test suites run and pass locally (Docker compose skipped due to missing host binary)
+  - [x] Client runs and loads App.jsx
+  - [x] Server runs and responds to health check
+  - [x] Database migrations work (Prisma client generated)

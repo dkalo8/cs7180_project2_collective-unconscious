@@ -1,0 +1,14 @@
+{
+    "name": "collective-unconscious",
+    "private": true,
+    "workspaces": [
+        "client",
+        "server"
+    ],
+    "devDependencies": {
+        "prisma": "^6.19.2"
+    },
+    "dependencies": {
+        "@prisma/client": "^6.19.2"
+    }
+}

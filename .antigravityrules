@@ -1,0 +1,71 @@
+# Collective Unconscious — Antigravity Rules
+
+## Project Context
+Collective Unconscious is an async collaborative chain-writing platform.
+Users create/join "logs" — turn-based sessions where participants write one segment at a time.
+PRD and full context: see `project_memory/PRD.md`
+Prototype reference: see `project_memory/prototype-notes.md`
+
+## Tech Stack
+- Frontend: React 18, Vite, React Router v6, Vitest
+- Backend: Node.js, Express
+- Database: PostgreSQL via Prisma ORM
+- Auth: JWT (access + refresh tokens) + Google OAuth via Passport.js
+- Testing: Vitest (client), Jest + Supertest (server)
+- CI/CD: GitHub Actions
+- Local dev: Docker Compose
+
+## Folder Structure
+/client        → Vite + React frontend
+/server        → Express API
+/prisma        → Prisma schema and migrations
+/project_memory → PRD, prototype notes, decisions log
+/.agents/skills → Antigravity skill files
+/.antigravityrules → this file
+
+## Naming Conventions
+- Components: PascalCase (LogCard, WriteView, TurnTranscript)
+- Hooks: camelCase prefixed with "use" (useLogSession, useAuth)
+- API routes: kebab-case, RESTful (/api/logs, /api/logs/:id/turns)
+- DB models: PascalCase singular (User, Log, Turn, Participant)
+- Files: kebab-case for non-components (auth.routes.js, log.controller.js)
+- Branch naming: feature/ISSUE_NUMBER-short-description (e.g. feature/12-turn-submission)
+- Commits: type(scope): description (e.g. feat(server): add turn submission endpoint)
+
+## Design & UI Rules
+- All UI must match the dark aesthetic in the prototype — background #080808, never white/light themes
+- Typography: IM Fell English for prose/headings, monospace for labels/metadata
+- Use the 5-color system from prototype (amber, rose, sky, violet, emerald) — never add new colors
+- Author identification uses a 2px vertical spine with the participant's color — not avatars or initials
+- Reactions use symbols: ✦ ◎ ∿ ⌖ — not emoji
+- UI copy: minimal, literary, lowercase preferred. Think literary journal not SaaS dashboard
+
+## Testing Strategy
+- Write tests BEFORE implementation (TDD)
+- Every API endpoint needs a Jest + Supertest integration test
+- Every React component needs at minimum a Vitest render test
+- Do not mark a task complete if tests are failing
+- Aim for 80% coverage on server routes
+
+## Scrum Workflow
+- All work must reference a GitHub Issue number
+- Branch from main, PR back to main
+- PR title format: [#ISSUE] Brief description
+- Link issues in commits: "feat(client): log card hover state fixes #14"
+- Do not merge without passing CI
+
+## Do's
+- Use Prisma for ALL database access — no raw SQL
+- Use Passport.js for OAuth — do not roll custom OAuth
+- Keep turns immutable — no update/delete on Turn model ever
+- Use the Participant model for color assignment (not User.color)
+- Reference `project_memory/decisions.md` before making architecture choices
+- Save new decisions to `project_memory/decisions.md`
+
+## Don'ts
+- Do NOT add new color values outside the 5-color palette
+- Do NOT use any UI component library (no MUI, Chakra, etc.) — custom only
+- Do NOT allow editing of submitted turns under any circumstance
+- Do NOT use raw fetch in components — create service layer in /client/src/services/
+- Do NOT store passwords — OAuth only for v1
+- Do NOT expose Prisma client directly in route handlers — use a controller layer
