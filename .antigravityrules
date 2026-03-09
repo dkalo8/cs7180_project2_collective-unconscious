@@ -37,22 +37,29 @@ Prototype reference: see `project_memory/prototype-notes.md`
 - Commits: type(scope): description (e.g. feat(server): add turn submission endpoint)
 
 ## Design & UI Rules
-- All UI must match the dark aesthetic in the prototype — background #080808, never white/light themes
-- Typography: IM Fell English for prose/headings, monospace for labels/metadata
-- Use the 5-color system from prototype (amber, rose, sky, violet, emerald) — never add new colors
-- Author identification uses a 2px vertical spine with the participant's color — not avatars or initials
-- Reactions use symbols: ✦ ◎ ∿ ⌖ — not emoji
-- UI copy: minimal, literary, lowercase preferred. Think literary journal not SaaS dashboard
+- White background, black text — low-tech, plain CSS style. Functional and unadorned.
+- Typography: system serif (renders as Song/SimSun for Chinese). No custom web fonts.
+- Default author color palette (6 colors): red #FF0000, orange #FF8C00, blue #0000FF, green #008000, purple #800080, black #000000. Users can also pick a custom color via color picker.
+- Author identification uses **text color** — no nicknames shown in the body, so the piece reads as a unified work
+- Reactions use symbols: ✦ ◎ ∿ ⌖ — not emoji, shown at the bottom of completed works
+- UI copy: casual, playful, low-pressure. Think group chat energy, not literary journal.
+- Buttons: grey background (#d4d0c8) with black border
+- Input fields: black border with small border-radius (rounded corners)
+- Nav: plain text links with default blue underline, no divider between nav and content
 
 ## Key UI Components & Expected Behavior
-- **LogCard**: Displays title, prompt, participant colors, and "your turn" indicator. On hover: opacity increases and arrow slides in.
-- **WriteZone**: The active input area. The colored spine matching the active user should glow when the input is focused.
-- **Submit Header**: Shows character count (max 600) and turns red when approaching limits. Submit uses typographic treatment.
+- **Feed Item**: Displays title, category, and 2-line plain text preview. No color bars in feed previews.
+- **Log Detail**: Full transcript with colored text per author. Inline write zone (textarea + nickname input + submit button) below the transcript.
+- **WriteZone**: Textarea + optional nickname input shown simultaneously. Nickname auto-generated (random adjective + noun, localized) if left blank.
+- **Submit Button**: Grey #d4d0c8 with black border. Per-turn length limit is configurable per log (sentence / paragraph / word count / no limit) — not a fixed character count.
+- **Log Creation Form**: Required fields on top (title, category, access mode, turn mode, seed). Advanced settings collapsed by default (per-turn limit, participant limit, round limit, timeout).
 
 ## User Flows for AI Implementation
-1. **Log Creation**: User clicks "Begin a log" → Selects settings (visibility, turns, prompt) → Invites users (if private) → Starts writing first segment.
-2. **Turn Taking**: User receives notification → Clicks log → Reads transcript (immutable) → Types in WriteZone → Hits Submit → Turn locks.
-3. **Discovery**: User views Feed → Filters by public logs → Clicks log to read → Adds symbol reaction.
+1. **Log Creation**: User creates a log → Fills required fields (title, category, access mode, turn mode) → Optionally expands advanced settings → Writes first segment with optional nickname.
+2. **Turn Taking**: User's turn arrives → Opens log → Reads full transcript (immutable, with colored left borders) → Types in textarea → Optionally enters nickname → Submits → Turn locks.
+3. **Discovery**: User views Feed → Flat chronological list (newest first, no algorithm) → Filters by category (Freewriting, Haiku, Poem, etc.) → Clicks log to read → Adds symbol reaction on completed works.
+4. **Joining a Log**: Open logs: user clicks and writes. Private logs: user enters access code first.
+5. **Identity (v1)**: No registration required — session tokens only. Core path is "click link → write a bit → leave." Full accounts deferred to Sprint 2.
 
 ## Testing Strategy
 - Write tests BEFORE implementation (TDD)
@@ -80,8 +87,8 @@ Prototype reference: see `project_memory/prototype-notes.md`
 - **Accessibility**: Ensure form inputs have proper contrasting placeholder states, and use semantic HTML structure (header, main, nav).
 
 ## Don'ts
-- Do NOT add new color values outside the 5-color palette
-- Do NOT use any UI component library (no MUI, Chakra, etc.) — custom only
+- Do NOT remove any of the 6 default author colors — users may also use the color picker for custom colors
+- Do NOT use any UI component library (no MUI, Chakra, etc.) — custom plain CSS only
 - Do NOT allow editing of submitted turns under any circumstance
 - Do NOT use raw fetch in components — create service layer in /client/src/services/
 - Do NOT store passwords — OAuth only for v1
