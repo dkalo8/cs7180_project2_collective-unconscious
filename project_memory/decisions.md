@@ -12,3 +12,42 @@
 - **Chronological Discovery Feed**: Removed "trending" or algorithms from the public feed. Works will be sorted chronologically and filterable by specific format categories (e.g., Haiku, Poem, Freewriting) to reduce performance pressure.
 - **Vibe Pivot - Casual Inspiration**: Shifted the platform's tone away from serious "literary co-authorship" or pure "shitposting." The new focus is capturing "sparks of inspiration," unpretentious humor, and everyday observations (e.g., a Haiku about a cat's butt or complaining about work).
 - **Sprint 2 Additions**: Added "Generate themed screenshots of logs" to Sprint 2 to encourage sharing on external platforms without building internal social features.
+
+## 2026-03-09: UI Vibe Overhaul — Low-Tech / Plain Style
+
+### Visual Direction (`prototype-notes.md`, `.antigravityrules`)
+- **Dropped dark/atmospheric theme** (dark bg #080808, grain overlay, floating particles, IM Fell English italic serif) in favor of **white background + black text + system serif** (renders as Song/SimSun for Chinese).
+- Style is now intentionally **low-tech and unadorned** — functional plain CSS, no visual polish for polish's sake.
+- Buttons: grey background (`#d4d0c8`) with black border. Input fields: black border with small border-radius.
+- Nav: plain text links with default blue underline; no divider between nav and content.
+
+### Color Palette (`styles.ts`, `mockData.ts`, `PRD.md`)
+- **Replaced the 8-color pastel palette** (`#E8927C`, `#7CA7E8`, `#A7E87C`, …, `#B8B8B8`) with a **6-color high-contrast palette**: red `#FF0000`, orange `#FF8C00`, blue `#0000FF`, green `#008000`, purple `#800080`, black `#000000`.
+- Colors are used as **text color** only (no background bars, no color spines). Users can also pick a custom color via color picker.
+- Mock data participant colors updated to reference the new palette indices.
+
+### Author Identification (`prototype-notes.md`, `PRD.md`)
+- **Removed vertical color spine** (2px bar per author) and **color bands in feed previews**.
+- Authors are distinguished by **text color only** — no nicknames shown in the log body.
+- Feed previews now show **title + plain text excerpt only** (no color bars).
+
+### UX Pattern Changes (`prototype-notes.md`)
+- Removed hover animations (opacity 0.7→1, arrow slide-in) and glowing spine effects.
+- Submit is no longer a "typographic text + line + chevron" — reverted to standard button.
+- Writing textarea and nickname input shown simultaneously.
+- Nickname is optional; system auto-generates one if left blank (random adjective + noun, localized per language).
+- Turn mode (structured/freestyle) is a fixed property of the log, not a viewer toggle.
+
+### Multilingual (`prototype-notes.md`)
+- Three languages: Chinese, English, Spanish — displayed as **side-by-side selectable options**, not a toggle.
+- Language switch affects UI labels and category names only; user-written content stays unchanged.
+
+### Screens Updated (`prototype-notes.md`)
+- Home/Feed: flat chronological log list with title, category, and 2-line plain text preview.
+- Log detail: transcript with colored left borders + inline write zone.
+- Log creation: required fields on top, advanced settings collapsed.
+- Added: access code entry screen (for private logs) and About page.
+
+### PRD Cleanup (`PRD.md`)
+- Resolved open question "How are user colors assigned?" — answered by the new 6-color default palette + custom color picker.
+- Updated user story US-05 to reference text color and color picker.

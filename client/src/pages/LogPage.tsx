@@ -40,7 +40,7 @@ export default function LogPage({ t, log, lang }: any) {
       <div style={{ marginBottom: 20 }}>
         {log.turns.map((turn: any, i: any) => (
           <div key={i} style={{
-            borderLeft: `3px solid ${log.participants[turn.pid].color}`,
+            color: log.participants[turn.pid].color,
             paddingLeft: 12, marginBottom: 10, lineHeight: 1.7,
           }}>
             {turn.text}

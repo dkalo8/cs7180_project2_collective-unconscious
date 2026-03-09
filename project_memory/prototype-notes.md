@@ -1,19 +1,30 @@
 # Prototype Design Decisions
 
 ## Aesthetic
-- Dark background #080808, grain overlay, floating particles
-- Typography: IM Fell English (italic serif) + monospace for labels
-- Color palette: amber #E8A838, rose #D4607A, sky #5BA8C4, violet #8B6FC4, emerald #4AA889
+- White background, black text
+- Low-tech, plain CSS style — functional and unadorned
+- Typography: system serif (renders as Song/SimSun for Chinese). 
+- Default color palette for author identification: red #FF0000, orange #FF8C00, blue #0000FF, green #008000, purple #800080, black #000000
+- Users can also pick a custom color via color picker
 
 ## UX Patterns
-- Vertical color spine (2px) identifies each author in transcript view
-- Spine glows on focus in the write zone
-- Log cards: opacity 0.7 → 1 on hover, arrow slides in
-- "Your turn" badge in amber monospace
-- Reactions use symbols not emoji: ✦ ◎ ∿ ⌖
-- Submit is typographic (text + line + chevron), not a button box
+- Text color identifies each author in log view — no nicknames shown in the body
+- Turn mode (structured/freestyle) is a fixed property of the log, not a viewer toggle
+- Writing textarea and nickname input shown simultaneously
+- Nickname is optional; system auto-generates one if left blank (random adjective + noun combo, localized per language)
+- Reactions use symbols not emoji: ✦ ◎ ∿ ⌖ — shown at the bottom of completed works
+- Buttons: grey background (#d4d0c8) with black border
+- Input fields: black border with small border-radius (rounded corners)
+- Nav: plain text links with default blue underline, no divider between nav and content
+- Discovery feed previews: title + plain text excerpt, no color bars
+
+## Multilingual
+- Three languages: Chinese, English, Spanish — displayed as side-by-side selectable options, not a toggle
+- Language switch affects UI labels and category names only; user-written content (titles, text, nicknames) stays unchanged
 
 ## Screens in Prototype
-- Home/Feed: weekly prompt hero + log list
-- Write/Turn view: transcript + live write zone
-- NOT YET BUILT: Log creation, completed work view, auth, profile
+- Home/Feed: flat chronological log list with title, category, and 2-line plain text preview
+- Log detail: transcript with colored left borders + inline write zone (textarea + nickname input + submit)
+- Log creation: required fields on top (title, category, access, turn mode, seed), advanced settings collapsed (per-turn limit, participant limit, round limit, timeout)
+- Access code entry: for private logs
+- About page

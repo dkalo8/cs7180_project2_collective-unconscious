@@ -1,4 +1,4 @@
-export const COLORS = ["#E8927C","#7CA7E8","#A7E87C","#E8D77C","#C47CE8","#7CE8D7","#E87CA7","#B8B8B8"];
+export const COLORS = ["#FF0000","#FF8C00","#0000FF","#008000","#800080","#000000"];
 
 export const S: any = {
   page: { fontFamily: "serif", fontSize: 16, color: "#000", background: "#fff", minHeight: "100vh", lineHeight: 1.6 },

@@ -94,7 +94,7 @@ User can create a log with a title.
 - Log settings are immutable once created
 - Writers see the full log so far when it's their turn
 - Simple text editor — minimal UI, focus on the writing
-- Each participant's text is rendered in a distinct, assigned color
+- Each participant's text is rendered in a distinct **text color** (default palette: red #FF0000, orange #FF8C00, blue #0000FF, green #008000, purple #800080, black #000000; users can also pick a custom color via color picker)
 
 ### 5.2 Discovery — Logs
 
@@ -104,7 +104,7 @@ User can create a log with a title.
 - Sort: Strictly reverse-chronological order (newest first). No "trending" or algorithms to keep the platform low-pressure.
 - View: Shows both completed works and currently active/uncompleted logs(even those with only a title).
 - Filtering: Only filterable by specific categories assigned at creation (e.g., Freewriting, Haiku, Poem, Short Novel).
-- Works display participant color bands as a visual signature of authorship
+- Feed previews show title + plain text excerpt only — no color bars or color bands
 
 ### 5.3 Social & Reactions
 - Symbol reactions on completed works (read-only, lightweight): ✦ ◎ ∿ ⌖
@@ -114,7 +114,7 @@ User can create a log with a title.
 ### 5.4 Identity & Accounts (V1 Scope)
 - **Account-Free Access:** V1 requires no registration—authentication uses session tokens. The core optimized path is "click link → write a bit → leave."
 - Full user accounts (profiles, bios, display names) are moved to Sprint 2.
-- Color preference stored in local session (default color assigned by system; user can request a different one).
+- Color preference stored in local session (default color assigned by system from the 6-color palette; user can pick a custom color via color picker).
 
 ---
 
@@ -125,7 +125,7 @@ User can create a log with a title.
 | **US-01** | As a participant, I want to write with friends or create with strangers. | Invite-only logs accept a share link/code. Public logs are discoverable and joinable from the feed. |
 | **US-02** | As a participant, I want themed prompts as creative starting points. | Platform titles/seeds appear in discovery feed. Tapping a prompt pre-fills the log creation form. |
 | **US-04** | As a participant, I want to react to completed works. | Symbol reactions available on any public completed log. Reactions are optional and non-blocking. |
-| **US-05** | As a participant, I want my writing distinguished from others through color. | System assigns each participant a unique color. Color is consistent throughout the log. User can update color preference in settings. |
+| **US-05** | As a participant, I want my writing distinguished from others through text color. | System assigns each participant a unique text color from the default palette. Color is consistent throughout the log. User can pick a custom color via color picker. |
 
 ---
 
@@ -142,7 +142,6 @@ User can create a log with a title.
 
 ## 8. Open Questions
 
-- How are user colors assigned — fully random, from a curated palette, or user-chosen?
 - How is content moderation handled on public logs?
 
 ---
