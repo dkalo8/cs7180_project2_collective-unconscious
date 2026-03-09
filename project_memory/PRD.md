@@ -14,53 +14,42 @@ Version 1.0 | February 2026
 
 ## 1. Product Overview
 
-Collective Unconscious is an asynchronous collaborative chain-writing platform where users pool their ideas and build creative works together — one turn at a time. Participants create or join writing "logs," contribute a segment when it's their turn, and watch a piece grow in unexpected directions. Each writer's voice is preserved visually through color coding, and completed works can be shared with the world.
+Collective Unconscious is an asynchronous collaborative chain-writing platform where users pool their ideas and build creative works together — one turn at a time. Participants create or join writing "logs," contribute a segment when it's their turn, and watch a piece grow in unexpected directions.
 
-The product sits at the intersection of social creativity and reflective writing — giving people a low-pressure way to collaborate with friends or strangers, break out of creative ruts, and feel the surprise and delight of co-authorship.
+The product sits at the intersection of social creativity and casual shitposting. It's not a platform for serious, high-brow literary co-authorship. Instead, it gives people a low-pressure, fun way to collaborate with friends or strangers. Whether it's complaining about work, making up silly poems (e.g., "Look at that majestic mountain... wait, that's a cat's butt"),the vibe is easy, playful, and completely devoid of "writer's block" pressure.
 
 ---
 
 ## 2. Problem Statement
 
-Collaborative writing is genuinely hard to coordinate. Writers who want to create together face:
+Collaborative writing and online socializing are often too high-pressure:
+- **Group chats are chaotic** — Threads get derailed instantly, and it's impossible to sustain a funny thought or a casual story over time.
+- **Social media feels performative** — Posting online often revolves around metrics, personal branding, or serious "takes," which kills the fun of casual, flashes-of-wit expression.
+- **Lost sparks of inspiration** — People have funny, weird, or insightful thoughts all the time, but lack a low-effort, engaging place to simply drop a single sentence and see what happens to it.
 
-- No dedicated async platform — group chats get derailed by off-topic conversations, and real-time tools (Google Docs, shared notes) require synchronous presence.
-- Isolation in creative practice — many writers work alone and lack low-friction ways to invite creative collaboration with friends or new people.
-- Creative stagnation — writing in your own patterns is limiting; unexpected contributions from others can break through blocks and produce surprising results.
-- High social stakes — committing to a long-form collaborative project feels daunting; micro-contributions reduce the pressure.
 
 ---
 
-## 3. Goals & Success Metrics
+## 3. Goals 
 
-### 3.1 Product Goals
 
-- Provide a focused, distraction-free space for async chain-writing
-- Lower the barrier to creative collaboration between strangers and friends
-- Build a community around completed works and creative prompts
-- Enable self-expression through structured, turn-based co-creation
+- Provide a focused, distraction-free space for casual, turn-based serendipity
+- Support dual modes of engagement: hyper-casual "drop in when bored" writing, and intentional co-creation with friends
+- Capture "sparks of inspiration" without the baggage of "prestigious art" or the pressure to build a "social media community"
 
-### 3.2 Success Metrics
-
-| Metric | Target (6 mo) | Notes |
-|---|---|---|
-| Logs completed | 500+ | Primary engagement signal |
-| Avg turns per user per week | 3+ | Habit formation |
-| Retention (30-day) | 40% | Community stickiness |
-| Works shared publicly | 25% of completions | Growth + virality signal |
 
 ---
 
 ## 4. User Personas
 
-### Persona A — The Social Writer
-Loves collaborative chain-writing but finds it hard to coordinate with friends. Group chats get derailed; real-time tools require scheduling. Wants an async platform where everyone can contribute on their own time and still produce something finished together.
+### Persona A — The Observant Commuter
+Doesn't consider themselves a "writer." Uses their phone on the train and often has funny, insightful thoughts about daily life. Wants a dedicated place to drop one sharp or weird sentence into a growing pool of text and see what it turns into by the time they clock out of work.
 
-### Persona B — The Pattern-Breaker
-An active writer looking to escape their own stylistic habits. Welcomes unexpected creative directions. Drawn to writing with strangers precisely because strangers take things somewhere unfamiliar.
+### Persona B — The Playful Twister
+Loves playing with language and internet culture in a clever way. Enjoys the anonymity of jumping into a log, taking a seemingly serious poem about a mountain, and twisting it into something lighthearted without anyone knowing it was them. 
 
 ### Persona C — The Low-Pressure Connector
-Seeks genuine connection but not through small talk. Creating something together — even something small — feels more meaningful than a chat. Values the artifact of a finished piece as a social touchstone.
+Seeks genuine connection with friends but hates the obligation of maintaining small-talk in group chats. Playing an async, turn-based writing game with friends feels more meaningful?"
 
 ---
 
@@ -70,51 +59,62 @@ Seeks genuine connection but not through small talk. Creating something together
 
 A "log" is a sequential chain-writing session. It is the central product object.
 
-#### Creator Controls
-- Set log to public (anyone can join) or invite-only (link/code required)
-- Define participant limit (2–10 writers)
-- Set turn order: sequential, random, or freeform
-- Optional round limit (e.g., 3 rounds, 5 rounds, unlimited)
-- Optional creative constraints (e.g., "no adjectives," "must end each turn with a question," custom text)
-- Start from a prompted seed or a blank slate
+User can create a log with a title.
 
-#### Writing Experience
+#### Access Mode (Pick one)
+- **Open:** Anyone can read and write
+- **Private:** Anyone can read; writing requires an access code
+
+#### Turn Mode (Pick one)
+- **Structured:** Round-robin by join order, with a per-turn length limit
+- **Freestyle:** No fixed order; the only rule is you cannot submit two consecutive turns
+
+#### Round-Robin Queue Logic (Structured Mode)
+- The Keeper (log creator) is #1; subsequent participants are appended to the queue in join order
+- New participants enter the rotation immediately — no waiting for the next round
+- Example: A creates log → A writes → B joins → B writes → A writes → C joins → C writes → A → B → C → repeat
+- One "round" = every current participant writes once; round limit is calculated on this basis
+
+#### Configurable Settings
+- **Mandatory Log Title:** Acts as the thematic anchor for the log
+- **Category (Optional Dropdown):** Options include Freewriting, Haiku, Poem, Short Novel, Flash Fiction (default: "Freewriting")
+- **Participant limit:** Capped or unlimited (default unlimited)
+- **Round limit:** Capped or unlimited (default unlimited)
+- **Turn timeout:** None (manual skip only), Auto-skip (1h / 6h / 12h / 24h / 48h / 7d), or No timeout (default no timeout)
+- **Per-turn length limit:** 1 sentence / 2 sentences / 1 paragraph / custom word count / no limit (default no limit)
+- **Optional Seed / Creative Constraint:** A starting sentence, prompt, or custom rule (e.g., "must end each turn with a question") to kick things off (default no seed)
+
+#### Keeper Permissions
+- Manually skip the current turn holder (Structured mode, available at any time)
+- Close the log (unlimited logs can be closed at any time; logs with a round limit close automatically when reached)
+- Cannot modify any log settings after creation
+
+#### Invariants
+- Turns are immutable once submitted
+- Log settings are immutable once created
 - Writers see the full log so far when it's their turn
 - Simple text editor — minimal UI, focus on the writing
-- Character/word limit per turn (configurable by creator, default TBD)
 - Each participant's text is rendered in a distinct, assigned color
-- Writers cannot edit previous turns (immutable history)
 
-#### Turn Notifications
-- Email and/or push notification when it's a user's turn
-- Configurable nudge timer — if a participant doesn't respond within X hours, they may be skipped or the log stalls
+### 5.2 Discovery — Logs
 
-### 5.2 Discovery — Public Logs & Prompts
-
-#### Platform Prompts
-- Editorial team releases themed weekly/monthly prompts to seed new logs
-- Prompts are displayed on the home/discovery feed
-- Users can start a new log directly from a platform prompt
-
-#### User-Published Prompts
-- Any user can submit a prompt for the community to use
-- Prompts can be upvoted; top prompts surface in discovery
-- Prompt author is credited when a log is started from their prompt
 
 #### Discovery Feed
-- Browse completed works filtered by: trending, recent, genre tag, prompt source
+- Editorial team releases themed weekly/monthly log titles (with or without optional seeds), and they are shown in the discovery feed.
+- Sort: Strictly reverse-chronological order (newest first). No "trending" or algorithms to keep the platform low-pressure.
+- View: Shows both completed works and currently active/uncompleted logs(even those with only a title).
+- Filtering: Only filterable by specific categories assigned at creation (e.g., Freewriting, Haiku, Poem, Short Novel).
 - Works display participant color bands as a visual signature of authorship
 
 ### 5.3 Social & Reactions
 - Symbol reactions on completed works (read-only, lightweight): ✦ ◎ ∿ ⌖
-- Text feedback / comments on completed works (moderated)
 - Works are shareable via link — viewable without an account
-- Authors can optionally display or hide their username on shared works
 
-### 5.4 Profiles
-- User profile shows: logs participated in, works completed, prompts published
-- Optional bio and display name
-- Color preference setting (default color assigned by system; user can request a different one)
+
+### 5.4 Identity & Accounts (V1 Scope)
+- **Account-Free Access:** V1 requires no registration—authentication uses session tokens. The core optimized path is "click link → write a bit → leave."
+- Full user accounts (profiles, bios, display names) are moved to Sprint 2.
+- Color preference stored in local session (default color assigned by system; user can request a different one).
 
 ---
 
@@ -123,9 +123,8 @@ A "log" is a sequential chain-writing session. It is the central product object.
 | # | User Story | Acceptance Criteria |
 |---|---|---|
 | **US-01** | As a participant, I want to write with friends or create with strangers. | Invite-only logs accept a share link/code. Public logs are discoverable and joinable from the feed. |
-| **US-02** | As a participant, I want themed prompts as creative starting points. | Platform prompts appear in discovery feed. Tapping a prompt pre-fills the log seed. New prompts published on a defined cadence. |
-| **US-03** | As a participant, I want to publish my own prompts. | Prompt submission form accessible from profile. Submitted prompts enter a review/upvote queue. Approved prompts appear in discovery. |
-| **US-04** | As a participant, I want to react to and give feedback on completed works. | Symbol reactions available on any public completed log. Comment field available post-completion. Both are optional and non-blocking. |
+| **US-02** | As a participant, I want themed prompts as creative starting points. | Platform titles/seeds appear in discovery feed. Tapping a prompt pre-fills the log creation form. |
+| **US-04** | As a participant, I want to react to completed works. | Symbol reactions available on any public completed log. Reactions are optional and non-blocking. |
 | **US-05** | As a participant, I want my writing distinguished from others through color. | System assigns each participant a unique color. Color is consistent throughout the log. User can update color preference in settings. |
 
 ---
@@ -133,30 +132,25 @@ A "log" is a sequential chain-writing session. It is the central product object.
 ## 7. Out of Scope (v1)
 
 - Real-time simultaneous editing
-- Audio or multimedia contributions
-- AI-generated turns or co-writing assistance
-- Monetization / paid tiers
-- Mobile native apps (web-first)
-- Content translation or multilingual support
+- Content translation (Note: UI language switcher for Chinese/English/Spanish IS in scope, but log content itself is not translated)
+- Comments on works
+- User registration / profiles / accounts (moved to Sprint 2)
+- Content moderation / Prompt review queues (moved to Sprint 2)
+- Generating/sharing styled themed screenshots of logs (moved to Sprint 2)
 
 ---
 
 ## 8. Open Questions
 
-- What is the default turn timeout before a participant is skipped?
 - How are user colors assigned — fully random, from a curated palette, or user-chosen?
-- Is there a minimum/maximum word count per turn, or is that creator-defined?
-- How is content moderation handled on public logs and comments?
-- What happens to an abandoned log — archive, delete, or allow takeover?
-- Should there be any game-like elements (streaks, badges) or keep it purely creative?
+- How is content moderation handled on public logs?
 
 ---
 
 ## 9. Technical Considerations
 
-- Async turn-queue logic with conflict prevention (only one active writer at a time)
+- Async turn-queue logic in freestyle (the first to submit a turn gets it)
 - Color coding stored per-user per-log (on the Participant model, not User)
 - Notification system: email required, push optional at v1
 - Content stored immutably per turn — no editing after submission
 - Public sharing via read-only permalink; no login required to view
-- Prompt moderation queue for user-submitted content
