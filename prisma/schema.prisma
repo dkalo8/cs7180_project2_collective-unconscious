@@ -1,91 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
-model User {
-  id           String        @id @default(uuid())
-  username     String        @unique
-  email        String        @unique
-  createdAt    DateTime      @default(now())
-  
-  prompts      Prompt[]
-  logsCreated  Log[]
-  participations Participant[]
-  reactions    Reaction[]
-}
-
-model Prompt {
-  id           String   @id @default(uuid())
-  text         String
-  type         String   // e.g., "PLATFORM", "USER"
-  number       String?  // e.g., "VII" for weekly prompts
-  creatorId    String?
-  creator      User?    @relation(fields: [creatorId], references: [id])
-  createdAt    DateTime @default(now())
-
-  logs         Log[]
-}
+// -----------------------------------------------------------------
+// Core Models for "Collective Unconscious"
+//
+// Refined schema focusing on anonymous, low-pressure writing loops.
+// -----------------------------------------------------------------
 
 model Log {
+  id                 String   @id @default(uuid())
+  title              String
+  category           String   @default("Freewriting")
+
+  // Modes
+  accessMode         String   @default("OPEN")      // "OPEN" | "PRIVATE"
+  turnMode           String   @default("FREESTYLE") // "FREESTYLE" | "STRUCTURED"
+  
+  // Advanced Settings
+  participantLimit   Int?     // null means unlimited
+  roundLimit         Int?     // null means unlimited
+  turnTimeout        Int?     // Timeout in seconds (null = none)
+  perTurnLengthLimit Int?     // Characters per turn (null = none)
+  seed               String?  // Initial prompt or constraint
+
+  // State
+  status             String   @default("ACTIVE")    // "ACTIVE" | "COMPLETED"
+  accessCode         String?  // Shareable code for private logs (e.g., 6-chars)
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  writers            Writer[]
+  turns              Turn[]
+}
+
+model Writer {
   id           String   @id @default(uuid())
-  title        String
-  promptId     String?
-  prompt       Prompt?  @relation(fields: [promptId], references: [id])
-  creatorId    String
-  creator      User     @relation(fields: [creatorId], references: [id])
+  sessionToken String   // Link to an anonymous session
   
-  // Settings
-  visibility   String   @default("PUBLIC") // "PUBLIC" | "INVITE_ONLY"
-  turnOrder    String   @default("SEQUENTIAL")
-  roundLimit   Int?     // null means unlimited
+  nickname     String?  // E.g., "Musing Crow"
+  colorHex     String   // E.g., "#FF8C00"
   
-  complete     Boolean  @default(false)
+  logId        String
+  log          Log      @relation(fields: [logId], references: [id], onDelete: Cascade)
+  
+  joinOrder    Int      // 1 for creator (keeper), 2 for second participant...
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  participants Participant[]
-  turns        Turn[]
-  reactions    Reaction[]
-}
-
-model Participant {
-  id           String   @id @default(uuid())
-  userId       String
-  logId        String
-  color        String   // e.g., "amber", "rose", "sky", "violet", "emerald"
-  orderIndex   Int?     // For sequential turn order
-  
-  user         User     @relation(fields: [userId], references: [id])
-  log          Log      @relation(fields: [logId], references: [id], onDelete: Cascade)
   turns        Turn[]
 
-  @@unique([userId, logId])
+  @@unique([sessionToken, logId])
 }
 
 model Turn {
-  id            String   @id @default(uuid())
-  text          String
-  logId         String
-  participantId String
-  createdAt     DateTime @default(now())
+  id           String   @id @default(uuid())
+  content      String   @db.Text
+  turnOrder    Int      // Sequence number within the Log (1, 2, 3...)
 
-  log           Log         @relation(fields: [logId], references: [id], onDelete: Cascade)
-  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
-}
+  logId        String
+  log          Log      @relation(fields: [logId], references: [id], onDelete: Cascade)
 
-model Reaction {
-  id        String   @id @default(uuid())
-  type      String   // e.g., "✦", "◎", "∿"
-  userId    String
-  logId     String
-  
-  user      User     @relation(fields: [userId], references: [id])
-  log       Log      @relation(fields: [logId], references: [id], onDelete: Cascade)
+  writerId     String
+  writer       Writer   @relation(fields: [writerId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, logId, type])
+  createdAt    DateTime @default(now())
 }
