@@ -1,0 +1,14 @@
+# Task List: Frontend Routing & Layout Scaffold
+
+- [ ] Write failing tests for the router (TDD)
+- [ ] Set up `react-router-dom` configuration
+- [ ] Create persistent Layout component with navigation
+- [ ] Create placeholder page components
+  - [ ] `HomePage` (/)
+  - [ ] `CreateLogPage` (/create)
+  - [ ] `LogDetailPage` (/logs/:id)
+  - [ ] `UserProfilePage` (/profile/:username)
+  - [ ] `NotFoundPage` (catch-all)
+- [ ] Update [main.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/main.jsx) (or [App.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/App.jsx)) to provide the Router
+- [ ] Verify navigation works without full page reload
+- [ ] Run all tests and ensure they pass

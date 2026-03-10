@@ -1,11 +1,11 @@
 import { CAT } from '../utils/i18n';
 import { S } from '../utils/styles';
 
-export default function FeedPage({ t, logs, lang, onOpen }: any) {
+export default function FeedPage({ t, logs, lang, onOpen }) {
   return (
     <div style={S.body}>
       <div style={{ ...S.muted, marginBottom: 16 }}>{t.feed.count(logs.length)}</div>
-      {logs.map((log: any) => (
+      {logs.map((log) => (
         <div key={log.id} style={{ marginBottom: 20 }}>
           <div>
             <button style={{ ...S.link, fontWeight: "bold", fontSize: 16 }} onClick={() => onOpen(log.id)}>{log.title}</button>
@@ -14,7 +14,7 @@ export default function FeedPage({ t, logs, lang, onOpen }: any) {
             </span>
           </div>
           <div style={{ marginTop: 6, fontSize: 14, color: "#555" }}>
-            {log.turns.slice(0, 2).map((turn: any, j: any) => (
+            {log.turns.slice(0, 2).map((turn, j) => (
               <div key={j} style={{ marginBottom: 2 }}>{turn.text}</div>
             ))}
             {log.turns.length > 2 && <div style={S.muted}>...</div>}

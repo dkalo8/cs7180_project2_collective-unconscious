@@ -1,0 +1,26 @@
+# Walkthrough: Frontend Routing & Layout Scaffold (Issue S1-4a)
+
+## Changes Made
+- **TypeScript Removal**: Converted all React component and page structures from [.tsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/App.tsx) to [.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/App.jsx), stripping out native TypeScript types to ensure compatibility with our specific technology stack and ESLint configurations. This applied to:
+  - [client/src/App.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/App.jsx)
+  - [client/src/components/Header.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/components/Header.jsx)
+  - [client/src/pages/AboutPage.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/pages/AboutPage.jsx)
+  - [client/src/pages/AccessPage.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/pages/AccessPage.jsx)
+  - [client/src/pages/CreatePage.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/pages/CreatePage.jsx)
+  - [client/src/pages/FeedPage.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/pages/FeedPage.jsx)
+  - [client/src/pages/LogPage.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/pages/LogPage.jsx)
+  - Removed outdated [App.test.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/App.test.jsx).
+
+- **Test-Driven Router Scaffolding**: Before implementing the routes, constructed a Vitest integration test suite [client/src/__tests__/routing.test.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/__tests__/routing.test.jsx). Installed `@testing-library/user-event` to handle accurate route clicks and verification checks.
+
+- **React Router Integration**:
+  - Implemented `createBrowserRouter` via [client/src/router.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/router.jsx) containing paths for `/`, `/create`, `/logs/:id`, and `/profile/:username`.
+  - Replaced the hardcoded routing component swap in [client/src/main.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/main.jsx) with the robust `<RouterProvider />`.
+  
+- **Layout & Placeholders**:
+  - Implemented a persistent [Layout.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/components/Layout.jsx) wrapper that integrates the `NavBar` and `<Outlet />`, guaranteeing clean and flicker-less UI navigation. 
+  - Constructed clean HTML placeholders for all primary route pages ([HomePage.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/pages/HomePage.jsx), [CreateLogPage.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/pages/CreateLogPage.jsx), [LogDetailPage.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/pages/LogDetailPage.jsx), [UserProfilePage.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/pages/UserProfilePage.jsx)), as well as a fallback [NotFoundPage.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/pages/NotFoundPage.jsx) for unregistered subdirectories.
+
+## Validation Results
+- **Automated Tests**: Completed execution of all front-end Vitest scripts, specifically validating dynamic path loading, URL link simulations, and the automated 404 response catch.
+- **ESLint Validation**: Executed `npm run lint` across the front-end, successfully removing all TypeScript unexpected token parsing errors. Checkout the [.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/App.jsx) syntax and zero warnings/errors.

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { S } from '../utils/styles';
 
-export default function AccessPage({ t, logTitle, onEnter }: any) {
+export default function AccessPage({ t, logTitle, onEnter }) {
   const [code, setCode] = useState("");
   const [wrong, setWrong] = useState(false);
   return (

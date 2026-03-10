@@ -1,0 +1,59 @@
+# Frontend Routing & Layout Scaffold (Issue #29 / S1-4a)
+
+This PR will set up the foundational frontend routing architecture using `react-router-dom`. It establishes the main routing configuration, the global application layout (including a persistent navigation bar), and placeholder components for the upcoming features in Sprints 1 & 2.
+
+## Proposed Changes
+
+### Configuration
+#### [NEW] `client/src/router.jsx`
+- Define the routing configuration using `createBrowserRouter` from `react-router-dom`.
+- Set up a root route with a `Layout` component that acts as an ErrorBoundary for uncaught errors, and an `errorElement` for 404s.
+- Add child routes for `/`, `/create`, `/logs/:id`, and `/profile/:username`.
+
+#### [MODIFY] [client/src/main.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/main.jsx)
+- Replace `<App />` with `<RouterProvider router={router} />`.
+
+### Components
+#### [NEW] `client/src/components/Layout.jsx`
+- Create a persistent wrapper component for the app.
+- Include a `<nav>` with `Link` and `NavLink` elements pointing to the placeholder routes based on the design specified in the [App.jsx](file:///Users/mineral/Desktop/VibeCoding/P2/cs7180_project2_collective-unconscious/client/src/App.jsx) prototype.
+- Include an `<Outlet />` wrapper for child route content.
+
+### Pages (Placeholders)
+#### [NEW] `client/src/pages/HomePage.jsx`
+- Placeholder component for the Discovery Feed.
+
+#### [NEW] `client/src/pages/CreateLogPage.jsx`
+- Placeholder component for the Log Creation page.
+
+#### [NEW] `client/src/pages/LogDetailPage.jsx`
+- Placeholder component for viewing a specific log / write zone. Extracts the `:id` parameter using `useParams()`.
+
+#### [NEW] `client/src/pages/UserProfilePage.jsx`
+- Placeholder component for the User Profile. Extracts the `:username` parameter.
+
+#### [NEW] `client/src/pages/NotFoundPage.jsx`
+- A generic 404 page ("Not Found") that displays when a user hits an undefined route.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+#### [NEW] `client/src/__tests__/routing.test.jsx`
+- First, write a test suite using `vitest` and `@testing-library/react` that checks if the `RouterProvider` correctly renders the `Layout` and navigation links.
+- Test that clicking navigation links simulates route changes without full page reloads.
+- Test that an invalid path renders the `NotFoundPage` component.
+- The tests will be written and run **first** following the project's Test-Driven Development (TDD) mandate.
+
+**Command to run tests:**
+```bash
+cd client
+npm run test
+```
+
+### Manual Verification
+- Run `npm run dev` in the `client` directory.
+- Open the application in the browser and verify the global navbar is visible.
+- Click the "Feed" and "Write" links in the navbar to see the URL update to `/` and `/create` (or whatever path is designated), while the page content updates instantly.
+- Manually navigate to a fake URL (e.g., `http://localhost:5173/fake-url`) and verify the 404 page is displayed.
