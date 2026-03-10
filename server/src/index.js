@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const session = require('express-session');
 const { sessionMiddleware } = require('./middleware/auth');
+const logsRouter = require('./routes/logs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,6 +26,9 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+
+// API routes
+app.use('/api/logs', logsRouter);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

@@ -35,7 +35,7 @@ describe("Frontend Routing", () => {
 
     // Verify URL change visually via rendered content
     expect(
-      screen.getByText(/log creation placeholder/i)
+      screen.getByRole('heading', { name: /create a new log/i })
     ).toBeInTheDocument();
   });
 
