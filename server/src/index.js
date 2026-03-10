@@ -1,14 +1,20 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const session = require('express-session');
+const { sessionMiddleware } = require('./middleware/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+
+// Apply our custom session token middleware globally
+app.use(sessionMiddleware);
 
 app.use(
     session({
