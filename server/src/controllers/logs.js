@@ -21,7 +21,7 @@ const createLogSchema = z.object({
     accessMode: z.enum(['OPEN', 'PRIVATE']),
     turnMode: z.enum(['FREESTYLE', 'STRUCTURED']),
     // Server-side default so direct API calls without category still get 'Freewriting'
-    category: z.string().default('Freewriting'),
+    category: z.enum(['Freewriting', 'Haiku', 'Poem', 'Short Novel']).default('Freewriting'),
     seed: z.string().optional(),
     // Unlimited by default (null); if provided must be >= 2 (no arbitrary cap)
     participantLimit: z

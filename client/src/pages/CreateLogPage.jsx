@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Default category value must match backend schema default
-const CATEGORIES = ['Freewriting', 'Haiku', 'Poem', 'Short Novel', 'Flash Fiction'];
+const CATEGORIES = ['Freewriting', 'Haiku', 'Poem', 'Short Novel'];
 
 export default function CreateLogPage() {
     const navigate = useNavigate();
@@ -18,10 +18,15 @@ export default function CreateLogPage() {
     const [seed, setSeed] = useState('');
     const [participantLimit, setParticipantLimit] = useState('');
     const [roundLimit, setRoundLimit] = useState('');
+    const [turnTimeout, setTurnTimeout] = useState('');
+    const [perTurnLengthLimit, setPerTurnLengthLimit] = useState('');
 
     // UI state
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [createdLogId, setCreatedLogId] = useState(null);
+    const [accessCode, setAccessCode] = useState(null);
+    const [copyStatus, setCopyStatus] = useState('');
 
     const handleSubmit = async () => {
         setError(null);
@@ -54,27 +59,58 @@ export default function CreateLogPage() {
                     seed: seed.trim() || undefined,
                     participantLimit: parsedLimit,
                     roundLimit: parsedRound,
+                    turnTimeout: turnTimeout || undefined,
+                    perTurnLengthLimit: perTurnLengthLimit || undefined,
                 }),
             });
 
             if (!res.ok) {
-                const body = await res.json();
-                const msg = body.errors
-                    ? Object.values(body.errors).flat().join(', ')
-                    : 'An error occurred';
+                let msg = 'An error occurred';
+                const contentType = res.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    const body = await res.json();
+                    msg = body.errors
+                        ? Object.values(body.errors).flat().join(', ')
+                        : body.error || 'An error occurred';
+                } else {
+                    msg = `Server error (${res.status}): ${res.statusText}`;
+                }
                 throw new Error(msg);
             }
 
             const newLog = await res.json();
-            // Show the access code in a simple alert if private, then redirect to feed
+            
             if (newLog.accessCode) {
-                alert(`Log created!\nShare code: ${newLog.accessCode}`);
+                setCreatedLogId(newLog.id);
+                setAccessCode(newLog.accessCode);
+            } else {
+                navigate(`/logs/${newLog.id}`);
             }
-            navigate('/');
         } catch (err) {
             setError(err.message);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleCopyCode = async () => {
+        if (!accessCode) return;
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(accessCode);
+                setCopyStatus('Copied!');
+                setTimeout(() => setCopyStatus(''), 2000);
+            } else {
+                setCopyStatus('Manual copy: ' + accessCode);
+            }
+        } catch (err) {
+            setCopyStatus('Failed to copy');
+        }
+    };
+
+    const handleDone = () => {
+        if (createdLogId) {
+            navigate(`/logs/${createdLogId}`);
         }
     };
 
@@ -242,6 +278,48 @@ export default function CreateLogPage() {
                             style={{ maxWidth: 120, marginTop: 4 }}
                         />
                     </div>
+
+                    {/* Turn Timeout */}
+                    <div style={{ marginBottom: 12 }}>
+                        <label htmlFor="turn-timeout">
+                            Turn timeout
+                        </label>
+                        <br />
+                        <select
+                            id="turn-timeout"
+                            value={turnTimeout}
+                            onChange={(e) => setTurnTimeout(e.target.value)}
+                            style={{ marginTop: 4 }}
+                        >
+                            <option value="">No timeout (default)</option>
+                            <option value="1h">Auto-skip after 1 hour</option>
+                            <option value="6h">Auto-skip after 6 hours</option>
+                            <option value="12h">Auto-skip after 12 hours</option>
+                            <option value="24h">Auto-skip after 24 hours</option>
+                            <option value="48h">Auto-skip after 48 hours</option>
+                            <option value="7d">Auto-skip after 7 days</option>
+                        </select>
+                    </div>
+
+                    {/* Per-turn Length Limit */}
+                    <div style={{ marginBottom: 12 }}>
+                        <label htmlFor="per-turn-length-limit">
+                            Per-turn length limit
+                        </label>
+                        <br />
+                        <select
+                            id="per-turn-length-limit"
+                            value={perTurnLengthLimit}
+                            onChange={(e) => setPerTurnLengthLimit(e.target.value)}
+                            style={{ marginTop: 4 }}
+                        >
+                            <option value="">No limit (default)</option>
+                            <option value="1_sentence">1 sentence</option>
+                            <option value="2_sentences">2 sentences</option>
+                            <option value="1_paragraph">1 paragraph</option>
+                            <option value="custom_word_count">Custom word count</option>
+                        </select>
+                    </div>
                 </div>
             )}
 
@@ -255,6 +333,69 @@ export default function CreateLogPage() {
                     {isLoading ? 'Creating...' : 'Start Log'}
                 </button>
             </div>
+
+            {/* Access Code Modal */}
+            {accessCode && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        backgroundColor: 'white',
+                        padding: '32px',
+                        borderRadius: '8px',
+                        maxWidth: '400px',
+                        width: '90%',
+                        textAlign: 'center',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                    }}>
+                        <h2 style={{ marginTop: 0 }}>Private Log Created</h2>
+                        <p>Share this access code with participants you want to invite:</p>
+                        
+                        <div style={{ 
+                            fontSize: '32px', 
+                            fontWeight: 'bold', 
+                            letterSpacing: '4px',
+                            margin: '24px 0',
+                            padding: '12px',
+                            border: '1px dashed #ccc',
+                            backgroundColor: '#f9f9f9'
+                        }}>
+                            {accessCode}
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            <button 
+                                onClick={handleCopyCode}
+                                style={{ padding: '8px 16px', cursor: 'pointer' }}
+                            >
+                                {copyStatus || 'Copy Code'}
+                            </button>
+                            <button 
+                                onClick={handleDone}
+                                style={{ 
+                                    padding: '8px 16px', 
+                                    cursor: 'pointer',
+                                    border: 'none',
+                                    backgroundColor: 'black',
+                                    color: 'white',
+                                    borderRadius: '4px'
+                                }}
+                            >
+                                Done
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

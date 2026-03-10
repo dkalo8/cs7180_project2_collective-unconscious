@@ -36,6 +36,11 @@ describe('POST /api/logs', () => {
         expect(res.body.Keeper).toBeDefined();
         expect(res.body.Keeper.joinOrder).toBe(1);
         expect(res.body.Keeper.colorHex).toBe('#FF0000');
+        
+        // [REFINEED] Ensure the session token is correctly linked to the Writer record
+        // We can extract the token from the cookie we just got
+        const token = sessionCookie[0].split(';')[0].split('=')[1];
+        expect(res.body.Keeper.sessionToken).toBe(token);
     });
 
     it('creates a private log and returns a 6-char access code', async () => {
@@ -98,5 +103,18 @@ describe('POST /api/logs', () => {
 
         expect(res.status).toBe(400);
         expect(res.body.errors).toBeDefined();
+    });
+
+    it('rejects an invalid category', async () => {
+        const res = await request(app).post('/api/logs').send({
+            title: 'Bad Category',
+            accessMode: 'OPEN',
+            turnMode: 'FREESTYLE',
+            category: 'NotRealCategory',
+        });
+
+        expect(res.status).toBe(400);
+        expect(res.body.errors).toBeDefined();
+        expect(res.body.errors.category).toBeDefined();
     });
 });
