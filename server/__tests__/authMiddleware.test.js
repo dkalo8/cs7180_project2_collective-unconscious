@@ -119,7 +119,7 @@ describe('Authentication Middleware', () => {
             expect(response.body.error).toBe('Unauthorized: Invalid or missing session token');
         });
         
-        it('should return 401 Unauthorized if sessionToken is not a valid UUID', async () => {
+        it('should return 401 Unauthorized if sessionToken is not a valid UUID when not in test env', async () => {
             const rawApp = express();
             rawApp.use((req, res, next) => {
                 req.sessionToken = 'invalid-fake-uuid';
@@ -127,8 +127,13 @@ describe('Authentication Middleware', () => {
             });
             rawApp.get('/api/raw-require-auth', requireAuth, (req, res) => res.status(200).send('OK'));
 
+            const originalEnv = process.env.NODE_ENV;
+            process.env.NODE_ENV = 'development';
+            
             const response = await request(rawApp).get('/api/raw-require-auth');
             expect(response.status).toBe(401);
+            
+            process.env.NODE_ENV = originalEnv;
         });
     });
 

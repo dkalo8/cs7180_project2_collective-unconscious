@@ -1,10 +1,8 @@
-import { useState, useMemo } from 'react';
-import { randomNick } from '../utils/nickname';
+import { useState } from 'react';
 import { CAT } from '../utils/i18n';
 import { S } from '../utils/styles';
 
 export default function LogPage({ t, log, lang }) {
-  const generatedNick = useMemo(() => randomNick(lang), [lang]);
   const [nickInput, setNickInput] = useState("");
   const [draft, setDraft] = useState("");
   const [copied, setCopied] = useState(false);
@@ -83,7 +81,7 @@ export default function LogPage({ t, log, lang }) {
             <div style={{ display: "flex", gap: 8, alignItems: "center", flex: 1 }}>
               <input
                 style={{ ...S.input, maxWidth: 180, fontSize: 13 }}
-                placeholder={generatedNick}
+                placeholder="Leave blank for random"
                 value={nickInput}
                 onChange={(e) => setNickInput(e.target.value)}
               />
