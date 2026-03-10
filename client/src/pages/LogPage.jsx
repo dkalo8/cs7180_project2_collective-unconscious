@@ -3,21 +3,21 @@ import { randomNick } from '../utils/nickname';
 import { CAT } from '../utils/i18n';
 import { S } from '../utils/styles';
 
-export default function LogPage({ t, log, lang }: any) {
+export default function LogPage({ t, log, lang }) {
   const generatedNick = useMemo(() => randomNick(lang), [lang]);
   const [nickInput, setNickInput] = useState("");
   const [draft, setDraft] = useState("");
   const [copied, setCopied] = useState(false);
-  const [localReactions, setLocalReactions] = useState<any>(log.reactions || {});
-  const [reacted, setReacted] = useState<any>({});
+  const [localReactions, setLocalReactions] = useState(log.reactions || {});
+  const [reacted, setReacted] = useState({});
 
   const isCompleted = log.status === "completed";
   const isStructured = log.mode === "structured";
 
-  const handleReact = (sym: any) => {
+  const handleReact = (sym) => {
     if (reacted[sym]) return;
-    setLocalReactions((prev: any) => ({ ...prev, [sym]: (prev[sym] || 0) + 1 }));
-    setReacted((prev: any) => ({ ...prev, [sym]: true }));
+    setLocalReactions((prev) => ({ ...prev, [sym]: (prev[sym] || 0) + 1 }));
+    setReacted((prev) => ({ ...prev, [sym]: true }));
   };
 
   return (
@@ -38,7 +38,7 @@ export default function LogPage({ t, log, lang }: any) {
       <hr style={S.hr} />
 
       <div style={{ marginBottom: 20 }}>
-        {log.turns.map((turn: any, i: any) => (
+        {log.turns.map((turn, i) => (
           <div key={i} style={{
             color: log.participants[turn.pid].color,
             paddingLeft: 12, marginBottom: 10, lineHeight: 1.7,
@@ -51,7 +51,7 @@ export default function LogPage({ t, log, lang }: any) {
       {isCompleted && (
         <div style={{ marginTop: 8, marginBottom: 20, paddingTop: 12, borderTop: "1px solid #eee" }}>
           <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-            {["✦", "◎", "∿", "⌖"].map((sym: any) => (
+            {["✦", "◎", "∿", "⌖"].map((sym) => (
               <button key={sym} onClick={() => handleReact(sym)} style={{
                 background: "none", border: "none", fontFamily: "inherit",
                 fontSize: 18, cursor: reacted[sym] ? "default" : "pointer",
@@ -105,7 +105,7 @@ export default function LogPage({ t, log, lang }: any) {
       {isStructured && !isCompleted && (
         <div style={{ marginTop: 16, fontSize: 13, color: "#888" }}>
           <span>{t.log.queue}: </span>
-          {log.participants.map((p: any, i: any) => (
+          {log.participants.map((p, i) => (
             <span key={i}>
               <span style={{ color: p.color }}>{p.name}</span>
               {i < log.participants.length - 1 ? " → " : ""}

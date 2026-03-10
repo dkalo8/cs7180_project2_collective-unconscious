@@ -1,7 +1,7 @@
 import { LANG_OPTIONS } from '../utils/i18n';
 import { S } from '../utils/styles';
 
-export default function Header({ t, lang, setLang, onNav }: any) {
+export default function Header({ t, lang, setLang, onNav }) {
   return (
     <div style={S.header}>
       <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
@@ -14,7 +14,7 @@ export default function Header({ t, lang, setLang, onNav }: any) {
         <button style={S.link} onClick={() => onNav("about")}>{t.nav.about}</button>
         <span style={{ color: "#ccc" }}>|</span>
         <div style={{ display: "flex", gap: 6 }}>
-          {LANG_OPTIONS.map((l: any, i: any) => (
+          {LANG_OPTIONS.map((l, i) => (
             <span key={l.code} style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
               <button style={S.langBtn(lang === l.code)} onClick={() => setLang(l.code)}>{l.label}</button>
               {i < LANG_OPTIONS.length - 1 && <span style={{ color: "#ccc", fontSize: 12 }}>/</span>}

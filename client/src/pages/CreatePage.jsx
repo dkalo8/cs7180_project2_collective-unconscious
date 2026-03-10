@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { CAT, CAT_KEYS } from '../utils/i18n';
 import { S } from '../utils/styles';
 
-export default function CreatePage({ t, lang, onCreated }: any) {
+export default function CreatePage({ t, lang, onCreated }) {
   const [isPrivate, setIsPrivate] = useState(false);
   const [mode, setMode] = useState("structured");
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -19,7 +19,7 @@ export default function CreatePage({ t, lang, onCreated }: any) {
       <div style={S.fieldGroup}>
         <label style={S.label}>{t.create.category}</label>
         <select style={S.select}>
-          {CAT_KEYS.map((k: any) => <option key={k} value={k}>{CAT[lang][k]}</option>)}
+          {CAT_KEYS.map((k) => <option key={k} value={k}>{CAT[lang][k]}</option>)}
         </select>
       </div>
 
@@ -56,7 +56,7 @@ export default function CreatePage({ t, lang, onCreated }: any) {
           {mode === "structured" && (
             <div style={S.fieldGroup}>
               <label style={S.label}>{t.create.perTurn}</label>
-              <select style={S.select}>{t.create.perTurnOpts.map((o: any, i: any) => <option key={i}>{o}</option>)}</select>
+              <select style={S.select}>{t.create.perTurnOpts.map((o, i) => <option key={i}>{o}</option>)}</select>
             </div>
           )}
           <div style={S.fieldGroup}>
@@ -69,7 +69,7 @@ export default function CreatePage({ t, lang, onCreated }: any) {
           </div>
           <div style={S.fieldGroup}>
             <label style={S.label}>{t.create.timeout}</label>
-            <select style={S.select}>{t.create.timeoutOpts.map((o: any, i: any) => <option key={i}>{o}</option>)}</select>
+            <select style={S.select}>{t.create.timeoutOpts.map((o, i) => <option key={i}>{o}</option>)}</select>
           </div>
         </div>
       )}
