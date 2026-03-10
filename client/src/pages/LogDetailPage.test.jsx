@@ -21,7 +21,7 @@ vi.mock('@tanstack/react-query', () => ({
 import { useQuery } from '@tanstack/react-query';
 
 // Mock global fetch
-global.fetch = vi.fn();
+globalThis.fetch = vi.fn();
 
 describe('LogDetailPage Component', () => {
     beforeEach(() => {
