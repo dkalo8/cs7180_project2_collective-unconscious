@@ -14,7 +14,7 @@ const renderPage = () =>
 
 describe('CreateLogPage', () => {
     beforeEach(() => {
-        global.fetch = vi.fn();
+        globalThis.fetch = vi.fn();
     });
 
     it('renders required fields on mount', () => {
@@ -66,7 +66,7 @@ describe('CreateLogPage', () => {
     });
 
     it('calls POST /api/logs and redirects to /logs/:id on valid public submit', async () => {
-        global.fetch.mockResolvedValueOnce({
+        globalThis.fetch.mockResolvedValueOnce({
             ok: true,
             json: async () => ({ id: 'abc-123', accessCode: null }),
         });
@@ -87,7 +87,7 @@ describe('CreateLogPage', () => {
     });
 
     it('shows access code modal for private log and redirects on "Done"', async () => {
-        global.fetch.mockResolvedValueOnce({
+        globalThis.fetch.mockResolvedValueOnce({
             ok: true,
             json: async () => ({ id: 'private-789', accessCode: 'SECRET' }),
         });
@@ -111,7 +111,7 @@ describe('CreateLogPage', () => {
         const writeText = vi.fn().mockResolvedValue();
         Object.assign(navigator, { clipboard: { writeText } });
 
-        global.fetch.mockResolvedValueOnce({
+        globalThis.fetch.mockResolvedValueOnce({
             ok: true,
             json: async () => ({ id: 'copyme-123', accessCode: 'COPYME' }),
         });
@@ -131,7 +131,7 @@ describe('CreateLogPage', () => {
         // Delete clipboard API
         delete navigator.clipboard;
 
-        global.fetch.mockResolvedValueOnce({
+        globalThis.fetch.mockResolvedValueOnce({
             ok: true,
             json: async () => ({ id: 'nocallback-123', accessCode: 'MANUAL' }),
         });
