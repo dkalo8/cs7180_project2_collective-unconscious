@@ -71,5 +71,10 @@ model Turn {
   writerId     String
   writer       Writer   @relation(fields: [writerId], references: [id], onDelete: Cascade)
 
+  isSkip       Boolean  @default(false)
+  isEntrance   Boolean  @default(false)
+
   createdAt    DateTime @default(now())
+
+  @@unique([logId, turnOrder])
 }
