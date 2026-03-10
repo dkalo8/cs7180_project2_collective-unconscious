@@ -20,9 +20,12 @@ jobs:
         cache: 'npm'
         cache-dependency-path: '**/package-lock.json'
 
-    # SERVER
-    - name: Server - Install Dependencies
-      run: cd server && npm ci
+    # SETUP
+    - name: Root - Install Dependencies
+      run: npm ci
+
+    - name: Prisma - Generate Client
+      run: npx prisma generate
 
     - name: Server - Lint
       run: cd server && npm run lint
@@ -31,9 +34,6 @@ jobs:
       run: cd server && npm run test
 
     # CLIENT
-    - name: Client - Install Dependencies
-      run: cd client && npm ci
-
     - name: Client - Lint
       run: cd client && npm run lint
 
