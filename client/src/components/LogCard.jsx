@@ -6,7 +6,6 @@ const CATEGORY_MAP = {
   'Haiku': '俳句',
   'Poem': '诗',
   'Short Novel': '短篇小说',
-  'Flash Fiction': '闪小说',
 };
 
 const LogCard = ({ log }) => {

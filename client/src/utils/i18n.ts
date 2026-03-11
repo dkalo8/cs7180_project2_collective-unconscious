@@ -1,9 +1,9 @@
 export const CAT: any = {
-  zh: { freewriting: "自由写作", haiku: "俳句", poem: "诗", novel: "短篇小说", flash: "闪小说" },
-  en: { freewriting: "Freewriting", haiku: "Haiku", poem: "Poem", novel: "Short Novel", flash: "Flash Fiction" },
-  es: { freewriting: "Escritura libre", haiku: "Haiku", poem: "Poema", novel: "Novela corta", flash: "Ficción relámpago" },
+  zh: { freewriting: "自由写作", haiku: "俳句", poem: "诗", novel: "短篇小说" },
+  en: { freewriting: "Freewriting", haiku: "Haiku", poem: "Poem", novel: "Short Novel" },
+  es: { freewriting: "Escritura libre", haiku: "Haiku", poem: "Poema", novel: "Novela corta" },
 };
-export const CAT_KEYS = ["freewriting", "haiku", "poem", "novel", "flash"];
+export const CAT_KEYS = ["freewriting", "haiku", "poem", "novel"];
 
 export const T: any = {
   zh: {
