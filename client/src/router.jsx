@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import CreateLogPage from "./pages/CreateLogPage";
 import LogDetailPage from "./pages/LogDetailPage";
 import UserProfilePage from "./pages/UserProfilePage";
+import AboutPage from "./pages/AboutPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 const routerConfig = [
@@ -25,8 +26,12 @@ const routerConfig = [
         element: <LogDetailPage />,
       },
       {
-        path: "profile/:username",
+        path: "users/:id",
         element: <UserProfilePage />,
+      },
+      {
+        path: "about",
+        element: <AboutPage />,
       },
       {
         path: "*",
@@ -37,4 +42,4 @@ const routerConfig = [
 ];
 
 export const router = createBrowserRouter(routerConfig);
-export default routerConfig; // Export config for testing without BrowserRouter tied to DOM
+export default routerConfig;
