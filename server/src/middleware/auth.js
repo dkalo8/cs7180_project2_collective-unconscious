@@ -1,6 +1,8 @@
 const { v4: uuidv4, validate: uuidValidate } = require('uuid');
 const { PrismaClient } = require('@prisma/client');
+const jwt = require('jsonwebtoken');
 const prisma = new PrismaClient();
+
 
 /**
  * sessionMiddleware
@@ -132,8 +134,29 @@ const requireWriter = async (req, res, next) => {
     }
 };
 
+/**
+ * requireJwt
+ * Verifies the JWT accessToken cookie. Attaches req.userId on success.
+ * Returns 401 if token is missing, expired, or invalid.
+ */
+const requireJwt = (req, res, next) => {
+    const token = req.cookies && req.cookies.accessToken;
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized: No access token provided' });
+    }
+    try {
+        const payload = jwt.verify(token, process.env.JWT_SECRET);
+        req.userId = payload.userId;
+        next();
+    } catch {
+        return res.status(401).json({ error: 'Unauthorized: Invalid or expired access token' });
+    }
+};
+
 module.exports = {
     sessionMiddleware,
     requireAuth,
-    requireWriter
+    requireWriter,
+    requireJwt,
 };
+

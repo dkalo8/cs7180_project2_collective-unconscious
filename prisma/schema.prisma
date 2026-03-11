@@ -41,16 +41,44 @@ model Log {
   turns              Turn[]
 }
 
+model User {
+  id          String   @id @default(uuid())
+  googleId    String   @unique
+  email       String   @unique
+  displayName String
+  bio         String?
+  avatarUrl   String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  writers      Writer[]
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique  // Stored as the raw JWT (consider hashing in prod)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
 model Writer {
   id           String   @id @default(uuid())
   sessionToken String   // Link to an anonymous session
-  
+
   nickname     String?  // E.g., "Musing Crow"
   colorHex     String   // E.g., "#FF8C00"
-  
+
   logId        String
   log          Log      @relation(fields: [logId], references: [id], onDelete: Cascade)
-  
+
+  // Optional link to a registered User account (null for anonymous writers)
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
   joinOrder    Int      // 1 for creator (keeper), 2 for second participant...
 
   createdAt    DateTime @default(now())
