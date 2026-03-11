@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './WriteZone.css';
 
-function WriteZone({ logId, colorHex, perTurnLengthLimit = 500, onSubmit }) {
+function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit }) {
     const [content, setContent] = useState('');
     const [nickname, setNickname] = useState('');
 

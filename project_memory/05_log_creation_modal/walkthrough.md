@@ -35,7 +35,6 @@ I have completed the implementation of the log creation flow, including the back
   - Verified copy-to-clipboard (and fallback) logic.
 
 ### Manual Verification
-- Verified that the 'Flash Fiction' category was successfully removed from both the backend schema and frontend dropdown.
 - Verified that redirection points to `/logs/:id`.
 
 ![Access Code Modal Mockup](file:///Users/mineral/.gemini/antigravity/brain/a7f4f734-0404-4d12-ae89-12cd01c94502/media__1773158311095.png)

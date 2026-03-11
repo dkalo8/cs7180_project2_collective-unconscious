@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { requireAuth } = require('../middleware/auth');
-const { createLog } = require('../controllers/logs');
+const { createLog, getLogs } = require('../controllers/logs');
 const { submitTurn, skipTurn } = require('../controllers/turns');
+
+// GET /api/logs — public discovery feed
+router.get('/', getLogs);
 
 // POST /api/logs — requires a valid session token to identify the Keeper
 router.post('/', requireAuth, createLog);

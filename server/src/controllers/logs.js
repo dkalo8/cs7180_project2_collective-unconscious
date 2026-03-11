@@ -92,4 +92,81 @@ const createLog = async (req, res) => {
     }
 };
 
-module.exports = { createLog };
+const getLogs = async (req, res) => {
+    try {
+        const { category, page = '1', limit = '20' } = req.query;
+        
+        const pageNum = parseInt(page, 10);
+        const limitNum = parseInt(limit, 10);
+        
+        if (isNaN(pageNum) || pageNum < 1) {
+            return res.status(400).json({ error: 'Invalid page number' });
+        }
+        if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+            return res.status(400).json({ error: 'Invalid limit parameter' });
+        }
+
+        const skip = (pageNum - 1) * limitNum;
+        
+        const whereClause = {};
+        if (category) {
+            whereClause.category = category;
+        }
+
+        const logs = await prisma.log.findMany({
+            where: whereClause,
+            orderBy: { createdAt: 'desc' },
+            skip,
+            take: limitNum,
+            include: {
+                _count: {
+                    select: { writers: true }
+                },
+                turns: {
+                    orderBy: { turnOrder: 'asc' },
+                    take: 1
+                }
+            }
+        });
+
+        const totalCount = await prisma.log.count({ where: whereClause });
+
+        const formattedLogs = logs.map(log => {
+            let excerpt = '';
+            if (log.turns && log.turns.length > 0) {
+                // Return plain text excerpt (first ~100 chars)
+                excerpt = log.turns[0].content.substring(0, 100);
+                if (log.turns[0].content.length > 100) excerpt += '...';
+            } else if (log.seed) {
+                excerpt = log.seed.substring(0, 100);
+                if (log.seed.length > 100) excerpt += '...';
+            }
+
+            return {
+                id: log.id,
+                title: log.title,
+                category: log.category,
+                status: log.status,
+                participantCount: log._count.writers,
+                excerpt,
+                createdAt: log.createdAt
+            };
+        });
+
+        return res.status(200).json({
+            data: formattedLogs,
+            meta: {
+                totalCount,
+                currentPage: pageNum,
+                totalPages: Math.ceil(totalCount / limitNum),
+                hasNextPage: skip + formattedLogs.length < totalCount
+            }
+        });
+
+    } catch (error) {
+        console.error('getLogs Error:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+module.exports = { createLog, getLogs };

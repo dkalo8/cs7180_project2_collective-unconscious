@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import WriteZone from '../components/WriteZone';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 // Temporary mock fetches until we have an auth and api client exported
 const fetchLog = async (id) => {

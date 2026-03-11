@@ -103,7 +103,7 @@ export default function CreateLogPage() {
             } else {
                 setCopyStatus('Manual copy: ' + accessCode);
             }
-        } catch (err) {
+        } catch {
             setCopyStatus('Failed to copy');
         }
     };
