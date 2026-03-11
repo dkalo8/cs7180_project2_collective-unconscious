@@ -44,13 +44,8 @@ describe('Authentication Middleware', () => {
     });
 
     afterAll(async () => {
-        // Clean up
-        await prisma.writer.deleteMany({
-            where: { logId: testLog.id }
-        });
-        await prisma.log.delete({
-            where: { id: testLog.id }
-        });
+        await prisma.writer.deleteMany({ where: { logId: testLog.id } });
+        await prisma.log.deleteMany({ where: { id: testLog.id } });
         await prisma.$disconnect();
     });
 
