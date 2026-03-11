@@ -50,6 +50,7 @@ Thumbs.db
 # Python / Gemini Agent generated files
 .gemini/
 __pycache__/
-
 # Agent workflows and skills
 .agents/
+
+server/.env

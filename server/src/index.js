@@ -2,19 +2,24 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const passport = require('passport');
 const session = require('express-session');
+const { passport } = require('./config/passport');
 const { sessionMiddleware } = require('./middleware/auth');
 const logsRouter = require('./routes/logs');
+const authRouter = require('./routes/auth.routes');
+const usersRouter = require('./routes/users.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    credentials: true,
+}));
 app.use(express.json());
 app.use(cookieParser());
 
-// Apply our custom session token middleware globally
+// Anonymous session token middleware (Sprint 1 — unchanged)
 app.use(sessionMiddleware);
 
 app.use(
@@ -29,6 +34,8 @@ app.use(passport.session());
 
 // API routes
 app.use('/api/logs', logsRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/users', usersRouter);
 
 if (process.env.NODE_ENV !== 'production') {
     const devRouter = require('./routes/dev');
