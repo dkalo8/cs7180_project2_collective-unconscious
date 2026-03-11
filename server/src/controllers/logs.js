@@ -132,10 +132,12 @@ const getLogs = async (req, res) => {
 
         const formattedLogs = logs.map(log => {
             let excerpt = '';
-            if (log.turns && log.turns.length > 0) {
-                // Return plain text excerpt (first ~100 chars)
-                excerpt = log.turns[0].content.substring(0, 100);
-                if (log.turns[0].content.length > 100) excerpt += '...';
+            const firstTurn = log.turns && log.turns.length > 0 ? log.turns[0] : null;
+            
+            if (firstTurn) {
+                const content = firstTurn.isHidden ? '[content removed]' : firstTurn.content;
+                excerpt = content.substring(0, 100);
+                if (content.length > 100) excerpt += '...';
             } else if (log.seed) {
                 excerpt = log.seed.substring(0, 100);
                 if (log.seed.length > 100) excerpt += '...';
@@ -254,8 +256,21 @@ const getLogById = async (req, res) => {
         // Strip sessionTokens before sending to client
         const safeWriters = participatingWriters.map(({ sessionToken: _st, ...w }) => w);
 
+        // Redact hidden turns unless the requester is an admin (checked via secret or role)
+        const isAdmin = (req.headers['x-admin-secret'] === process.env.ADMIN_SECRET);
+        // Note: we don't have a full User object here yet as it's not guarded by requireAdmin
+        // but for now secret header is enough.
+
+        const safeTurns = log.turns.map(t => {
+            if (t.isHidden && !isAdmin) {
+                return { ...t, content: '[content removed]' };
+            }
+            return t;
+        });
+
         const safeLog = {
             ...log,
+            turns: safeTurns,
             writers: safeWriters,
             isCreator,
             isMyTurn,

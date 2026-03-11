@@ -153,10 +153,48 @@ const requireJwt = (req, res, next) => {
     }
 };
 
+/**
+ * requireAdmin
+ * Guard for administrative endpoints.
+ * First checks if the authenticated user has the "ADMIN" role.
+ * Fallback: checks for a shared secret in the X-Admin-Secret header (useful for bootstrap).
+ */
+const requireAdmin = async (req, res, next) => {
+    const adminSecret = process.env.ADMIN_SECRET;
+    const headerSecret = req.headers['x-admin-secret'];
+
+    // 1. Check shared secret fallback
+    if (adminSecret && headerSecret === adminSecret) {
+        return next();
+    }
+
+    // 2. Check JWT-based user role
+    const token = req.cookies && req.cookies.accessToken;
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized: Admin access or secret required' });
+    }
+
+    try {
+        const payload = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await prisma.user.findUnique({ where: { id: payload.userId } });
+        
+        if (!user || user.role !== 'ADMIN') {
+            return res.status(403).json({ error: 'Forbidden: Admin role required' });
+        }
+
+        req.userId = user.id;
+        req.user = user;
+        next();
+    } catch (err) {
+        return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+    }
+};
+
 module.exports = {
     sessionMiddleware,
     requireAuth,
     requireWriter,
     requireJwt,
+    requireAdmin,
 };
 

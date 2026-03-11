@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import WriteZone from '../components/WriteZone';
+import ReportButton from '../components/ReportButton';
 import { useState } from 'react';
 
 import { getLogById, closeLog } from '../services/log.service';
@@ -122,6 +123,7 @@ export default function LogDetailPage() {
                             {t.log.close}
                         </button>
                     )}
+                    {!log.isCreator && <ReportButton targetType="LOG" targetId={id} />}
                 </div>
                 <div style={{ color: '#666', fontSize: 14 }}>
                     {t.log.mode(log.turnMode?.toLowerCase())} &middot; {log.status}
@@ -136,10 +138,11 @@ export default function LogDetailPage() {
                         const writer = log.writers?.find(w => w.id === turn.writerId);
                         const textColor = writer?.colorHex || '#000';
                         return (
-                            <div key={turn.id || index}>
-                                <div style={{ fontSize: 20, lineHeight: 1.6, whiteSpace: 'pre-wrap', color: textColor }}>
+                            <div key={turn.id || index} style={{ marginBottom: 12 }}>
+                                <div style={{ fontSize: 20, lineHeight: 1.6, whiteSpace: 'pre-wrap', color: textColor, display: 'inline' }}>
                                     {turn.content}
                                 </div>
+                                {!turn.isHidden && <ReportButton targetType="TURN" targetId={turn.id} />}
                             </div>
                         );
                     })}

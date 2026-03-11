@@ -8,6 +8,7 @@ const { sessionMiddleware } = require('./middleware/auth');
 const logsRouter = require('./routes/logs');
 const authRouter = require('./routes/auth.routes');
 const usersRouter = require('./routes/users.routes');
+const moderationRouter = require('./routes/moderation.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -36,6 +37,7 @@ app.use(passport.session());
 app.use('/api/logs', logsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
+app.use('/api', moderationRouter);
 
 if (process.env.NODE_ENV !== 'production') {
     const devRouter = require('./routes/dev');
