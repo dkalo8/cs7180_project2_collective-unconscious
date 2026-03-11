@@ -65,6 +65,9 @@ describe('LogDetailPage Component', () => {
 
         // Assert WriteZone is NOT rendered by checking for the submit button or textarea
         expect(screen.queryByPlaceholderText(/continue the piece/i)).not.toBeInTheDocument();
+
+        // Assert Share as Image button IS rendered
+        expect(screen.getByText(/Share as Image/i)).toBeInTheDocument();
     });
 
     it('handles the submit flow successfully on an active log', async () => {
