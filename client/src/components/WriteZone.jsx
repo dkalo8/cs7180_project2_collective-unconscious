@@ -1,9 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { randomNick } from '../utils/nickname';
 import './WriteZone.css';
 
-function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit }) {
+const DEFAULT_COLORS = ['#FF0000', '#FF8C00', '#0000FF', '#008000', '#800080', '#000000'];
+
+function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit, myWriter = null }) {
     const [content, setContent] = useState('');
-    const [nickname, setNickname] = useState('');
+    const [nickname, setNickname] = useState(myWriter?.nickname || '');
+    const [placeholderNick, setPlaceholderNick] = useState('');
+    const [selectedColor, setSelectedColor] = useState(myWriter?.colorHex || colorHex || '#000000');
+    const isReturningWriter = !!myWriter;
+
+    useEffect(() => {
+        setPlaceholderNick(randomNick());
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -13,7 +23,7 @@ function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit }) {
         }
 
         if (onSubmit) {
-            await onSubmit({ content, nickname: nickname.trim() });
+            await onSubmit({ content, nickname: nickname.trim(), colorHex: selectedColor });
         }
         
         setContent('');
@@ -23,13 +33,14 @@ function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit }) {
     const isOverLimit = content.length > perTurnLengthLimit;
 
     return (
-        <div className="write-zone" style={{ borderLeftColor: colorHex }}>
+        <div className="write-zone">
             <form onSubmit={handleSubmit}>
                 <textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     placeholder="Type your turn..."
                     className={isOverLimit ? 'over-limit' : ''}
+                    style={{ color: selectedColor }}
                 />
                 <div className="write-zone-controls">
                     <span className={`char-count ${isOverLimit ? 'error' : ''}`}>
@@ -39,9 +50,31 @@ function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit }) {
                         type="text"
                         value={nickname}
                         onChange={(e) => setNickname(e.target.value)}
-                        placeholder="Nickname (optional)"
+                        placeholder={`Nickname (e.g. ${placeholderNick})`}
                         className="nickname-input"
+                        disabled={isReturningWriter}
                     />
+                    <div className="color-picker">
+                        {DEFAULT_COLORS.map(c => (
+                            <button
+                                key={c}
+                                type="button"
+                                className={`color-option ${selectedColor === c ? 'selected' : ''}`}
+                                style={{ backgroundColor: c }}
+                                onClick={() => !isReturningWriter && setSelectedColor(c)}
+                                disabled={isReturningWriter}
+                                aria-label={`Select color ${c}`}
+                            />
+                        ))}
+                        <input
+                            type="color"
+                            value={selectedColor}
+                            onChange={(e) => setSelectedColor(e.target.value)}
+                            className="custom-color-picker"
+                            aria-label="Pick custom color"
+                            disabled={isReturningWriter}
+                        />
+                    </div>
                     <button 
                         type="submit" 
                         disabled={!content.trim() || isOverLimit}

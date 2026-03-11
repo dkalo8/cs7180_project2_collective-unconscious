@@ -51,3 +51,16 @@
 ### PRD Cleanup (`PRD.md`)
 - Resolved open question "How are user colors assigned?" — answered by the new 6-color default palette + custom color picker.
 - Updated user story US-05 to reference text color and color picker.
+## 2026-03-11: Turn Logic Refinement & Terminology Update
+
+### Completion & Rotation Logic (`PRD.md`, `turns.js`)
+- **Simplified Completion:** Changed "Round Limit" to **"Turn Limit"**. Log completion is now a simple count of total non-skip turns, applying identically to both Structured and Freestyle modes.
+- **Participation Gate:** A user is only considered a "Participant" (Writer) after successfully submitting their first turn.
+- **`isOutOfRotation` Identity:** Renamed `isEntrance` to `isOutOfRotation`. This flag identifies turns that contribute content but do not advance the queue pointer (used for first-time joiners mid-rotation).
+- **Skip Behavior:** Skip turns advance the rotation pointer but are hidden from display. This ensures "Skipped by Keeper" doesn't clutter the creative narrative.
+
+### UI/UX Decisions (`LogDetailPage.jsx`, `LogDetailPage.css`)
+- **Colored Content:** Confirmed decision to color turn text directly rather than using colored left margins.
+- **Anonymous/Clean Log:** Nicknames are removed from the log body to keep the focus on the text, but are displayed at the bottom of the log in the participant gallery.
+- **Dynamic Skip UI:** The skip button was moved below the `WriteZone`, removed of its emoji, and upgraded with a dynamic dropdown allowing the Keeper to select the target writer.
+- **Manual Closure:** Added the ability for the Keeper to manually close any log (`PATCH /api/logs/:id/close`).

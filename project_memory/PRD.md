@@ -71,22 +71,22 @@ User can create a log with a title.
 
 #### Round-Robin Queue Logic (Structured Mode)
 - The Keeper (log creator) is #1; subsequent participants are appended to the queue in join order
-- New participants enter the rotation immediately — no waiting for the next round
+- New participants enter the rotation immediately — no waiting for the next cycle
 - Example: A creates log → A writes → B joins → B writes → A writes → C joins → C writes → A → B → C → repeat
-- One "round" = every current participant writes once; round limit is calculated on this basis
+- Turn limit: the log closes automatically after the configured number of total submitted turns
 
 #### Configurable Settings
 - **Mandatory Log Title:** Acts as the thematic anchor for the log
 - **Category (Optional Dropdown):** Options include Freewriting, Haiku, Poem, Short Novel (default: "Freewriting")
 - **Participant limit:** Capped or unlimited (default unlimited)
-- **Round limit:** Capped or unlimited (default unlimited)
+- **Turn limit:** Capped or unlimited (default unlimited)
 - **Turn timeout:** None (manual skip only), Auto-skip (1h / 6h / 12h / 24h / 48h / 7d), or No timeout (default no timeout)
 - **Per-turn length limit:** 1 sentence / 2 sentences / 1 paragraph / custom word count / no limit (default no limit)
 - **Optional Seed / Creative Constraint:** A starting sentence, prompt, or custom rule (e.g., "must end each turn with a question") to kick things off (default no seed)
 
 #### Keeper Permissions
 - Manually skip the current turn holder (Structured mode, available at any time)
-- Close the log (unlimited logs can be closed at any time; logs with a round limit close automatically when reached)
+- Close the log (unlimited logs can be closed at any time; logs with a turn limit close automatically when reached)
 - Cannot modify any log settings after creation
 
 #### Invariants

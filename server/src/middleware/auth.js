@@ -19,11 +19,12 @@ const sessionMiddleware = (req, res, next) => {
     }
 
     // If no token or invalid token, create a new one
-    if (!token || !uuidValidate(token)) {
+    // In non-production, allow arbitrary strings (e.g. "my-creator-token") for manual testing
+    const isProduction = process.env.NODE_ENV === 'production';
+    if (!token || (isProduction && !uuidValidate(token))) {
         token = uuidv4();
-        
+
         // Config: HttpOnly, SameSite=Lax, Secure (in production), 30 days max age
-        const isProduction = process.env.NODE_ENV === 'production';
         const maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days in ms
         
         res.cookie('sessionToken', token, {
@@ -58,13 +59,9 @@ const requireAuth = (req, res, next) => {
         if (match) token = match[1];
     }
     
-    if (!token || !uuidValidate(token)) {
-        // Since test cookies might just be "sessionToken=...", let's be lenient for tests with mock tokens
-        if (token && typeof token === 'string' && process.env.NODE_ENV === 'test') {
-             // Mock tokens in tests are fine.
-        } else {
-             return res.status(401).json({ error: 'Unauthorized: Invalid or missing session token' });
-        }
+    const isProductionAuth = process.env.NODE_ENV === 'production';
+    if (!token || (isProductionAuth && !uuidValidate(token))) {
+        return res.status(401).json({ error: 'Unauthorized: Invalid or missing session token' });
     }
     
     req.sessionToken = token;
@@ -81,10 +78,11 @@ const requireWriter = async (req, res, next) => {
     const token = req.sessionToken;
     const logId = (req.params && req.params.logId) || (req.body && req.body.logId);
     
-    if (!token || !uuidValidate(token)) {
+    const isProductionWriter = process.env.NODE_ENV === 'production';
+    if (!token || (isProductionWriter && !uuidValidate(token))) {
         return res.status(401).json({ error: 'Unauthorized: Invalid or missing session token' });
     }
-    
+
     if (!logId) {
         return res.status(400).json({ error: 'Bad Request: Missing logId' });
     }

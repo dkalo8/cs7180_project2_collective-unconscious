@@ -44,13 +44,8 @@ describe('Authentication Middleware', () => {
     });
 
     afterAll(async () => {
-        // Clean up
-        await prisma.writer.deleteMany({
-            where: { logId: testLog.id }
-        });
-        await prisma.log.delete({
-            where: { id: testLog.id }
-        });
+        await prisma.writer.deleteMany({ where: { logId: testLog.id } });
+        await prisma.log.deleteMany({ where: { id: testLog.id } });
         await prisma.$disconnect();
     });
 
@@ -83,13 +78,27 @@ describe('Authentication Middleware', () => {
             expect(response.headers['set-cookie']).toBeUndefined();
         });
         
-        it('should discard completely invalid cookie values, renew token, and set new cookie', async () => {
-             // Let's assume sessionMiddleware discards tokens that are not valid UUIDs.
-             // This keeps our `requireAuth` strictly for route protection, while `sessionMiddleware` cleans up bad state.
+        it('should preserve non-UUID tokens in non-production (dev token switcher support)', async () => {
+            const forgedToken = "my-creator-token";
+            const response = await request(app)
+                .get('/api/test-session')
+                .set('Cookie', `sessionToken=${forgedToken}`);
+
+            expect(response.status).toBe(200);
+            expect(response.body.token).toBe(forgedToken);
+            expect(response.headers['set-cookie']).toBeUndefined();
+        });
+
+        it('should discard non-UUID tokens and renew in production', async () => {
+            const originalEnv = process.env.NODE_ENV;
+            process.env.NODE_ENV = 'production';
+
             const forgedToken = "not-a-uuid";
             const response = await request(app)
                 .get('/api/test-session')
                 .set('Cookie', `sessionToken=${forgedToken}`);
+
+            process.env.NODE_ENV = originalEnv;
 
             expect(response.status).toBe(200);
             expect(uuidValidate(response.body.token)).toBe(true);
@@ -119,7 +128,19 @@ describe('Authentication Middleware', () => {
             expect(response.body.error).toBe('Unauthorized: Invalid or missing session token');
         });
         
-        it('should return 401 Unauthorized if sessionToken is not a valid UUID when not in test env', async () => {
+        it('should allow non-UUID tokens in non-production (dev token switcher support)', async () => {
+            const rawApp = express();
+            rawApp.use((req, res, next) => {
+                req.sessionToken = 'my-creator-token';
+                next();
+            });
+            rawApp.get('/api/raw-require-auth', requireAuth, (req, res) => res.status(200).send('OK'));
+
+            const response = await request(rawApp).get('/api/raw-require-auth');
+            expect(response.status).toBe(200);
+        });
+
+        it('should return 401 if sessionToken is not a valid UUID in production', async () => {
             const rawApp = express();
             rawApp.use((req, res, next) => {
                 req.sessionToken = 'invalid-fake-uuid';
@@ -128,11 +149,11 @@ describe('Authentication Middleware', () => {
             rawApp.get('/api/raw-require-auth', requireAuth, (req, res) => res.status(200).send('OK'));
 
             const originalEnv = process.env.NODE_ENV;
-            process.env.NODE_ENV = 'development';
-            
+            process.env.NODE_ENV = 'production';
+
             const response = await request(rawApp).get('/api/raw-require-auth');
             expect(response.status).toBe(401);
-            
+
             process.env.NODE_ENV = originalEnv;
         });
     });

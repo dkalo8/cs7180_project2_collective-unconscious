@@ -30,6 +30,11 @@ app.use(passport.session());
 // API routes
 app.use('/api/logs', logsRouter);
 
+if (process.env.NODE_ENV !== 'production') {
+    const devRouter = require('./routes/dev');
+    app.use('/api/dev', devRouter);
+}
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok' });

@@ -3,18 +3,13 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import WriteZone from '../components/WriteZone';
 import { useState } from 'react';
 
-// Temporary mock fetches until we have an auth and api client exported
-const fetchLog = async (id) => {
-    const res = await fetch(`/api/logs/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch log');
-    return res.json();
-};
+import { getLogById, closeLog } from '../services/log.service';
 
-const submitTurn = async ({ logId, content, nickname }) => {
+const submitTurnApi = async ({ logId, content, nickname, colorHex, accessCode }) => {
     const res = await fetch(`/api/logs/${logId}/turns`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content, nickname })
+        body: JSON.stringify({ content, nickname, colorHex, ...(accessCode ? { accessCode } : {}) })
     });
     if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
@@ -23,21 +18,56 @@ const submitTurn = async ({ logId, content, nickname }) => {
     return res.json();
 };
 
+const skipTurnApi = async (logId) => {
+    const res = await fetch(`/api/logs/${logId}/skip`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    });
+    if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to skip turn');
+    }
+    return res.json();
+};
+
 export default function LogDetailPage() {
     const { id } = useParams();
     const queryClient = useQueryClient();
     const [submitError, setSubmitError] = useState('');
+    const [accessCode, setAccessCode] = useState('');
+    // Tracks which writer the creator has selected to skip (defaults to nextWriter)
+    const [skipTargetId, setSkipTargetId] = useState('');
 
     const { data: log, isLoading, isError, error } = useQuery({
         queryKey: ['log', id],
-        queryFn: () => fetchLog(id),
+        queryFn: () => getLogById(id),
     });
 
-    const handleTurnSubmit = async ({ content, nickname }) => {
+    const handleTurnSubmit = async ({ content, nickname, colorHex }) => {
         setSubmitError('');
         try {
-            await submitTurn({ logId: id, content, nickname });
-            // Invalidate to refetch the log and get the new turn
+            await submitTurnApi({ logId: id, content, nickname, colorHex, accessCode });
+            queryClient.invalidateQueries({ queryKey: ['log', id] });
+        } catch (err) {
+            setSubmitError(err.message);
+        }
+    };
+
+    const handleSkipTurn = async () => {
+        setSubmitError('');
+        try {
+            await skipTurnApi(id);
+            queryClient.invalidateQueries({ queryKey: ['log', id] });
+            setSkipTargetId('');
+        } catch (err) {
+            setSubmitError(err.message);
+        }
+    };
+
+    const handleCloseLog = async () => {
+        setSubmitError('');
+        try {
+            await closeLog(id);
             queryClient.invalidateQueries({ queryKey: ['log', id] });
         } catch (err) {
             setSubmitError(err.message);
@@ -45,7 +75,7 @@ export default function LogDetailPage() {
     };
 
     if (isLoading) return <div style={{ padding: 48 }}>Loading log...</div>;
-    
+
     if (isError) {
         return (
             <div style={{ padding: 48, color: 'red' }}>
@@ -57,40 +87,56 @@ export default function LogDetailPage() {
 
     if (!log) return null;
 
-    // Check if current user is eligible to write
-    // For now we render WriteZone unconditionally until we hook up full Auth state
-    // but in a real app this should only render if it's their turn
     const isCompleted = log.status === 'COMPLETED';
 
+    // All turns are visible except skipped ones (skipped turns are invisible per design)
+    const visibleTurns = (log.turns || []).filter(t => !t.isSkip);
+
+    // For the skip dropdown: show all current participating writers
+    const skipableWriters = log.writers || [];
+
+    // Default the skip target to nextWriter if not yet picked
+    const resolvedSkipTarget = skipTargetId || (log.nextWriter?.id ?? '');
+
     return (
-        <div style={{ maxWidth: 800, margin: '0 auto', padding: '40px 20px', fontFamily: 'Arial, sans-serif' }}>
+        <div style={{ maxWidth: 800, margin: '0 auto', padding: '40px 20px' }}>
+            {/* Header */}
             <div style={{ borderBottom: '2px solid #ccc', paddingBottom: 16, marginBottom: 24 }}>
-                <h1 style={{ margin: '0 0 8px 0', fontSize: 24 }}>{log.title}</h1>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <h1 style={{ margin: '0 0 8px 0', fontSize: 24 }}>{log.title}</h1>
+                    {log.isCreator && !isCompleted && (
+                        <button
+                            onClick={handleCloseLog}
+                            style={{
+                                padding: '6px 14px',
+                                fontSize: 13,
+                                backgroundColor: '#fff',
+                                border: '1px solid #ccc',
+                                borderRadius: 4,
+                                cursor: 'pointer',
+                                color: '#c00',
+                            }}
+                        >
+                            Close Log
+                        </button>
+                    )}
+                </div>
                 <div style={{ color: '#666', fontSize: 14 }}>
-                    Mode: {log.turnMode} &middot; Status: {log.status} 
-                    {log.roundLimit && (<span> &middot; Round Limit: {log.roundLimit}</span>)}
+                    Mode: {log.turnMode} &middot; Status: {log.status}
+                    {log.turnLimit && <span> &middot; Turn Limit: {log.turnLimit}</span>}
                 </div>
             </div>
 
-            {log.turns && log.turns.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 24, marginBottom: 40 }}>
-                    {log.turns.map((turn, index) => {
-                        // Find writer color, fallback to grey
+            {/* Turns content */}
+            {visibleTurns.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 40 }}>
+                    {visibleTurns.map((turn, index) => {
                         const writer = log.writers?.find(w => w.id === turn.writerId);
-                        const borderColor = writer?.colorHex || '#ccc';
-                        const nickname = writer?.nickname || 'Anonymous';
-
+                        const textColor = writer?.colorHex || '#000';
                         return (
-                            <div key={turn.id || index} style={{
-                                paddingLeft: 16,
-                                borderLeft: `6px solid ${borderColor}`,
-                                paddingBottom: 8
-                            }}>
-                                <div style={{ fontSize: 16, lineHeight: 1.6, marginBottom: 8, whiteSpace: 'pre-wrap' }}>
+                            <div key={turn.id || index}>
+                                <div style={{ fontSize: 20, lineHeight: 1.6, whiteSpace: 'pre-wrap', color: textColor }}>
                                     {turn.content}
-                                </div>
-                                <div style={{ fontSize: 12, color: '#888' }}>
-                                    &mdash; {nickname}
                                 </div>
                             </div>
                         );
@@ -100,23 +146,128 @@ export default function LogDetailPage() {
                 <p style={{ color: '#666', fontStyle: 'italic', marginBottom: 40 }}>No turns written yet.</p>
             )}
 
-            {!isCompleted ? (
+            {/* Write zone / completed state */}
+            {isCompleted ? (
+                <div style={{ padding: 24, textAlign: 'center', backgroundColor: '#f9f9f9', borderTop: '2px solid #ccc', fontWeight: 'bold' }}>
+                    <p style={{ margin: '0 0 16px 0' }}>This log has been completed.</p>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: 24, fontSize: 28, fontWeight: 'normal', color: '#666' }}>
+                        <span style={{ cursor: 'pointer' }} title="Spark">✦</span>
+                        <span style={{ cursor: 'pointer' }} title="Ripple">◎</span>
+                        <span style={{ cursor: 'pointer' }} title="Wave">∿</span>
+                        <span style={{ cursor: 'pointer' }} title="Target">⌖</span>
+                    </div>
+                </div>
+            ) : (
                 <>
                     {submitError && (
                         <div style={{ color: 'red', marginBottom: 16, padding: '12px', border: '1px solid red', borderRadius: 4, backgroundColor: '#ffeeee' }}>
                             {submitError}
                         </div>
                     )}
-                    <WriteZone 
-                        logId={id} 
-                        colorHex="#000" // Fallback color until we know current user's color
-                        perTurnLengthLimit={log.perTurnLengthLimit || 500}
-                        onSubmit={handleTurnSubmit}
-                    />
+
+                    {/* Bug 1 fix: only render WriteZone when it is the user's turn */}
+                    {log.isMyTurn && log.accessMode === 'PRIVATE' && !log.myWriter ? (
+                        <div style={{ marginBottom: 16 }}>
+                            <p style={{ fontSize: 14, color: '#555', marginBottom: 8 }}>
+                                This is a private log. Enter the access code to join:
+                            </p>
+                            <input
+                                type="text"
+                                value={accessCode}
+                                onChange={(e) => setAccessCode(e.target.value)}
+                                placeholder="Access code"
+                                style={{
+                                    padding: '6px 10px',
+                                    fontSize: 14,
+                                    border: '1px solid #ccc',
+                                    borderRadius: 4,
+                                    marginRight: 8,
+                                    width: 180,
+                                }}
+                            />
+                            {accessCode.trim() && (
+                                <WriteZone
+                                    logId={id}
+                                    colorHex="#000"
+                                    perTurnLengthLimit={log.perTurnLengthLimit || 500}
+                                    onSubmit={handleTurnSubmit}
+                                    myWriter={null}
+                                />
+                            )}
+                        </div>
+                    ) : log.isMyTurn ? (
+                        <WriteZone
+                            logId={id}
+                            colorHex="#000"
+                            perTurnLengthLimit={log.perTurnLengthLimit || 500}
+                            onSubmit={handleTurnSubmit}
+                            myWriter={log.myWriter || null}
+                        />
+                    ) : (
+                        <div style={{ padding: '20px 0', color: '#888', fontStyle: 'italic', fontSize: 14 }}>
+                            {log.nextWriter && (log.writers || []).length > 1
+                                ? <>Waiting for <strong style={{ color: log.nextWriter.colorHex }}>{log.nextWriter.nickname || 'Anonymous'}</strong> to write...</>
+                                : log.nextWriter
+                                    ? 'Waiting for the next one to write...'
+                                    : 'Waiting for the first writer...'}
+                        </div>
+                    )}
+
+                    {/* Bug 4 + 5 fix: Skip button below WriteZone, no emoji, with dropdown */}
+                    {log.isCreator && log.turnMode === 'STRUCTURED' && skipableWriters.length > 0 && (
+                        <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: 13, color: '#555' }}>Skip the next turn of:</span>
+                            <select
+                                value={resolvedSkipTarget}
+                                onChange={e => setSkipTargetId(e.target.value)}
+                                style={{
+                                    fontSize: 13,
+                                    padding: '3px 8px',
+                                    border: '1px solid #ccc',
+                                    borderRadius: 4,
+                                    backgroundColor: '#fff',
+                                    cursor: 'pointer',
+                                }}
+                            >
+                                {skipableWriters.map(w => (
+                                    <option key={w.id} value={w.id}>
+                                        {w.nickname || 'Anonymous'} (#{w.joinOrder})
+                                        {log.nextWriter?.id === w.id ? ' ← next' : ''}
+                                    </option>
+                                ))}
+                            </select>
+                            <button
+                                onClick={handleSkipTurn}
+                                style={{
+                                    padding: '4px 12px',
+                                    fontSize: 13,
+                                    backgroundColor: '#f0f0f0',
+                                    border: '1px solid #ccc',
+                                    borderRadius: 4,
+                                    cursor: 'pointer',
+                                    color: '#333',
+                                }}
+                            >
+                                Skip Turn
+                            </button>
+                        </div>
+                    )}
                 </>
-            ) : (
-                <div style={{ padding: 24, textAlign: 'center', backgroundColor: '#f9f9f9', borderTop: '2px solid #ccc', fontWeight: 'bold' }}>
-                    This log has been completed.
+            )}
+
+            {/* Writers list at the bottom — Bug 2 fix: only shows writers with actual turns */}
+            {log.writers && log.writers.length > 0 && (
+                <div style={{ paddingTop: 40, marginTop: 40, borderTop: '1px solid #eee', fontSize: 14, textAlign: 'left' }}>
+                    {log.writers.map((w, index) => (
+                        <span key={w.id} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                            <span style={{ color: w.colorHex, fontWeight: 'bold' }}>{w.nickname || 'Anonymous'}</span>
+                            {index < log.writers.length - 1 && (
+                                <span style={{ color: '#000', margin: '0 8px', fontWeight: 'bold' }}>
+                                    {log.turnMode === 'STRUCTURED' ? '→' : ' '}
+                                </span>
+                            )}
+                        </span>
+                    ))}
                 </div>
             )}
         </div>

@@ -21,7 +21,7 @@ describe('POST /api/logs/:id/turns', () => {
             title: 'Structured Log',
             accessMode: 'OPEN',
             turnMode: 'STRUCTURED',
-            roundLimit: 2,
+            turnLimit: 8,
             perTurnLengthLimit: 140
         });
         
@@ -39,8 +39,25 @@ describe('POST /api/logs/:id/turns', () => {
         });
         freestyleLogId = freeRes.body.id;
         
-        // Let's actually find the Keeper's `id` from the DB so we can mock the rest safely.
-        const keeperWriter = await prisma.writer.findFirst({ where: { sessionToken: keeperToken } });
+        // Because we removed automatic Keeper creation during POST /api/logs,
+        // we must manually explicitly create the Keeper writer here for tests to behave as expected.
+        const keeperWriter = await prisma.writer.create({
+            data: {
+                sessionToken: keeperToken,
+                logId: structuredLogId,
+                joinOrder: 1,
+                colorHex: '#FF0000',
+            }
+        });
+        
+        await prisma.writer.create({
+            data: {
+                sessionToken: keeperToken,
+                logId: freestyleLogId,
+                joinOrder: 1,
+                colorHex: '#FF0000',
+            }
+        });
         
         // 2. We need to create Writer2 and Writer3 for both logs using fixed UUID mock tokens.
         const w2Session = '11111111-1111-4111-8111-111111111111';
@@ -219,30 +236,23 @@ describe('POST /api/logs/:id/turns', () => {
             expect(rightRes.status).toBe(201);
         });
         
-        it('closes the log when round limit is hit on Keeper wrap-around', async () => {
-            // Let's complete round 2 for W2, W3, W4
+        it('closes the log when turn limit is hit', async () => {
+            // With turnLimit=8, we already have Keeper1, W2, W3, W4, Keeper2 = 5 turns.
+            // Now W2, W3, W4 submit (6, 7, 8). On turn 8, log should complete.
             const w4SessionCookie = [`sessionToken=33333333-3333-4333-8333-333333333333`];
             await request(app).post(`/api/logs/${structuredLogId}/turns`).set('Cookie', writer2Cookie).send({ content: 'w2 2' });
             await request(app).post(`/api/logs/${structuredLogId}/turns`).set('Cookie', writer3Cookie).send({ content: 'w3 2' });
-            await request(app).post(`/api/logs/${structuredLogId}/turns`).set('Cookie', w4SessionCookie).send({ content: 'w4 2' });
+            const finalRes = await request(app).post(`/api/logs/${structuredLogId}/turns`).set('Cookie', w4SessionCookie).send({ content: 'w4 2' });
 
-            // Right now, Keeper has written 2 times. Round limit is 2.
-            // When it wraps back to Keeper, the turn should be rejected and the log marked completed.
-            const res = await request(app)
-                .post(`/api/logs/${structuredLogId}/turns`)
-                .set('Cookie', keeperCookie)
-                .send({ content: 'Keeper 3' });
-            
-            expect(res.status).toBe(403);
-            expect(res.body.error).toMatch(/completed/i);
+            expect(finalRes.status).toBe(201);
 
             const log = await prisma.log.findUnique({ where: { id: structuredLogId } });
             expect(log.status).toBe('COMPLETED');
-            
+
             // Further submissions should fail
             const lateRes = await request(app)
                 .post(`/api/logs/${structuredLogId}/turns`)
-                .set('Cookie', writer2Cookie)
+                .set('Cookie', keeperCookie)
                 .send({ content: 'Late' });
             expect(lateRes.status).toBe(403);
             expect(lateRes.body.error).toMatch(/completed/i);
@@ -258,6 +268,18 @@ describe('POST /api/logs/:id/turns', () => {
                 turnMode: 'STRUCTURED'
             });
             skipLogId = skipRes.body.id;
+            
+            const keeperTokenMatch = keeperCookie[0].match(/sessionToken=([^;]+)/);
+            const kToken = keeperTokenMatch ? keeperTokenMatch[1] : keeperCookie[0].split('=')[1];
+            
+            await prisma.writer.create({
+                data: {
+                    logId: skipLogId,
+                    sessionToken: kToken,
+                    joinOrder: 1,
+                    colorHex: '#FF0000'
+                }
+            });
             
             await prisma.writer.createMany({
                 data: [

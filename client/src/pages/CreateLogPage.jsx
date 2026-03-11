@@ -17,7 +17,7 @@ export default function CreateLogPage() {
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [seed, setSeed] = useState('');
     const [participantLimit, setParticipantLimit] = useState('');
-    const [roundLimit, setRoundLimit] = useState('');
+    const [turnLimit, setTurnLimit] = useState('');
     const [turnTimeout, setTurnTimeout] = useState('');
     const [perTurnLengthLimit, setPerTurnLengthLimit] = useState('');
 
@@ -44,7 +44,7 @@ export default function CreateLogPage() {
             }
         }
 
-        const parsedRound = roundLimit !== '' ? parseInt(roundLimit, 10) : null;
+        const parsedTurnLimit = turnLimit !== '' ? parseInt(turnLimit, 10) : null;
 
         try {
             setIsLoading(true);
@@ -58,7 +58,7 @@ export default function CreateLogPage() {
                     turnMode,
                     seed: seed.trim() || undefined,
                     participantLimit: parsedLimit,
-                    roundLimit: parsedRound,
+                    turnLimit: parsedTurnLimit,
                     turnTimeout: turnTimeout || undefined,
                     perTurnLengthLimit: perTurnLengthLimit || undefined,
                 }),
@@ -262,18 +262,18 @@ export default function CreateLogPage() {
                         />
                     </div>
 
-                    {/* Round Limit */}
+                    {/* Turn Limit */}
                     <div style={{ marginBottom: 12 }}>
-                        <label htmlFor="round-limit">
-                            Round limit (blank = unlimited)
+                        <label htmlFor="turn-limit">
+                            Turn limit (blank = unlimited)
                         </label>
                         <br />
                         <input
-                            id="round-limit"
+                            id="turn-limit"
                             type="number"
                             min="1"
-                            value={roundLimit}
-                            onChange={(e) => setRoundLimit(e.target.value)}
+                            value={turnLimit}
+                            onChange={(e) => setTurnLimit(e.target.value)}
                             placeholder="Unlimited"
                             style={{ maxWidth: 120, marginTop: 4 }}
                         />

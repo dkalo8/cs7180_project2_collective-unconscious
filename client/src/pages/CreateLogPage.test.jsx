@@ -35,7 +35,7 @@ describe('CreateLogPage', () => {
         fireEvent.click(screen.getByText(/advanced settings/i));
 
         expect(screen.getByLabelText(/participant limit/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/round limit/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/turn limit/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/seed/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/turn timeout/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/per-turn length limit/i)).toBeInTheDocument();

@@ -30,7 +30,7 @@ const createLogSchema = z.object({
         .min(2, 'Participant limit must be at least 2')
         .optional()
         .nullable(),
-    roundLimit: z.number().int().min(1).optional().nullable(),
+    turnLimit: z.number().int().min(1).optional().nullable(),
     turnTimeout: z.number().int().min(1).optional().nullable(),
     perTurnLengthLimit: z.number().int().min(1).optional().nullable(),
 });
@@ -54,7 +54,7 @@ const createLog = async (req, res) => {
             accessCode = generateAccessCode();
         }
 
-        // Transaction: create Log + Keeper Writer atomically
+        // Transaction: create Log atomically
         const result = await prisma.$transaction(async (tx) => {
             const newLog = await tx.log.create({
                 data: {
@@ -64,25 +64,16 @@ const createLog = async (req, res) => {
                     category: data.category,
                     seed: data.seed,
                     participantLimit: data.participantLimit ?? null,
-                    roundLimit: data.roundLimit ?? null,
+                    turnLimit: data.turnLimit ?? null,
                     turnTimeout: data.turnTimeout ?? null,
                     perTurnLengthLimit: data.perTurnLengthLimit ?? null,
                     accessCode,
                     status: 'ACTIVE',
+                    creatorToken: token, // Add the creator's token to the record directly
                 },
             });
 
-            // Create the Keeper (Writer #1) with the default color
-            const keeper = await tx.writer.create({
-                data: {
-                    sessionToken: token,
-                    logId: newLog.id,
-                    joinOrder: 1,
-                    colorHex: KEEPER_COLOR,
-                },
-            });
-
-            return { ...newLog, Keeper: keeper };
+            return { ...newLog };
         });
 
         return res.status(201).json(result);
@@ -94,11 +85,11 @@ const createLog = async (req, res) => {
 
 const getLogs = async (req, res) => {
     try {
-        const { category, page = '1', limit = '20' } = req.query;
-        
+        const { category, page = '1', limit = '20', canWrite } = req.query;
+
         const pageNum = parseInt(page, 10);
         const limitNum = parseInt(limit, 10);
-        
+
         if (isNaN(pageNum) || pageNum < 1) {
             return res.status(400).json({ error: 'Invalid page number' });
         }
@@ -107,10 +98,18 @@ const getLogs = async (req, res) => {
         }
 
         const skip = (pageNum - 1) * limitNum;
-        
+
         const whereClause = {};
         if (category) {
             whereClause.category = category;
+        }
+        if (canWrite === 'true') {
+            const token = req.sessionToken;
+            whereClause.status = { not: 'COMPLETED' };
+            whereClause.OR = [
+                { accessMode: 'OPEN' },
+                { writers: { some: { sessionToken: token } } },
+            ];
         }
 
         const logs = await prisma.log.findMany({
@@ -169,4 +168,142 @@ const getLogs = async (req, res) => {
     }
 };
 
-module.exports = { createLog, getLogs };
+const getLogById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const token = req.sessionToken;
+
+        const log = await prisma.log.findUnique({
+            where: { id },
+            include: {
+                turns: {
+                    orderBy: { turnOrder: 'asc' },
+                },
+                writers: {
+                    select: {
+                        id: true,
+                        joinOrder: true,
+                        colorHex: true,
+                        logId: true,
+                        createdAt: true,
+                        nickname: true,
+                        sessionToken: true, // needed for isMyTurn calc, stripped before response
+                    },
+                    orderBy: { joinOrder: 'asc' },
+                }
+            }
+        });
+
+        if (!log) {
+            return res.status(404).json({ error: 'Log not found' });
+        }
+
+        const isCreator = typeof token === 'string' && log.creatorToken === token;
+
+        // ── Writers who have submitted at least one turn (entrance counts; skip does not) ──
+        const realTurnWriterIds = new Set(
+            log.turns.filter(t => !t.isSkip).map(t => t.writerId)
+        );
+        const participatingWriters = log.writers.filter(w => realTurnWriterIds.has(w.id));
+
+        // ── STRUCTURED: next expected writer in the rotation ──
+        let nextExpectedJoinOrder = null;
+        const lastInRotationTurn = [...log.turns].reverse().find(t => !t.isOutOfRotation);
+
+        if (participatingWriters.length > 0) {
+            if (lastInRotationTurn) {
+                const lastWriter = participatingWriters.find(w => w.id === lastInRotationTurn.writerId);
+                if (lastWriter) {
+                    const later = participatingWriters.filter(w => w.joinOrder > lastWriter.joinOrder);
+                    nextExpectedJoinOrder = later.length > 0 ? later[0].joinOrder : participatingWriters[0].joinOrder;
+                }
+            } else {
+                // No in-rotation turns yet → first participating writer is next
+                nextExpectedJoinOrder = participatingWriters[0].joinOrder;
+            }
+        }
+
+        const nextWriter = nextExpectedJoinOrder !== null
+            ? participatingWriters.find(w => w.joinOrder === nextExpectedJoinOrder) || null
+            : null;
+        const myWriter = log.writers.find(w => w.sessionToken === token) || null;
+
+        // isMyTurn: true when
+        //   - FREESTYLE: I have a writer record AND I wasn't the last to submit
+        //   - STRUCTURED: it is literally my joinOrder that is expected next
+        //   - OR I'm completely new (I haven't joined yet — I can always enter)
+        let isMyTurn = false;
+        if (log.status !== 'COMPLETED') {
+            if (!myWriter) {
+                // Not joined yet — can submit if participant limit not hit
+                if (log.participantLimit && participatingWriters.length >= log.participantLimit) {
+                    isMyTurn = false;
+                } else {
+                    isMyTurn = true;
+                }
+            } else if (log.turnMode === 'FREESTYLE') {
+                // FREESTYLE: can't go twice in a row (check absolute last turn)
+                const lastTurnAny = log.turns.length > 0 ? log.turns[log.turns.length - 1] : null;
+                isMyTurn = !lastTurnAny || lastTurnAny.writerId !== myWriter.id;
+            } else {
+                // STRUCTURED: must be my joinOrder
+                isMyTurn = nextExpectedJoinOrder !== null && myWriter.joinOrder === nextExpectedJoinOrder;
+            }
+        }
+
+        // Strip sessionTokens before sending to client
+        const safeWriters = participatingWriters.map(({ sessionToken: _st, ...w }) => w);
+
+        const safeLog = {
+            ...log,
+            writers: safeWriters,
+            isCreator,
+            isMyTurn,
+            nextWriter: nextWriter ? { id: nextWriter.id, nickname: nextWriter.nickname, colorHex: nextWriter.colorHex, joinOrder: nextWriter.joinOrder } : null,
+            myWriter: myWriter ? { id: myWriter.id, nickname: myWriter.nickname, colorHex: myWriter.colorHex, joinOrder: myWriter.joinOrder } : null,
+        };
+        delete safeLog.creatorToken;
+        delete safeLog.accessCode;
+
+        return res.status(200).json(safeLog);
+    } catch (error) {
+        console.error('getLogById Error:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+// =======================
+// PATCH /api/logs/:id/close
+// =======================
+const closeLog = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const token = req.sessionToken;
+
+        const log = await prisma.log.findUnique({ where: { id } });
+
+        if (!log) {
+            return res.status(404).json({ error: 'Log not found' });
+        }
+
+        if (log.creatorToken !== token) {
+            return res.status(403).json({ error: 'Only the Keeper can close this log' });
+        }
+
+        if (log.status === 'COMPLETED') {
+            return res.status(400).json({ error: 'Log is already closed' });
+        }
+
+        const updated = await prisma.log.update({
+            where: { id },
+            data: { status: 'COMPLETED' },
+        });
+
+        return res.status(200).json(updated);
+    } catch (error) {
+        console.error('closeLog Error:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+module.exports = { createLog, getLogs, getLogById, closeLog };
