@@ -2,8 +2,8 @@ import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import WriteZone from '../components/WriteZone';
 import ReportButton from '../components/ReportButton';
+import { useState, useEffect } from 'react';
 import ShareModal from '../components/ShareModal';
-import { useState } from 'react';
 
 import { getLogById, closeLog } from '../services/log.service';
 import { useLanguage } from '../context/LanguageContext';
@@ -41,6 +41,17 @@ export default function LogDetailPage() {
     const [accessCode, setAccessCode] = useState('');
     // Tracks which writer the creator has selected to skip (defaults to nextWriter)
     const [skipTargetId, setSkipTargetId] = useState('');
+    const [colorsHidden, setColorsHidden] = useState(
+        () => sessionStorage.getItem('colorsHidden') === 'true'
+    );
+
+    const toggleColors = () => {
+        setColorsHidden(prev => {
+            const next = !prev;
+            sessionStorage.setItem('colorsHidden', String(next));
+            return next;
+        });
+    };
     const [showShareModal, setShowShareModal] = useState(false);
 
     const { data: log, isLoading, isError, error } = useQuery({
@@ -109,6 +120,19 @@ export default function LogDetailPage() {
             <div style={{ borderBottom: '2px solid #ccc', paddingBottom: 16, marginBottom: 24 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <h1 style={{ margin: '0 0 8px 0', fontSize: 24 }}>{log.title}</h1>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <button
+                            onClick={toggleColors}
+                            style={{
+                                padding: '4px 10px',
+                                fontSize: 13,
+                                backgroundColor: '#d4d0c8',
+                                border: '1px solid #000',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            {colorsHidden ? 'Show colors' : 'Hide colors'}
+                        </button>
                     {log.isCreator && !isCompleted && (
                         <button
                             onClick={handleCloseLog}
@@ -126,6 +150,7 @@ export default function LogDetailPage() {
                         </button>
                     )}
                     {!log.isCreator && <ReportButton targetType="LOG" targetId={id} />}
+                    </div>
                 </div>
                 <div style={{ color: '#666', fontSize: 14 }}>
                     {t.log.mode(log.turnMode?.toLowerCase())} &middot; {log.status}
@@ -138,7 +163,7 @@ export default function LogDetailPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 40 }}>
                     {visibleTurns.map((turn, index) => {
                         const writer = log.writers?.find(w => w.id === turn.writerId);
-                        const textColor = writer?.colorHex || '#000';
+                        const textColor = colorsHidden ? '#000000' : (writer?.colorHex || '#000');
                         return (
                             <div key={turn.id || index} style={{ marginBottom: 12 }}>
                                 <div style={{ fontSize: 20, lineHeight: 1.6, whiteSpace: 'pre-wrap', color: textColor, display: 'inline' }}>

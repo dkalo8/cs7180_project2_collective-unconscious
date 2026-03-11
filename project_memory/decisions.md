@@ -51,6 +51,15 @@
 ### PRD Cleanup (`PRD.md`)
 - Resolved open question "How are user colors assigned?" — answered by the new 6-color default palette + custom color picker.
 - Updated user story US-05 to reference text color and color picker.
+## 2026-03-11: Color Toggle (S1-7)
+
+### Feature (`LogDetailPage.jsx`, `LogDetailPage.test.jsx`)
+- Added a **"Hide colors / Show colors"** toggle button in the log detail header.
+- When hidden, all turn text renders in `#000000`, presenting the work as a unified piece with no author distinction.
+- When shown (default), each turn uses the writer's assigned `colorHex`.
+- Toggle preference persists in `sessionStorage` (key: `colorsHidden`) and restores on mount — no page reload required.
+- The button uses the standard grey `#d4d0c8` / black border style per project conventions.
+
 ## 2026-03-11: Turn Logic Refinement & Terminology Update
 
 ### Completion & Rotation Logic (`PRD.md`, `turns.js`)
