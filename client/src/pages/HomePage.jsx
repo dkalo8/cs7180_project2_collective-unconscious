@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import LogCard from '../components/LogCard';
 import { fetchLogs } from '../services/log.service';
 
