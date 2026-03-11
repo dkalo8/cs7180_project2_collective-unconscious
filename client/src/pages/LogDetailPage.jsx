@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import WriteZone from '../components/WriteZone';
 import ReportButton from '../components/ReportButton';
 import { useState, useEffect } from 'react';
+import ShareModal from '../components/ShareModal';
 
 import { getLogById, closeLog } from '../services/log.service';
 import { useLanguage } from '../context/LanguageContext';
@@ -51,6 +52,7 @@ export default function LogDetailPage() {
             return next;
         });
     };
+    const [showShareModal, setShowShareModal] = useState(false);
 
     const { data: log, isLoading, isError, error } = useQuery({
         queryKey: ['log', id],
@@ -180,6 +182,22 @@ export default function LogDetailPage() {
             {isCompleted ? (
                 <div style={{ padding: 24, textAlign: 'center', backgroundColor: '#f9f9f9', borderTop: '2px solid #ccc', fontWeight: 'bold' }}>
                     <p style={{ margin: '0 0 16px 0' }}>{t.log.completed}</p>
+                    <button 
+                        onClick={() => setShowShareModal(true)}
+                        style={{
+                            marginBottom: 24,
+                            padding: '10px 20px',
+                            backgroundColor: '#000',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: 4,
+                            cursor: 'pointer',
+                            fontSize: 14,
+                            fontWeight: 'bold'
+                        }}
+                    >
+                        Share as Image
+                    </button>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: 24, fontSize: 28, fontWeight: 'normal', color: '#666' }}>
                         <span style={{ cursor: 'pointer' }} title="Spark">✦</span>
                         <span style={{ cursor: 'pointer' }} title="Ripple">◎</span>
@@ -299,6 +317,10 @@ export default function LogDetailPage() {
                         </span>
                     ))}
                 </div>
+            )}
+
+            {showShareModal && (
+                <ShareModal log={log} onClose={() => setShowShareModal(false)} />
             )}
         </div>
     );
