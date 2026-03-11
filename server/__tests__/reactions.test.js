@@ -1,11 +1,3 @@
-// Set OAuth env vars before app import so passport-google-oauth20 doesn't throw
-process.env.GOOGLE_CLIENT_ID = 'mock-client-id';
-process.env.GOOGLE_CLIENT_SECRET = 'mock-client-secret';
-process.env.GOOGLE_CALLBACK_URL = 'http://localhost:3000/api/auth/google/callback';
-process.env.JWT_SECRET = 'test-secret';
-process.env.JWT_REFRESH_SECRET = 'test-refresh-secret';
-process.env.SESSION_SECRET = 'test-session-secret';
-
 const request = require('supertest');
 const app = require('../src/index');
 const { PrismaClient } = require('@prisma/client');
