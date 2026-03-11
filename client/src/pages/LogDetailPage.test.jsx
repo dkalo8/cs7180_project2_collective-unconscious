@@ -72,9 +72,13 @@ describe('LogDetailPage Component', () => {
             id: 'mock-log-id',
             title: 'Active Log',
             turnMode: 'FREESTYLE',
+            accessMode: 'OPEN',
             status: 'ACTIVE',
             perTurnLengthLimit: 500,
-            turns: []
+            isMyTurn: true,
+            myWriter: null,
+            turns: [],
+            writers: [],
         };
         useQuery.mockReturnValue({ isLoading: false, isError: false, data: mockLog });
         
