@@ -1,23 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { randomNick } from '../utils/nickname';
+import { useLanguage } from '../context/LanguageContext';
 import './WriteZone.css';
 
 const DEFAULT_COLORS = ['#FF0000', '#FF8C00', '#0000FF', '#008000', '#800080', '#000000'];
 
 function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit, myWriter = null }) {
+    const { t, lang } = useLanguage();
     const [content, setContent] = useState('');
     const [nickname, setNickname] = useState(myWriter?.nickname || '');
-    const [placeholderNick, setPlaceholderNick] = useState('');
     const [selectedColor, setSelectedColor] = useState(myWriter?.colorHex || colorHex || '#000000');
     const isReturningWriter = !!myWriter;
 
-    useEffect(() => {
-        setPlaceholderNick(randomNick());
-    }, []);
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!content.trim() || content.length > perTurnLengthLimit) {
             return;
         }
@@ -25,7 +22,7 @@ function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit, myWriter = nu
         if (onSubmit) {
             await onSubmit({ content, nickname: nickname.trim(), colorHex: selectedColor });
         }
-        
+
         setContent('');
         setNickname('');
     };
@@ -38,7 +35,7 @@ function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit, myWriter = nu
                 <textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    placeholder="Type your turn..."
+                    placeholder={t.log.placeholder}
                     className={isOverLimit ? 'over-limit' : ''}
                     style={{ color: selectedColor }}
                 />
@@ -50,7 +47,7 @@ function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit, myWriter = nu
                         type="text"
                         value={nickname}
                         onChange={(e) => setNickname(e.target.value)}
-                        placeholder={`Nickname (e.g. ${placeholderNick})`}
+                        placeholder={`${t.log.nickLabel} ${randomNick(lang)}`}
                         className="nickname-input"
                         disabled={isReturningWriter}
                     />
@@ -75,12 +72,12 @@ function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit, myWriter = nu
                             disabled={isReturningWriter}
                         />
                     </div>
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         disabled={!content.trim() || isOverLimit}
                         className="submit-button"
                     >
-                        Submit
+                        {t.log.submit}
                     </button>
                 </div>
             </form>

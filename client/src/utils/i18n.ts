@@ -9,7 +9,7 @@ export const T: any = {
   zh: {
     siteName: "集体潜意识", tagline: "协作接龙写作",
     nav: { feed: "广场", create: "新建", about: "关于" },
-    feed: { count: (n: any) => `共 ${n} 篇`, status: { active: "进行中", completed: "已完成" } },
+    feed: { count: (n: any) => `共 ${n} 篇`, status: { active: "进行中", completed: "已完成" }, allCategories: "所有类型", canWrite: "可参与", empty: "暂无内容", loading: "加载中...", error: "加载失败" },
     log: {
       structured: "回合制", freestyle: "自由模式",
       turnOf: (name: any) => `等待 ${name} 的回合`, yourTurn: "轮到你了",
@@ -19,6 +19,8 @@ export const T: any = {
       round: (c: any, t: any) => t ? `第 ${c}/${t} 轮` : `第 ${c} 轮`,
       queue: "顺序", copy: "复制链接", copied: "已复制",
       mode: (m: any) => m === "structured" ? "回合制" : "自由模式",
+      close: "关闭 Log", waitingFirst: "等待第一位写作者...", waitingNext: "等待下一位写作者...",
+      empty: "还没有内容。", completed: "这篇 Log 已完结。",
     },
     create: {
       title: "新建 Log", logTitle: "标题", logTitlePh: "给这篇起个名字",
@@ -42,7 +44,7 @@ export const T: any = {
   en: {
     siteName: "Collective Unconscious", tagline: "collaborative chain-writing",
     nav: { feed: "feed", create: "new log", about: "about" },
-    feed: { count: (n: any) => `${n} logs`, status: { active: "active", completed: "completed" } },
+    feed: { count: (n: any) => `${n} logs`, status: { active: "active", completed: "completed" }, allCategories: "All", canWrite: "Can write", empty: "Nothing here yet", loading: "Loading...", error: "Failed to load" },
     log: {
       structured: "structured", freestyle: "freestyle",
       turnOf: (name: any) => `waiting for ${name}`, yourTurn: "your turn",
@@ -52,6 +54,8 @@ export const T: any = {
       round: (c: any, t: any) => t ? `round ${c}/${t}` : `round ${c}`,
       queue: "queue", copy: "copy link", copied: "copied",
       mode: (m: any) => m === "structured" ? "structured" : "freestyle",
+      close: "Close Log", waitingFirst: "Waiting for the first writer...", waitingNext: "Waiting for the next one...",
+      empty: "No turns written yet.", completed: "This log has been completed.",
     },
     create: {
       title: "New Log", logTitle: "Title", logTitlePh: "give it a name",
@@ -75,7 +79,7 @@ export const T: any = {
   es: {
     siteName: "Inconsciente Colectivo", tagline: "escritura colaborativa en cadena",
     nav: { feed: "plaza", create: "crear", about: "acerca de" },
-    feed: { count: (n: any) => `${n} logs`, status: { active: "en curso", completed: "completado" } },
+    feed: { count: (n: any) => `${n} logs`, status: { active: "en curso", completed: "completado" }, allCategories: "Todas", canWrite: "Puedo escribir", empty: "Nada aquí aún", loading: "Cargando...", error: "Error al cargar" },
     log: {
       structured: "por turnos", freestyle: "libre",
       turnOf: (name: any) => `esperando a ${name}`, yourTurn: "tu turno",
@@ -85,6 +89,8 @@ export const T: any = {
       round: (c: any, t: any) => t ? `ronda ${c}/${t}` : `ronda ${c}`,
       queue: "orden", copy: "copiar enlace", copied: "copiado",
       mode: (m: any) => m === "structured" ? "por turnos" : "libre",
+      close: "Cerrar Log", waitingFirst: "Esperando al primer escritor...", waitingNext: "Esperando al siguiente...",
+      empty: "Aún no hay turnos.", completed: "Este log ha sido completado.",
     },
     create: {
       title: "Nuevo Log", logTitle: "Título", logTitlePh: "dale un nombre",

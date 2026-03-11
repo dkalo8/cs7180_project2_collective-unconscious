@@ -1,11 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
+import { CAT_KEY_MAP } from '../context/LanguageContext';
 
 // Default category value must match backend schema default
 const CATEGORIES = ['Freewriting', 'Haiku', 'Poem', 'Short Novel'];
 
+const TIMEOUT_VALUES = ['', '1h', '6h', '12h', '24h', '48h', '7d'];
+const PER_TURN_VALUES = ['', '1_sentence', '2_sentences', '1_paragraph', 'custom_word_count'];
+
 export default function CreateLogPage() {
     const navigate = useNavigate();
+    const { t, cat } = useLanguage();
 
     // Required fields
     const [title, setTitle] = useState('');
@@ -79,7 +85,7 @@ export default function CreateLogPage() {
             }
 
             const newLog = await res.json();
-            
+
             if (newLog.accessCode) {
                 setCreatedLogId(newLog.id);
                 setAccessCode(newLog.accessCode);
@@ -98,7 +104,7 @@ export default function CreateLogPage() {
         try {
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 await navigator.clipboard.writeText(accessCode);
-                setCopyStatus('Copied!');
+                setCopyStatus(t.log.copied);
                 setTimeout(() => setCopyStatus(''), 2000);
             } else {
                 setCopyStatus('Manual copy: ' + accessCode);
@@ -116,7 +122,7 @@ export default function CreateLogPage() {
 
     return (
         <div style={{ padding: '24px', maxWidth: 600 }}>
-            <h1>Create a New Log</h1>
+            <h1>{t.create.title}</h1>
 
             {error && (
                 <p
@@ -130,7 +136,7 @@ export default function CreateLogPage() {
             {/* Title */}
             <div style={{ marginBottom: 16 }}>
                 <label htmlFor="log-title">
-                    <strong>Title *</strong>
+                    <strong>{t.create.logTitle} *</strong>
                 </label>
                 <br />
                 <input
@@ -138,7 +144,7 @@ export default function CreateLogPage() {
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Give your log a title..."
+                    placeholder={t.create.logTitlePh}
                     style={{ width: '100%', marginTop: 4 }}
                 />
             </div>
@@ -146,7 +152,7 @@ export default function CreateLogPage() {
             {/* Category */}
             <div style={{ marginBottom: 16 }}>
                 <label htmlFor="log-category">
-                    <strong>Category</strong>
+                    <strong>{t.create.category}</strong>
                 </label>
                 <br />
                 <select
@@ -157,7 +163,7 @@ export default function CreateLogPage() {
                 >
                     {CATEGORIES.map((c) => (
                         <option key={c} value={c}>
-                            {c}
+                            {cat[CAT_KEY_MAP[c]]}
                         </option>
                     ))}
                 </select>
@@ -165,7 +171,7 @@ export default function CreateLogPage() {
 
             {/* Access Mode */}
             <div style={{ marginBottom: 16 }}>
-                <strong>Access Mode</strong>
+                <strong>{t.create.access}</strong>
                 <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
                     <label>
                         <input
@@ -175,7 +181,7 @@ export default function CreateLogPage() {
                             checked={accessMode === 'OPEN'}
                             onChange={() => setAccessMode('OPEN')}
                         />{' '}
-                        Open
+                        {t.create.open}
                     </label>
                     <label>
                         <input
@@ -185,14 +191,14 @@ export default function CreateLogPage() {
                             checked={accessMode === 'PRIVATE'}
                             onChange={() => setAccessMode('PRIVATE')}
                         />{' '}
-                        Private
+                        {t.create.private}
                     </label>
                 </div>
             </div>
 
             {/* Turn Mode */}
             <div style={{ marginBottom: 16 }}>
-                <strong>Turn Mode</strong>
+                <strong>{t.create.turnMode}</strong>
                 <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
                     <label>
                         <input
@@ -202,7 +208,7 @@ export default function CreateLogPage() {
                             checked={turnMode === 'FREESTYLE'}
                             onChange={() => setTurnMode('FREESTYLE')}
                         />{' '}
-                        Freestyle
+                        {t.create.freestyle}
                     </label>
                     <label>
                         <input
@@ -212,7 +218,7 @@ export default function CreateLogPage() {
                             checked={turnMode === 'STRUCTURED'}
                             onChange={() => setTurnMode('STRUCTURED')}
                         />{' '}
-                        Structured
+                        {t.create.structured}
                     </label>
                 </div>
             </div>
@@ -225,7 +231,7 @@ export default function CreateLogPage() {
                 onClick={() => setShowAdvanced((v) => !v)}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px 0', color: 'inherit', fontSize: 14 }}
             >
-                {showAdvanced ? '▾' : '▸'} Advanced settings
+                {showAdvanced ? '▾' : '▸'} {t.create.advanced}
             </button>
 
             {showAdvanced && (
@@ -233,14 +239,14 @@ export default function CreateLogPage() {
                     {/* Seed */}
                     <div style={{ marginBottom: 12 }}>
                         <label htmlFor="log-seed">
-                            Seed / creative constraint
+                            {t.create.seed}
                         </label>
                         <br />
                         <textarea
                             id="log-seed"
                             value={seed}
                             onChange={(e) => setSeed(e.target.value)}
-                            placeholder="Optional starting prompt..."
+                            placeholder={t.create.seedPh}
                             style={{ width: '100%', marginTop: 4 }}
                         />
                     </div>
@@ -248,7 +254,7 @@ export default function CreateLogPage() {
                     {/* Participant Limit */}
                     <div style={{ marginBottom: 12 }}>
                         <label htmlFor="participant-limit">
-                            Participant limit (blank = unlimited, min 2 if set)
+                            {t.create.participantLimit}
                         </label>
                         <br />
                         <input
@@ -257,7 +263,7 @@ export default function CreateLogPage() {
                             min="2"
                             value={participantLimit}
                             onChange={(e) => setParticipantLimit(e.target.value)}
-                            placeholder="Unlimited"
+                            placeholder={t.create.unlimited}
                             style={{ maxWidth: 120, marginTop: 4 }}
                         />
                     </div>
@@ -265,7 +271,7 @@ export default function CreateLogPage() {
                     {/* Turn Limit */}
                     <div style={{ marginBottom: 12 }}>
                         <label htmlFor="turn-limit">
-                            Turn limit (blank = unlimited)
+                            {t.create.turnLimit}
                         </label>
                         <br />
                         <input
@@ -274,7 +280,7 @@ export default function CreateLogPage() {
                             min="1"
                             value={turnLimit}
                             onChange={(e) => setTurnLimit(e.target.value)}
-                            placeholder="Unlimited"
+                            placeholder={t.create.unlimited}
                             style={{ maxWidth: 120, marginTop: 4 }}
                         />
                     </div>
@@ -282,7 +288,7 @@ export default function CreateLogPage() {
                     {/* Turn Timeout */}
                     <div style={{ marginBottom: 12 }}>
                         <label htmlFor="turn-timeout">
-                            Turn timeout
+                            {t.create.timeout}
                         </label>
                         <br />
                         <select
@@ -291,20 +297,16 @@ export default function CreateLogPage() {
                             onChange={(e) => setTurnTimeout(e.target.value)}
                             style={{ marginTop: 4 }}
                         >
-                            <option value="">No timeout (default)</option>
-                            <option value="1h">Auto-skip after 1 hour</option>
-                            <option value="6h">Auto-skip after 6 hours</option>
-                            <option value="12h">Auto-skip after 12 hours</option>
-                            <option value="24h">Auto-skip after 24 hours</option>
-                            <option value="48h">Auto-skip after 48 hours</option>
-                            <option value="7d">Auto-skip after 7 days</option>
+                            {t.create.timeoutOpts.map((opt, i) => (
+                                <option key={i} value={TIMEOUT_VALUES[i]}>{opt}</option>
+                            ))}
                         </select>
                     </div>
 
                     {/* Per-turn Length Limit */}
                     <div style={{ marginBottom: 12 }}>
                         <label htmlFor="per-turn-length-limit">
-                            Per-turn length limit
+                            {t.create.perTurn}
                         </label>
                         <br />
                         <select
@@ -313,11 +315,9 @@ export default function CreateLogPage() {
                             onChange={(e) => setPerTurnLengthLimit(e.target.value)}
                             style={{ marginTop: 4 }}
                         >
-                            <option value="">No limit (default)</option>
-                            <option value="1_sentence">1 sentence</option>
-                            <option value="2_sentences">2 sentences</option>
-                            <option value="1_paragraph">1 paragraph</option>
-                            <option value="custom_word_count">Custom word count</option>
+                            {t.create.perTurnOpts.map((opt, i) => (
+                                <option key={i} value={PER_TURN_VALUES[i]}>{opt}</option>
+                            ))}
                         </select>
                     </div>
                 </div>
@@ -330,7 +330,7 @@ export default function CreateLogPage() {
                     onClick={handleSubmit}
                     disabled={isLoading}
                 >
-                    {isLoading ? 'Creating...' : 'Start Log'}
+                    {isLoading ? '...' : t.create.submit}
                 </button>
             </div>
 
@@ -357,12 +357,12 @@ export default function CreateLogPage() {
                         textAlign: 'center',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                     }}>
-                        <h2 style={{ marginTop: 0 }}>Private Log Created</h2>
-                        <p>Share this access code with participants you want to invite:</p>
-                        
-                        <div style={{ 
-                            fontSize: '32px', 
-                            fontWeight: 'bold', 
+                        <h2 style={{ marginTop: 0 }}>{t.access.title}</h2>
+                        <p>{t.access.desc}</p>
+
+                        <div style={{
+                            fontSize: '32px',
+                            fontWeight: 'bold',
                             letterSpacing: '4px',
                             margin: '24px 0',
                             padding: '12px',
@@ -373,16 +373,16 @@ export default function CreateLogPage() {
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <button 
+                            <button
                                 onClick={handleCopyCode}
                                 style={{ padding: '8px 16px', cursor: 'pointer' }}
                             >
-                                {copyStatus || 'Copy Code'}
+                                {copyStatus || t.log.copy}
                             </button>
-                            <button 
+                            <button
                                 onClick={handleDone}
-                                style={{ 
-                                    padding: '8px 16px', 
+                                style={{
+                                    padding: '8px 16px',
                                     cursor: 'pointer',
                                     border: 'none',
                                     backgroundColor: 'black',

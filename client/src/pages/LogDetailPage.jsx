@@ -4,6 +4,7 @@ import WriteZone from '../components/WriteZone';
 import { useState } from 'react';
 
 import { getLogById, closeLog } from '../services/log.service';
+import { useLanguage } from '../context/LanguageContext';
 
 const submitTurnApi = async ({ logId, content, nickname, colorHex, accessCode }) => {
     const res = await fetch(`/api/logs/${logId}/turns`, {
@@ -33,6 +34,7 @@ const skipTurnApi = async (logId) => {
 export default function LogDetailPage() {
     const { id } = useParams();
     const queryClient = useQueryClient();
+    const { t } = useLanguage();
     const [submitError, setSubmitError] = useState('');
     const [accessCode, setAccessCode] = useState('');
     // Tracks which writer the creator has selected to skip (defaults to nextWriter)
@@ -117,13 +119,13 @@ export default function LogDetailPage() {
                                 color: '#c00',
                             }}
                         >
-                            Close Log
+                            {t.log.close}
                         </button>
                     )}
                 </div>
                 <div style={{ color: '#666', fontSize: 14 }}>
-                    Mode: {log.turnMode} &middot; Status: {log.status}
-                    {log.turnLimit && <span> &middot; Turn Limit: {log.turnLimit}</span>}
+                    {t.log.mode(log.turnMode?.toLowerCase())} &middot; {log.status}
+                    {log.turnLimit && <span> &middot; {t.log.round(log.turns?.length ?? 0, log.turnLimit)}</span>}
                 </div>
             </div>
 
@@ -143,13 +145,13 @@ export default function LogDetailPage() {
                     })}
                 </div>
             ) : (
-                <p style={{ color: '#666', fontStyle: 'italic', marginBottom: 40 }}>No turns written yet.</p>
+                <p style={{ color: '#666', fontStyle: 'italic', marginBottom: 40 }}>{t.log.empty}</p>
             )}
 
             {/* Write zone / completed state */}
             {isCompleted ? (
                 <div style={{ padding: 24, textAlign: 'center', backgroundColor: '#f9f9f9', borderTop: '2px solid #ccc', fontWeight: 'bold' }}>
-                    <p style={{ margin: '0 0 16px 0' }}>This log has been completed.</p>
+                    <p style={{ margin: '0 0 16px 0' }}>{t.log.completed}</p>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: 24, fontSize: 28, fontWeight: 'normal', color: '#666' }}>
                         <span style={{ cursor: 'pointer' }} title="Spark">✦</span>
                         <span style={{ cursor: 'pointer' }} title="Ripple">◎</span>
@@ -169,13 +171,13 @@ export default function LogDetailPage() {
                     {log.isMyTurn && log.accessMode === 'PRIVATE' && !log.myWriter ? (
                         <div style={{ marginBottom: 16 }}>
                             <p style={{ fontSize: 14, color: '#555', marginBottom: 8 }}>
-                                This is a private log. Enter the access code to join:
+                                {t.access.title}. {t.access.desc}
                             </p>
                             <input
                                 type="text"
                                 value={accessCode}
                                 onChange={(e) => setAccessCode(e.target.value)}
-                                placeholder="Access code"
+                                placeholder={t.access.placeholder}
                                 style={{
                                     padding: '6px 10px',
                                     fontSize: 14,
@@ -206,10 +208,10 @@ export default function LogDetailPage() {
                     ) : (
                         <div style={{ padding: '20px 0', color: '#888', fontStyle: 'italic', fontSize: 14 }}>
                             {log.nextWriter && (log.writers || []).length > 1
-                                ? <>Waiting for <strong style={{ color: log.nextWriter.colorHex }}>{log.nextWriter.nickname || 'Anonymous'}</strong> to write...</>
+                                ? <><strong style={{ color: log.nextWriter.colorHex }}>{t.log.turnOf(log.nextWriter.nickname || 'Anonymous')}</strong></>
                                 : log.nextWriter
-                                    ? 'Waiting for the next one to write...'
-                                    : 'Waiting for the first writer...'}
+                                    ? t.log.waitingNext
+                                    : t.log.waitingFirst}
                         </div>
                     )}
 
