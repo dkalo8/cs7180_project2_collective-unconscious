@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react';
 import LogCard from '../components/LogCard';
 import { fetchLogs } from '../services/log.service';
+import { useLanguage } from '../context/LanguageContext';
+import { CAT_KEY_MAP } from '../context/LanguageContext';
+
+const CATEGORIES = ['Freewriting', 'Haiku', 'Poem', 'Short Novel'];
 
 export default function HomePage() {
+  const { t, cat } = useLanguage();
   const [logs, setLogs] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [canWriteOnly, setCanWriteOnly] = useState(false);
   const [category, setCategory] = useState('');
-
-  const CATEGORIES = ['Freewriting', 'Haiku', 'Poem', 'Short Novel'];
 
   useEffect(() => {
     const loadLogs = async () => {
@@ -22,7 +25,7 @@ export default function HomePage() {
         setError(null);
       } catch (err) {
         console.error('Failed to load logs', err);
-        setError('加载失败');
+        setError(t.feed.error);
       } finally {
         setLoading(false);
       }
@@ -34,7 +37,7 @@ export default function HomePage() {
   return (
     <div style={{ maxWidth: '720px' }}>
       <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ color: '#999', fontSize: '14px' }}>共 {total} 篇</span>
+        <span style={{ color: '#999', fontSize: '14px' }}>{t.feed.count(total)}</span>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <select
             value={category}
@@ -48,9 +51,9 @@ export default function HomePage() {
               cursor: 'pointer',
             }}
           >
-            <option value=''>所有类型</option>
+            <option value=''>{t.feed.allCategories}</option>
             {CATEGORIES.map(c => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c} value={c}>{cat[CAT_KEY_MAP[c]]}</option>
             ))}
           </select>
           <button
@@ -65,7 +68,7 @@ export default function HomePage() {
               cursor: 'pointer',
             }}
           >
-            可参与
+            {t.feed.canWrite}
           </button>
         </div>
       </div>
@@ -74,7 +77,7 @@ export default function HomePage() {
 
       <div className="discovery-feed">
         {logs.length === 0 && !loading && !error ? (
-          <p style={{ color: '#999' }}>暂无内容</p>
+          <p style={{ color: '#999' }}>{t.feed.empty}</p>
         ) : (
           logs.map(log => (
             <LogCard key={log.id} log={log} />
@@ -82,7 +85,7 @@ export default function HomePage() {
         )}
       </div>
 
-      {loading && <p style={{ color: '#999' }}>加载中...</p>}
+      {loading && <p style={{ color: '#999' }}>{t.feed.loading}</p>}
     </div>
   );
 }

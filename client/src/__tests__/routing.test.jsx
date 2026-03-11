@@ -12,13 +12,13 @@ describe("Frontend Routing", () => {
 
     render(<RouterProvider router={router} />);
 
-    // Verify navigation links are present
-    expect(screen.getByRole("link", { name: /广场/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /新建/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /关于/i })).toBeInTheDocument();
+    // Verify navigation links are present (default lang = en)
+    expect(screen.getByRole("link", { name: /feed/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /new log/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /about/i })).toBeInTheDocument();
 
     // Verify home page content is rendering
-    expect(screen.getByText(/加载/i)).toBeInTheDocument();
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
 
   it("navigates to the Create Log page when clicking 'write'", async () => {
@@ -29,8 +29,8 @@ describe("Frontend Routing", () => {
 
     render(<RouterProvider router={router} />);
 
-    // Click the write link
-    const writeLink = screen.getByRole("link", { name: /新建/i });
+    // Click the write link (default lang = en)
+    const writeLink = screen.getByRole("link", { name: /new log/i });
     await user.click(writeLink);
 
     // Verify URL change visually via rendered content

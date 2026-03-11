@@ -43,7 +43,7 @@ describe('HomePage Component', () => {
         });
 
         // Ensure total count logic works properly
-        expect(screen.getByText('共 4 篇')).toBeInTheDocument();
+        expect(screen.getByText('4 logs')).toBeInTheDocument();
     });
 
     it('shows error state if fetch fails', async () => {
@@ -54,7 +54,7 @@ describe('HomePage Component', () => {
         renderWithRouter(<HomePage />);
         
         await waitFor(() => {
-            expect(screen.getByText(/加载失败/i)).toBeInTheDocument();
+            expect(screen.getByText(/Failed to load/i)).toBeInTheDocument();
         });
         console.error.mockRestore();
     });

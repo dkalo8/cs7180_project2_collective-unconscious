@@ -62,9 +62,9 @@ describe('LogDetailPage Component', () => {
         
         // Assert "This log has been completed" is visible
         expect(screen.getByText(/This log has been completed/i)).toBeInTheDocument();
-        
+
         // Assert WriteZone is NOT rendered by checking for the submit button or textarea
-        expect(screen.queryByPlaceholderText('Type your turn...')).not.toBeInTheDocument();
+        expect(screen.queryByPlaceholderText(/continue the piece/i)).not.toBeInTheDocument();
     });
 
     it('handles the submit flow successfully on an active log', async () => {
@@ -91,8 +91,8 @@ describe('LogDetailPage Component', () => {
         render(<LogDetailPage />);
 
         // The WriteZone is rendered because it's ACTIVE
-        const textarea = screen.getByPlaceholderText('Type your turn...');
-        const submitButton = screen.getByRole('button', { name: /Submit/i });
+        const textarea = screen.getByPlaceholderText(/continue the piece/i);
+        const submitButton = screen.getByRole('button', { name: /submit/i });
 
         fireEvent.change(textarea, { target: { value: 'A new contribution' } });
         fireEvent.click(submitButton);
