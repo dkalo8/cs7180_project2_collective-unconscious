@@ -48,6 +48,7 @@ model User {
   displayName String
   bio         String?
   avatarUrl   String?
+  role        String   @default("USER") // "USER" | "ADMIN"
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -58,7 +59,7 @@ model User {
 
 model RefreshToken {
   id        String   @id @default(uuid())
-  token     String   @unique  // Stored as the raw JWT (consider hashing in prod)
+  token     String   @unique
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
@@ -67,19 +68,18 @@ model RefreshToken {
 
 model Writer {
   id           String   @id @default(uuid())
-  sessionToken String   // Link to an anonymous session
+  sessionToken String
 
-  nickname     String?  // E.g., "Musing Crow"
-  colorHex     String   // E.g., "#FF8C00"
+  nickname     String?
+  colorHex     String
 
   logId        String
   log          Log      @relation(fields: [logId], references: [id], onDelete: Cascade)
 
-  // Optional link to a registered User account (null for anonymous writers)
   userId       String?
   user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  joinOrder    Int      // 1 for creator (keeper), 2 for second participant...
+  joinOrder    Int
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -92,7 +92,7 @@ model Writer {
 model Turn {
   id           String   @id @default(uuid())
   content      String   @db.Text
-  turnOrder    Int      // Sequence number within the Log (1, 2, 3...)
+  turnOrder    Int
 
   logId        String
   log          Log      @relation(fields: [logId], references: [id], onDelete: Cascade)
@@ -101,9 +101,35 @@ model Turn {
   writer       Writer   @relation(fields: [writerId], references: [id], onDelete: Cascade)
 
   isSkip            Boolean  @default(false)
-  isOutOfRotation   Boolean  @default(false) @map("isEntrance") // true when a new joiner submits; does NOT advance the rotation pointer
+  isOutOfRotation   Boolean  @default(false) @map("isEntrance")
+  isHidden          Boolean  @default(false)
 
   createdAt    DateTime @default(now())
 
   @@unique([logId, turnOrder])
+}
+
+model Report {
+  id            String   @id @default(uuid())
+  reporterToken String   // Session token of the reporter
+  reason        String
+  targetType    String   // "TURN" | "LOG"
+  targetId      String
+  status        String   @default("PENDING") // "PENDING" | "DISMISSED" | "ACTIONED"
+  
+  createdAt     DateTime @default(now())
+  
+  actions       ModerationAction[]
+}
+
+model ModerationAction {
+  id            String   @id @default(uuid())
+  moderatorId   String   // User ID of the moderator
+  action        String   // "HIDE_TURN" | "CLOSE_LOG" | "DISMISS"
+  reportId      String
+  report        Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  targetId      String
+  note          String?
+  
+  createdAt     DateTime @default(now())
 }

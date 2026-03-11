@@ -5,6 +5,7 @@ import CreateLogPage from "./pages/CreateLogPage";
 import LogDetailPage from "./pages/LogDetailPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import AboutPage from "./pages/AboutPage";
+import ModerationPage from "./pages/ModerationPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 const routerConfig = [
@@ -32,6 +33,10 @@ const routerConfig = [
       {
         path: "about",
         element: <AboutPage />,
+      },
+      {
+        path: "moderation",
+        element: <ModerationPage />,
       },
       {
         path: "*",
