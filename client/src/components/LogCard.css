@@ -1,0 +1,36 @@
+.log-entry {
+    margin-bottom: 32px;
+    line-height: 1.8;
+}
+
+.log-entry-header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.log-entry-title {
+    font-size: 18px;
+    color: #0033cc;
+    text-decoration: underline;
+    font-weight: normal;
+}
+
+.log-entry-meta {
+    font-size: 13px;
+    color: #999;
+}
+
+.log-entry-excerpt {
+    font-size: 14px;
+    color: #333;
+    white-space: pre-wrap;
+    /* Limit to 2 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+

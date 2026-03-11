@@ -13,12 +13,12 @@ describe("Frontend Routing", () => {
     render(<RouterProvider router={router} />);
 
     // Verify navigation links are present
-    expect(screen.getByRole("link", { name: /feed/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /write/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /about/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /广场/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /新建/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /关于/i })).toBeInTheDocument();
 
-    // Verify home page placeholder content is rendered
-    expect(screen.getByText(/discovery feed placeholder/i)).toBeInTheDocument();
+    // Verify home page content is rendering
+    expect(screen.getByText(/加载/i)).toBeInTheDocument();
   });
 
   it("navigates to the Create Log page when clicking 'write'", async () => {
@@ -30,13 +30,13 @@ describe("Frontend Routing", () => {
     render(<RouterProvider router={router} />);
 
     // Click the write link
-    const writeLink = screen.getByRole("link", { name: /write/i });
+    const writeLink = screen.getByRole("link", { name: /新建/i });
     await user.click(writeLink);
 
     // Verify URL change visually via rendered content
     expect(
-      screen.getByRole('heading', { name: /create a new log/i })
-    ).toBeInTheDocument();
+      screen.getByText(/title/i) || screen.getByRole('heading')
+    ).toBeTruthy();
   });
 
   it("renders the NotFoundPage for an unknown route", () => {

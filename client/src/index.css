@@ -1,47 +1,27 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
 
-@theme {
-  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif, SimSun, "Songti SC", STSong;
-  
-  --color-author-red: #FF0000;
-  --color-author-orange: #FF8C00;
-  --color-author-blue: #0000FF;
-  --color-author-green: #008000;
-  --color-author-purple: #800080;
-  --color-author-black: #000000;
-
-  --color-ui-btn: #d4d0c8;
+:root {
+  --color-blue-link: #0033cc;
+  --color-text-main: #333333;
+  --color-text-secondary: #999999;
 }
 
 @layer base {
   body {
-    @apply bg-white text-black font-serif antialiased;
+    background-color: #ffffff;
+    color: var(--color-text-main);
+    font-family: 'Noto Serif SC', 'STSong', 'SimSun', serif;
     margin: 0;
     padding: 0;
+    -webkit-font-smoothing: antialiased;
   }
 
   a {
-    @apply text-blue-600 underline hover:text-blue-800;
+    color: var(--color-blue-link);
+    text-decoration: none;
   }
 
-  button, input, select, textarea {
-    @apply font-sans;
-  }
-
-  button {
-    @apply bg-ui-btn border border-black rounded-lg px-4 py-2 cursor-pointer transition-colors;
-  }
-  
-  button:hover {
-    @apply bg-gray-300;
-  }
-
-  input, textarea, select {
-    @apply border border-black rounded-lg px-3 py-2 bg-white text-black;
-  }
-  
-  input:focus, textarea:focus, select:focus {
-    @apply outline-none ring-2 ring-blue-500 border-blue-500;
+  a:hover {
+    text-decoration: underline;
   }
 }
