@@ -48,7 +48,7 @@ Issues are ordered by build dependency:
 | US-02 | As a Keeper, I want to create a log with a title, category, access mode, and turn mode. | Required fields validate. Advanced settings (limits, timeout, seed) collapse by default. |
 | US-03 | As a Writer, I want my text distinguished from others by color. | System assigns one of 6 default colors (red, orange, blue, green, purple, black). Custom color picker available. |
 | US-04 | As a Reader, I want to toggle off author colors to read the log as one unified piece. | Toggle button on log detail view switches all text to a single color. State is local (no persistence). |
-| US-05 | As a Reader, I want to discover logs and filter by category. | Feed shows newest first. Filterable by: Freewriting, Haiku, Poem, Short Novel, Flash Fiction. |
+| US-05 | As a Reader, I want to discover logs and filter by category. | Feed shows newest first. Filterable by: Freewriting, Haiku, Poem, Short Novel. |
 | US-06 | As a Reader, I want to react to a completed work without an account. | Symbol reactions (✦ ◎ ∿ ⌖) visible at bottom of completed logs. Tappable without login. |
 
 ---

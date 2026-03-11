@@ -77,7 +77,7 @@ User can create a log with a title.
 
 #### Configurable Settings
 - **Mandatory Log Title:** Acts as the thematic anchor for the log
-- **Category (Optional Dropdown):** Options include Freewriting, Haiku, Poem, Short Novel, Flash Fiction (default: "Freewriting")
+- **Category (Optional Dropdown):** Options include Freewriting, Haiku, Poem, Short Novel (default: "Freewriting")
 - **Participant limit:** Capped or unlimited (default unlimited)
 - **Round limit:** Capped or unlimited (default unlimited)
 - **Turn timeout:** None (manual skip only), Auto-skip (1h / 6h / 12h / 24h / 48h / 7d), or No timeout (default no timeout)
