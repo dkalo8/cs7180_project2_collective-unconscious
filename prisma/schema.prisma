@@ -24,7 +24,7 @@ model Log {
   
   // Advanced Settings
   participantLimit   Int?     // null means unlimited
-  roundLimit         Int?     // null means unlimited
+  turnLimit          Int?     @map("roundLimit") // total submitted turns before auto-close; null means unlimited
   turnTimeout        Int?     // Timeout in seconds (null = none)
   perTurnLengthLimit Int?     // Characters per turn (null = none)
   seed               String?  // Initial prompt or constraint
@@ -35,6 +35,7 @@ model Log {
 
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+  creatorToken       String?  // Session token of the log creator / keeper
 
   writers            Writer[]
   turns              Turn[]
@@ -71,8 +72,8 @@ model Turn {
   writerId     String
   writer       Writer   @relation(fields: [writerId], references: [id], onDelete: Cascade)
 
-  isSkip       Boolean  @default(false)
-  isEntrance   Boolean  @default(false)
+  isSkip            Boolean  @default(false)
+  isOutOfRotation   Boolean  @default(false) @map("isEntrance") // true when a new joiner submits; does NOT advance the rotation pointer
 
   createdAt    DateTime @default(now())
 

@@ -64,7 +64,7 @@ export default function CreatePage({ t, lang, onCreated }) {
             <input style={{ ...S.input, maxWidth: 120 }} placeholder={t.create.unlimited} type="number" min="2" max="20" />
           </div>
           <div style={S.fieldGroup}>
-            <label style={S.label}>{t.create.roundLimit}</label>
+            <label style={S.label}>{t.create.turnLimit}</label>
             <input style={{ ...S.input, maxWidth: 120 }} placeholder={t.create.unlimited} type="number" min="1" max="50" />
           </div>
           <div style={S.fieldGroup}>

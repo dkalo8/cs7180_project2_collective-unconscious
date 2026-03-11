@@ -27,7 +27,7 @@ export default function LogPage({ t, log, lang }) {
           {" · "}
           {t.log.mode(log.mode)}
           {" · "}
-          {isCompleted ? t.log.closed : t.log.round(log.round, log.roundLimit)}
+          {isCompleted ? t.log.closed : t.log.round(log.round, log.turnLimit)}
           {" · "}
           {log.participants.length} writers
         </div>

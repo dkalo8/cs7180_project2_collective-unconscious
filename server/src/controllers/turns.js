@@ -2,6 +2,31 @@ const { z } = require('zod');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+// =======================
+// Shared helper: compute the next expected joinOrder in a STRUCTURED rotation.
+// Looks at the last in-rotation turn (not isOutOfRotation) to advance the pointer.
+// Skip turns DO count (they consume the writer's rotation slot).
+// =======================
+function computeNextExpectedJoinOrder(turns, writers) {
+    if (writers.length === 0) return null;
+
+    const lastInRotation = [...turns].reverse().find(t => !t.isOutOfRotation);
+
+    if (!lastInRotation) {
+        // No rotation turn yet → first writer is next
+        return writers[0].joinOrder;
+    }
+
+    const lastWriter = writers.find(w => w.id === lastInRotation.writerId);
+    if (!lastWriter) return writers[0].joinOrder;
+
+    const later = writers.filter(w => w.joinOrder > lastWriter.joinOrder);
+    return later.length > 0 ? later[0].joinOrder : writers[0].joinOrder;
+}
+
+// =======================
+// POST /api/logs/:id/turns
+// =======================
 const submitTurnSchema = z.object({
     content: z.string().min(1, 'Content is required'),
     nickname: z.string().optional(),
@@ -33,24 +58,32 @@ const submitTurn = async (req, res) => {
                 }
             });
 
-            if (!log) {
-                throw new Error('NOT_FOUND');
-            }
+            if (!log) throw new Error('NOT_FOUND');
+            if (log.status === 'COMPLETED') throw new Error('COMPLETED');
 
-            if (log.status === 'COMPLETED') {
-                throw new Error('COMPLETED');
-            }
-
+            // ── Find or create writer ──
             let currentWriter = log.writers.find(w => w.sessionToken === token);
             let isNewJoin = false;
-            
+
             if (!currentWriter) {
-                // Create implicitly
+                // Check access code for private logs
+                if (log.accessMode === 'PRIVATE') {
+                    const submittedCode = req.body.accessCode;
+                    if (!submittedCode || submittedCode !== log.accessCode) {
+                        throw new Error('ACCESS_CODE_INVALID');
+                    }
+                }
+
+                // Check participant limit
+                if (log.participantLimit && log.writers.length >= log.participantLimit) {
+                    throw new Error('PARTICIPANT_LIMIT_REACHED');
+                }
+
                 const nextJoinOrder = log.writers.length > 0 ? Math.max(...log.writers.map(w => w.joinOrder)) + 1 : 1;
                 const { randomNick } = require('../utils/nickname');
                 const generatedNickname = nickname && nickname.trim() !== '' ? nickname : randomNick();
                 const assignedColor = colorHex || '#d4d0c8';
-                
+
                 currentWriter = await tx.writer.create({
                     data: {
                         sessionToken: token,
@@ -61,9 +94,10 @@ const submitTurn = async (req, res) => {
                     }
                 });
                 isNewJoin = true;
-                log.writers.push(currentWriter); // Update local array
+                log.writers.push(currentWriter);
             }
 
+            // ── Length check ──
             if (log.perTurnLengthLimit && content.length > log.perTurnLengthLimit) {
                 throw new Error('LENGTH_EXCEEDED');
             }
@@ -72,89 +106,60 @@ const submitTurn = async (req, res) => {
             const previousTurns = log.turns;
             const lastTurn = previousTurns.length > 0 ? previousTurns[previousTurns.length - 1] : null;
 
-            let isEntrance = false;
+            let isOutOfRotation = false;
 
-            // Handle Freestyle
+            // ── FREESTYLE validation ──
             if (log.turnMode === 'FREESTYLE') {
+                // Can't submit twice in a row (check the very last turn of any kind)
                 if (lastTurn && lastTurn.writerId === currentWriter.id) {
                     throw new Error('CONSECUTIVE_TURNS_NOT_ALLOWED');
                 }
-                
-                if (log.roundLimit && (previousTurns.length + 1) >= log.roundLimit) {
-                    // Turn limits out at this turn
-                    // We don't return early, we just flag it
-                }
-            } 
-            // Handle Structured
+            }
+            // ── STRUCTURED validation ──
             else if (log.turnMode === 'STRUCTURED') {
                 if (isNewJoin) {
-                    // Option B: Jump the line!
-                    isEntrance = true;
+                    // A new joiner's turn is out-of-rotation ONLY if there's already an active
+                    // rotation queue to disrupt. If nobody is in rotation yet, this turn
+                    // establishes the queue (in-rotation).
+                    const hasInRotationTurns = previousTurns.some(t => !t.isOutOfRotation);
+                    isOutOfRotation = hasInRotationTurns;
                 } else {
-                    let expectJoinOrder = 1;
-                    // Find the last NON-ENTRANCE and NON-SKIP turn to determine rotation
-                    const validLastTurn = [...previousTurns].reverse().find(t => !t.isEntrance);
+                    // Existing writer: must be their turn in the rotation
+                    const expectJoinOrder = computeNextExpectedJoinOrder(previousTurns, activeWriters);
 
-                    if (validLastTurn) {
-                        const lastWriter = activeWriters.find(w => w.id === validLastTurn.writerId);
-                        if (lastWriter) {
-                            const lastJoinOrder = lastWriter.joinOrder;
-                            const nextWriters = activeWriters.filter(w => w.joinOrder > lastJoinOrder);
-                            
-                            if (nextWriters.length > 0) {
-                                expectJoinOrder = nextWriters[0].joinOrder;
-                            } else {
-                                expectJoinOrder = activeWriters[0].joinOrder;
-                            }
-                        }
-                    }
-
-                    if (currentWriter.joinOrder !== expectJoinOrder) {
+                    if (expectJoinOrder !== null && currentWriter.joinOrder !== expectJoinOrder) {
                         throw new Error('NOT_YOUR_TURN');
                     }
                 }
             }
 
-            // Update writer nickname if provided and changed
-            if (!isNewJoin && nickname && currentWriter.nickname !== nickname) {
-                await tx.writer.update({
-                    where: { id: currentWriter.id },
-                    data: { nickname }
-                });
+            // ── Update writer nickname/color if provided ──
+            if (!isNewJoin) {
+                const updates = {};
+                if (nickname && currentWriter.nickname !== nickname) updates.nickname = nickname;
+                if (colorHex && currentWriter.colorHex !== colorHex) updates.colorHex = colorHex;
+                if (Object.keys(updates).length > 0) {
+                    await tx.writer.update({ where: { id: currentWriter.id }, data: updates });
+                }
             }
 
-            // Insert turn
+            // ── Insert the turn ──
             const newTurn = await tx.turn.create({
                 data: {
                     content,
                     turnOrder: previousTurns.length + 1,
                     logId: log.id,
                     writerId: currentWriter.id,
-                    isEntrance: isEntrance
+                    isOutOfRotation
                 }
             });
-            
-            // Re-evaluate COMPLETION
+
+            // ── Re-evaluate COMPLETION ──
+            // turnLimit = total number of real (non-skip) submitted turns before auto-close.
             let shouldComplete = false;
-            if (log.turnMode === 'STRUCTURED' && log.roundLimit) {
-                // If the turn just completed was the last person in the round, AND it's the final round
-                // Wait, if next expected join order is 1, a round just finished.
-                const nextExpectedWriterOrder = currentWriter.joinOrder === Math.max(...activeWriters.map(w => w.joinOrder)) ? 1 : currentWriter.joinOrder + 1;
-                
-                if (nextExpectedWriterOrder === 1) {
-                    // A round just finished
-                    const keeper = activeWriters.find(w => w.joinOrder === 1);
-                    if (keeper) {
-                        // Count how many normal turns the keeper has
-                        const updatedTurns = await tx.turn.findMany({ where: { logId: log.id }});
-                        const keeperTurns = updatedTurns.filter(t => t.writerId === keeper.id && !t.isEntrance && !t.isSkip).length;
-                        if (keeperTurns >= log.roundLimit) {
-                            shouldComplete = true;
-                        }
-                    }
-                }
-            } else if (log.turnMode === 'FREESTYLE' && log.roundLimit) {
-                if ((previousTurns.length + 1) >= log.roundLimit) {
+            if (log.turnLimit) {
+                const totalRealTurns = previousTurns.filter(t => !t.isSkip).length + 1; // +1 for the turn just created
+                if (totalRealTurns >= log.turnLimit) {
                     shouldComplete = true;
                 }
             }
@@ -180,28 +185,14 @@ const submitTurn = async (req, res) => {
         return res.status(201).json(result);
 
     } catch (error) {
-        if (error.message === 'NOT_FOUND') {
-            return res.status(404).json({ error: 'Log not found' });
-        }
-        if (error.message === 'COMPLETED') {
-            return res.status(403).json({ error: 'Log has been completed' });
-        }
-        if (error.message === 'FORBIDDEN_NOT_PARTICIPANT') {
-            return res.status(403).json({ error: 'You must join this log to participate' });
-        }
-        if (error.message === 'LENGTH_EXCEEDED') {
-            return res.status(422).json({ error: 'Content exceeds maximum length' });
-        }
-        if (error.message === 'CONSECUTIVE_TURNS_NOT_ALLOWED') {
-            return res.status(403).json({ error: 'Consecutive turns are not allowed in Freestyle mode' });
-        }
-        if (error.message === 'NOT_YOUR_TURN') {
-            return res.status(403).json({ error: 'Not your turn' });
-        }
-        if (error.message === 'ROUND_LIMIT_REACHED') {
-            return res.status(403).json({ error: 'Log has completed its round limit' });
-        }
-        
+        if (error.message === 'NOT_FOUND') return res.status(404).json({ error: 'Log not found' });
+        if (error.message === 'COMPLETED') return res.status(403).json({ error: 'Log has been completed' });
+        if (error.message === 'ACCESS_CODE_INVALID') return res.status(403).json({ error: 'Invalid access code' });
+        if (error.message === 'PARTICIPANT_LIMIT_REACHED') return res.status(403).json({ error: 'Participant limit reached' });
+        if (error.message === 'LENGTH_EXCEEDED') return res.status(422).json({ error: 'Content exceeds maximum length' });
+        if (error.message === 'CONSECUTIVE_TURNS_NOT_ALLOWED') return res.status(403).json({ error: 'Consecutive turns are not allowed in Freestyle mode' });
+        if (error.message === 'NOT_YOUR_TURN') return res.status(403).json({ error: 'Not your turn' });
+
         if (error.code === 'P2002' && error.meta?.target?.includes('turnOrder')) {
             return res.status(409).json({ error: 'Race condition detected: Another turn was submitted simultaneously.' });
         }
@@ -211,6 +202,9 @@ const submitTurn = async (req, res) => {
     }
 };
 
+// =======================
+// POST /api/logs/:id/skip
+// =======================
 const skipTurn = async (req, res) => {
     try {
         const token = req.sessionToken;
@@ -231,8 +225,7 @@ const skipTurn = async (req, res) => {
             if (log.status === 'COMPLETED') throw new Error('COMPLETED');
             if (log.turnMode !== 'STRUCTURED') throw new Error('NOT_STRUCTURED');
 
-            const keeper = log.writers.find(w => w.joinOrder === 1);
-            if (!keeper || keeper.sessionToken !== token) {
+            if (log.creatorToken !== token) {
                 throw new Error('NOT_KEEPER');
             }
 
@@ -241,36 +234,20 @@ const skipTurn = async (req, res) => {
                 throw new Error('NOT_ENOUGH_WRITERS');
             }
 
-            const previousTurns = log.turns;
-            let expectJoinOrder = 1;
-
-            const validLastTurn = [...previousTurns].reverse().find(t => !t.isEntrance);
-            if (validLastTurn) {
-                const lastWriter = activeWriters.find(w => w.id === validLastTurn.writerId);
-                if (lastWriter) {
-                    const nextWriters = activeWriters.filter(w => w.joinOrder > lastWriter.joinOrder);
-                    if (nextWriters.length > 0) {
-                        expectJoinOrder = nextWriters[0].joinOrder;
-                    } else {
-                        expectJoinOrder = activeWriters[0].joinOrder;
-                    }
-                }
-            }
-
+            const expectJoinOrder = computeNextExpectedJoinOrder(log.turns, activeWriters);
             const turnSkippedWriter = activeWriters.find(w => w.joinOrder === expectJoinOrder);
+
+            if (!turnSkippedWriter) throw new Error('NOT_ENOUGH_WRITERS');
 
             await tx.turn.create({
                 data: {
                     content: '*Skipped by Keeper*',
-                    turnOrder: previousTurns.length + 1,
+                    turnOrder: log.turns.length + 1,
                     logId: log.id,
                     writerId: turnSkippedWriter.id,
                     isSkip: true
                 }
             });
-
-            // No completion check here because skipped rounds don't count toward Keeper round limits typically, or do they?
-            // Actually, if expectJoinOrder was 1 and Keeper skips themselves, does that count as a round? Let's just let normal turns dictate.
 
             return await tx.log.findUnique({
                 where: { id: logId },
@@ -286,7 +263,7 @@ const skipTurn = async (req, res) => {
         if (error.message === 'NOT_STRUCTURED') return res.status(400).json({ error: 'Cannot skip turns in Freestyle mode' });
         if (error.message === 'NOT_KEEPER') return res.status(403).json({ error: 'Only the log Keeper can skip turns' });
         if (error.message === 'NOT_ENOUGH_WRITERS') return res.status(400).json({ error: 'Not enough writers to skip' });
-        
+
         console.error('skipTurn Error:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }

@@ -32,15 +32,9 @@ describe('POST /api/logs', () => {
         expect(res.body.title).toBe('My Public Log');
         expect(res.body.category).toBe('Freewriting'); // server-side default
         expect(res.body.accessCode).toBeNull();
-        // Keeper should be Writer #1 with red color
-        expect(res.body.Keeper).toBeDefined();
-        expect(res.body.Keeper.joinOrder).toBe(1);
-        expect(res.body.Keeper.colorHex).toBe('#FF0000');
         
-        // [REFINEED] Ensure the session token is correctly linked to the Writer record
-        // We can extract the token from the cookie we just got
-        const token = sessionCookie[0].split(';')[0].split('=')[1];
-        expect(res.body.Keeper.sessionToken).toBe(token);
+        // Creator is NOT inserted into Writer table automatically
+        expect(res.body.Keeper).toBeUndefined();
     });
 
     it('creates a private log and returns a 6-char access code', async () => {

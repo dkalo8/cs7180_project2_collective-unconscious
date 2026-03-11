@@ -16,7 +16,7 @@ describe('WriteZone Component', () => {
         renderWithClient(<WriteZone logId="123" colorHex="#FF0000" />);
         
         expect(screen.getByPlaceholderText(/Type your turn.../i)).toBeInTheDocument();
-        expect(screen.getByPlaceholderText(/Nickname \(optional\)/i)).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/Nickname \(e\.g\./i)).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /Submit/i })).toBeInTheDocument();
     });
 
@@ -27,12 +27,12 @@ describe('WriteZone Component', () => {
         );
 
         fireEvent.change(getByPlaceholderText(/Type your turn.../i), { target: { value: 'My cool turn' } });
-        fireEvent.change(getByPlaceholderText(/Nickname \(optional\)/i), { target: { value: 'Custom Nick' } });
+        fireEvent.change(getByPlaceholderText(/Nickname \(e\.g\./i), { target: { value: 'Custom Nick' } });
         
         fireEvent.click(getByRole('button', { name: /Submit/i }));
 
         await waitFor(() => {
-            expect(mockSubmit).toHaveBeenCalledWith({ content: 'My cool turn', nickname: 'Custom Nick' });
+            expect(mockSubmit).toHaveBeenCalledWith({ content: 'My cool turn', nickname: 'Custom Nick', colorHex: '#FF0000' });
         });
     });
 
@@ -49,7 +49,8 @@ describe('WriteZone Component', () => {
         await waitFor(() => {
             expect(mockSubmit).toHaveBeenCalledWith({
                 content: 'This is my turn.',
-                nickname: ''
+                nickname: '',
+                colorHex: '#000'
             });
         });
     });

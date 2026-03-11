@@ -46,7 +46,7 @@ describe('LogDetailPage Component', () => {
             title: 'My Completed Log',
             turnMode: 'STRUCTURED',
             status: 'COMPLETED',
-            roundLimit: 2,
+            turnLimit: 2,
             turns: [
                 { id: '1', content: 'First turn', writerId: 'w1' }
             ],
@@ -59,7 +59,6 @@ describe('LogDetailPage Component', () => {
         
         expect(screen.getByText('My Completed Log')).toBeInTheDocument();
         expect(screen.getByText('First turn')).toBeInTheDocument();
-        expect(screen.getByText('— Alice')).toBeInTheDocument();
         
         // Assert "This log has been completed" is visible
         expect(screen.getByText(/This log has been completed/i)).toBeInTheDocument();
@@ -99,7 +98,7 @@ describe('LogDetailPage Component', () => {
             expect(fetch).toHaveBeenCalledWith('/api/logs/mock-log-id/turns', expect.objectContaining({
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: 'A new contribution', nickname: '' })
+                body: JSON.stringify({ content: 'A new contribution', nickname: '', colorHex: '#000' })
             }));
 
             // Assert react-query invalidated the cache to trigger a refetch

@@ -6,9 +6,10 @@
 - Typography: system serif (renders as Song/SimSun for Chinese). 
 - Default color palette for author identification: red #FF0000, orange #FF8C00, blue #0000FF, green #008000, purple #800080, black #000000
 - Users can also pick a custom color via color picker
+- the whole ui style should feel like old website and plain html(although we use tailwind to implement it)
 
 ## UX Patterns
-- Text color identifies each author in log view — no nicknames shown in the body
+- Text color identifies each author in log view — no nicknames shown in the body, no colored left borders or color spines
 - Turn mode (structured/freestyle) is a fixed property of the log, not a viewer toggle
 - Writing textarea and nickname input shown simultaneously
 - Nickname is optional; system auto-generates one if left blank (random adjective + noun combo, localized per language)
@@ -24,7 +25,14 @@
 
 ## Screens in Prototype
 - Home/Feed: flat chronological log list with title, category, and 2-line plain text preview
-- Log detail: transcript with colored left borders + inline write zone (textarea + nickname input + submit)
+- Log detail: transcript with each author's text rendered in their assigned color + inline write zone (textarea + nickname input + color picker + submit)
 - Log creation: required fields on top (title, category, access, turn mode, seed), advanced settings collapsed (per-turn limit, participant limit, round limit, timeout)
 - Access code entry: for private logs
 - About page
+
+## 2026-03-11 Updates
+- **Skip UI:** Grey button labeled "skip the next turn of:" followed by a dropdown selecting from current participants. No emojis.
+- **Log Status:** Header displays "Mode: [TYPE] · Status: [STATUS] · Turn Limit: [LIMIT]".
+- **Participation Gallery:** Writers' nicknames and colors displayed at the bottom of the log (Joint order for Freestyle; Numerical list for Structured).
+- **Manual Close:** The Keeper has a "Close Log" button that marks the log as COMPLETED instantly.
+- **Clean Log:** No nicknames or "Join/Skip" system messages in the log transcript.

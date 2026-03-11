@@ -18,7 +18,7 @@ async function main() {
       accessMode: 'OPEN',
       turnMode: 'STRUCTURED',
       participantLimit: 3,
-      roundLimit: 1, // One round of 3 turns completes the haiku
+      turnLimit: 3, // 3 turns completes the haiku
       seed: 'Write a haiku about the morning commute.',
       status: 'COMPLETED',
     },
@@ -134,9 +134,88 @@ async function main() {
     },
   })
   
+  // 3. Create a casual, funny Freewriting log
+  const logFunny = await prisma.log.create({
+    data: {
+      title: 'The Great Subway Sandwich Incident',
+      category: 'Freewriting',
+      accessMode: 'OPEN',
+      turnMode: 'FREESTYLE',
+      status: 'ACTIVE',
+    },
+  })
+
+  const writerFunny1 = await prisma.writer.create({
+    data: {
+      sessionToken: 'seed-session-6',
+      nickname: 'Hungry Pigeon',
+      colorHex: '#000000', // Black
+      logId: logFunny.id,
+      joinOrder: 1,
+    },
+  })
+
+  const writerFunny2 = await prisma.writer.create({
+    data: {
+      sessionToken: 'seed-session-7',
+      nickname: 'Bored Commuter',
+      colorHex: '#FF0000', // Red
+      logId: logFunny.id,
+      joinOrder: 2,
+    },
+  })
+
+  const writerFunny3 = await prisma.writer.create({
+    data: {
+      sessionToken: 'seed-session-8',
+      nickname: 'Sandwich Enthusiast',
+      colorHex: '#008000', // Green
+      logId: logFunny.id,
+      joinOrder: 3,
+    },
+  })
+
+  // Turns for Funny log
+  await prisma.turn.create({
+    data: {
+      content: 'I stared at the guy eating a meatball sub on the 6 train at 8 AM. It was an act of profound bravery, or perhaps madness. ',
+      turnOrder: 1,
+      logId: logFunny.id,
+      writerId: writerFunny1.id,
+    },
+  })
+
+  await prisma.turn.create({
+    data: {
+      content: 'Suddenly, the train jerked. A single meatball entered low orbit, defying gravity in a sauce-covered arc of doom. ',
+      turnOrder: 2,
+      logId: logFunny.id,
+      writerId: writerFunny2.id,
+    },
+  })
+
+  await prisma.turn.create({
+    data: {
+      content: 'Time slowed down as the meatball rotated. We all watched, helpless, knowing it was destined for the white coat of the lady sitting across from him. ',
+      turnOrder: 3,
+      logId: logFunny.id,
+      writerId: writerFunny3.id,
+    },
+  })
+
+  await prisma.turn.create({
+    data: {
+      content: 'But then—out of nowhere—a stray pigeon that somehow boarded at Union Square swooped down. ',
+      turnOrder: 4,
+      logId: logFunny.id,
+      writerId: writerFunny1.id,
+    },
+  })
+
   console.log('Seed data inserted successfully:')
   console.log(`- 1 Completed Haiku Log ("${logHaiku.title}")`)
   console.log(`- 1 Active Short Novel Log ("${logNovel.title}")`)
+  console.log(`- 1 Active Freewriting Log ("${logFunny.title}")`)
 }
 
 main()

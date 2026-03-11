@@ -11,7 +11,7 @@ export const LOGS: any[] = [
       { pid: 0, text: "我决定向山道歉。这似乎是应该做的事。" },
       { pid: 1, text: "山什么也没说。山从来不说话。这就是它们让人恼火的地方。" },
     ],
-    currentTurn: 2, round: 2, roundLimit: null,
+    currentTurn: 2, round: 2, turnLimit: null,
   },
   {
     id: 2, title: "我的猫凌晨三点在干嘛", catKey: "flash", status: "completed", mode: "freestyle",
@@ -24,7 +24,7 @@ export const LOGS: any[] = [
       { pid: 1, text: "我翻了个身。她掉了下去。我们都假装什么都没发生。" },
       { pid: 2, text: "天亮的时候她蜷在我脚边睡着了。像个天使。骗子。" },
     ],
-    currentTurn: null, round: 2, roundLimit: 2,
+    currentTurn: null, round: 2, turnLimit: 2,
     reactions: { "✦": 3, "◎": 1, "∿": 5, "⌖": 0 },
   },
   {
@@ -35,7 +35,7 @@ export const LOGS: any[] = [
       { pid: 1, text: "紫罗兰嘛，说实话一直是那种灰不拉几的白。" },
       { pid: 0, text: "糖是咸的。这个大家都知道。" },
     ],
-    currentTurn: null, round: 2, roundLimit: null,
+    currentTurn: null, round: 2, turnLimit: null,
   },
   {
     id: 4, title: "电梯里的尬聊", catKey: "freewriting", status: "completed", mode: "structured",
@@ -48,7 +48,7 @@ export const LOGS: any[] = [
       { pid: 1, text: "我说我也是。我们达成了某种共识。" },
       { pid: 2, text: "门开了。外面什么都没有。我们又关上了门。" },
     ],
-    currentTurn: null, round: 2, roundLimit: 2,
+    currentTurn: null, round: 2, turnLimit: 2,
     reactions: { "✦": 7, "◎": 2, "∿": 0, "⌖": 4 },
   },
 ];
