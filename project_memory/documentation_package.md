@@ -4,7 +4,7 @@ This document serves as the central index for all technical and process document
 
 ## 🚀 Live Links
 - **Production Application**: [https://cs7180-project2-collective-unconscious-1.onrender.com/](https://cs7180-project2-collective-unconscious-1.onrender.com/)
-- **API Documentation (Swagger)**: [https://cs7180-project2-collective-unconscious.onrender.com/api/docs/](https://cs7180-project2-collective-unconscious.onrender.com/api/docs/)
+- **API Documentation (Swagger)**: [https://cs7180-project2-collective-unconscious.onrender.com/api-docs/](https://cs7180-project2-collective-unconscious.onrender.com/api-docs/)
 
 ## 📋 Product & Agile Documentation
 - **[README.md](../README.md)**: Main project overview, tech stack, and sprint checklists.

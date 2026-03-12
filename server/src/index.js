@@ -55,15 +55,15 @@ app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
 });
 
-// Swagger API Documentation (Serving at /api/docs to work with proxy)
-// Redirect /api/docs to /api/docs/ for stable asset loading
-app.get('/api/docs', (req, res, next) => {
+// Swagger API Documentation (Serving at /api-docs)
+// Redirect /api-docs to /api-docs/ for stable asset loading
+app.get('/api-docs', (req, res, next) => {
   if (!req.url.endsWith('/')) {
     return res.redirect(301, req.originalUrl + '/');
   }
   next();
 });
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // API routes
 app.use('/api/logs', logsRouter);
