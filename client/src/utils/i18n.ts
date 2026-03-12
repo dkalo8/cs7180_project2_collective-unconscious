@@ -40,6 +40,13 @@ export const T: any = {
       placeholder: "输入访问码", submit: "进入", wrong: "不对。",
     },
     about: "集体潜意识是一个异步协作写作平台。创建一篇 Log，分享链接，轮流写下一句话。没有账号，没有压力，只有留在这里的文字。",
+    aboutTitle: "如何开始？",
+    howItWorks: [
+      "新建：给你的 Log 起个标题，设置分类和规则（如每人只能写一句话）。",
+      "分享：复制链接发给你的朋友，或者让它在‘广场’公开。",
+      "接龙：大家轮流写下一段文字。在回合制模式下，你需要等待其他参与者完成。",
+      "完结：作品完成后，可以生成精美的长图分享到社交媒体。"
+    ]
   },
   en: {
     siteName: "Collective Unconscious", tagline: "collaborative chain-writing",
@@ -75,6 +82,13 @@ export const T: any = {
       placeholder: "enter code", submit: "enter", wrong: "That's not it.",
     },
     about: "Collective Unconscious is an async collaborative chain-writing platform. Create a log, share the link, take turns writing. No accounts, no pressure, just words left behind.",
+    aboutTitle: "How it works",
+    howItWorks: [
+      "Create: Give your log a title, category, and rules (like limiting turns or sentences).",
+      "Share: Send the link to friends or let it be discovered in the public feed.",
+      "Collaborate: Take turns adding to the story. In structured mode, you'll wait for your turn.",
+      "Complete: Once finished, the log is archived and can be shared as a styled image."
+    ]
   },
   es: {
     siteName: "Inconsciente Colectivo", tagline: "escritura colaborativa en cadena",
@@ -110,6 +124,13 @@ export const T: any = {
       placeholder: "introduce el código", submit: "entrar", wrong: "No es correcto.",
     },
     about: "Inconsciente Colectivo es una plataforma de escritura colaborativa asincrónica. Crea un log, comparte el enlace, escribe por turnos. Sin cuentas, sin presión, solo palabras que quedan.",
+    aboutTitle: "Cómo funciona",
+    howItWorks: [
+      "Crear: Dale a tu log un título, categoría y reglas (como límites de turnos o frases).",
+      "Compartir: Envía el enlace a tus amigos o deja que se descubra en la plaza pública.",
+      "Colaborar: Turnaos para añadir a la historia. En modo por turnos, esperarás tu turno.",
+      "Completar: Una vez terminado, el log se archiva y se puede compartir como una imagen con estilo."
+    ]
   },
 };
 
