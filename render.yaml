@@ -30,7 +30,7 @@ services:
           property: host
 
   # Frontend UI
-  - type: static
+  - type: static_site
     name: collective-unconscious-ui
     runtime: static
     rootDir: client
