@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_BASE_URL } from '../config';
 import { S } from '../utils/styles';
 
 /**
@@ -18,7 +19,7 @@ export default function ReportButton({ targetType, targetId, onReported }) {
 
     setSubmitting(true);
     try {
-      const res = await fetch('/api/reports', {
+      const res = await fetch(`${API_BASE_URL}/api/reports`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ targetType, targetId, reason }),

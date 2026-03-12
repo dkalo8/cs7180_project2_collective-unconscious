@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 import { useLanguage } from '../context/LanguageContext';
 import { CAT_KEY_MAP } from '../context/LanguageContext';
 
@@ -54,7 +55,7 @@ export default function CreateLogPage() {
 
         try {
             setIsLoading(true);
-            const res = await fetch('/api/logs', {
+            const res = await fetch(`${API_BASE_URL}/api/logs`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

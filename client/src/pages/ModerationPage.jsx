@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config';
 import { S } from '../utils/styles';
 
 export default function ModerationPage() {
@@ -9,7 +10,7 @@ export default function ModerationPage() {
 
   const fetchQueue = async (secret) => {
     try {
-      const res = await fetch('/api/moderation/queue', {
+      const res = await fetch(`${API_BASE_URL}/api/moderation/queue`, {
         headers: { 'x-admin-secret': secret }
       });
       if (res.ok) {
@@ -37,7 +38,7 @@ export default function ModerationPage() {
 
   const handleAction = async (reportId, action) => {
     try {
-      const res = await fetch('/api/moderation/action', {
+      const res = await fetch(`${API_BASE_URL}/api/moderation/action`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
