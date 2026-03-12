@@ -8,7 +8,7 @@ import { vi } from "vitest";
 
 globalThis.fetch = vi.fn().mockResolvedValue({
   ok: true,
-  json: async () => ({ logs: [], totalPages: 0, users: [] })
+  json: async () => ({ data: [], meta: { totalCount: 0 }, users: [] })
 });
 
 describe("Frontend Routing", () => {
