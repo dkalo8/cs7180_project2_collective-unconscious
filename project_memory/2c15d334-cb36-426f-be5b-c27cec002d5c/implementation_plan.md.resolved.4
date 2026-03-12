@@ -1,0 +1,35 @@
+# S2-4: Generate & Share Themed Screenshots
+
+This sprint focuses on the "Share" part of the collaborative experience. When a log is completed, users should be able to export a beautiful image of their work to share on social media.
+
+## Proposed Changes
+
+### [Component] `ShareModal.jsx` [NEW]
+A modal UI that allows users to preview their log in different themes before downloading.
+- **Themes**:
+    - **Minimal**: White background, clean Sans-serif.
+    - **Nocturne**: Dark background, neon/vibrant text colors.
+    - **Parchment**: Aged paper texture (CSS-based), serif font (Playfair Display/serif fallback).
+- **Functionality**:
+    - Uses `html-to-image` to capture a hidden DOM element styled according to the selected theme.
+    - Supports "Download as PNG".
+    - Branding: Includes the "Collective Unconscious" logo/name at the bottom.
+
+### [Page] [LogDetailPage.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/LogDetailPage.jsx) [MODIFY]
+- Add a "Share as Image" button that appears only when `log.status === 'COMPLETED'`.
+- This button triggers the `ShareModal`.
+
+### [Infra] Dependency Installation
+- Install `html-to-image` in the `client` folder.
+
+## Verification Plan
+
+### Automated Tests
+- Test that the "Share" button only renders for completed logs.
+- Test that clicking the button opens the modal.
+
+### Manual Verification
+- Complete a log.
+- Open the share modal.
+- Verify each theme renders correctly in the browser.
+- Download the image and verify clarity, author colors, and branding.

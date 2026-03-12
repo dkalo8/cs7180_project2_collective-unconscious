@@ -1,0 +1,46 @@
+# S2-7: Production Deployment & CI Integration
+
+This task focuses on setting up the production infrastructure and ensuring every Pull Request generates a "Deploy Preview" for easy review.
+
+## User Review Required
+
+> [!IMPORTANT]
+> I am proposing **Render** (render.com) as the primary deployment platform because it supports monorepo structures, managed PostgreSQL, and automatic "Preview Environments" for GitHub Pull Requests out of the box.
+
+## Proposed Changes
+
+### Infrastructure (Render)
+
+#### [NEW] [render.yaml](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20(Python)/Project%202%20-%20Collective%20Unconscious/render.yaml)
+Create a Blueprint file defining:
+- **Database**: PostgreSQL (managed).
+- **Web Service (Backend)**: Express API running in the `/server` directory.
+- **Static Site (Frontend)**: Vite build from the `/client` directory.
+
+### CI/CD (GitHub Actions)
+
+#### [MODIFY] [.github/workflows/ci.yml](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20(Python)/Project%202%20-%20Collective%20Unconscious/.github/workflows/ci.yml)
+- Ensure tests run against a clean environment on every push.
+- (Manual Step) Enable Render's PR Preview functionality in the Render dashboard once the Blueprint is synced.
+
+### Environment Management
+
+#### [NEW] [.env.example](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20(Python)/Project%202%20-%20Collective%20Unconscious/.env.example)
+Create a template for all required production secrets:
+- `DATABASE_URL`
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`
+- `JWT_SECRET` / `JWT_REFRESH_SECRET`
+- `SESSION_SECRET`
+- `CLIENT_URL` / `SERVER_URL`
+
+## Verification Plan
+
+### Automated Steps
+- **GitHub Actions**: Verify that the CI workflow passes on the current branch.
+- **Blueprint Validation**: Use Render's Blueprint validator (if available via CLI) or sync it manually.
+
+### Manual Verification
+1. Connect the repository to Render.
+2. Apply the `render.yaml` blueprint.
+3. Verify that the app is accessible at the generated URL.
+4. Open a test PR and verify that a Preview Environment is created.

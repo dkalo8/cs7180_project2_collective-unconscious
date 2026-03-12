@@ -180,7 +180,7 @@ describe('LogDetailPage Component', () => {
 
         await waitFor(() => {
             // Assert fetch was called with the right body
-            expect(fetch).toHaveBeenCalledWith('/api/logs/mock-log-id/turns', expect.objectContaining({
+            expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/api/logs/mock-log-id/turns'), expect.objectContaining({
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ content: 'A new contribution', nickname: '', colorHex: '#000' })
@@ -188,6 +188,124 @@ describe('LogDetailPage Component', () => {
 
             // Assert react-query invalidated the cache to trigger a refetch
             expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: ['log', 'mock-log-id'] });
+        });
+    });
+
+    it('invokes skipTurnApi when creator clicks skip turn', async () => {
+        const creatorLog = { ...mockColorLog, isCreator: true, turnMode: 'STRUCTURED' };
+        useQuery.mockReturnValue({ isLoading: false, isError: false, data: creatorLog });
+        fetch.mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'skip-1' }) });
+
+        render(<LogDetailPage />);
+
+        const skipBtn = screen.getByRole('button', { name: /skip turn/i });
+        fireEvent.click(skipBtn);
+
+        await waitFor(() => {
+            expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/api/logs/mock-log-id/skip'), expect.objectContaining({ method: 'POST' }));
+            expect(mockInvalidateQueries).toHaveBeenCalled();
+        });
+    });
+
+    it('invokes closeLog when creator clicks close log', async () => {
+        const creatorLog = { ...mockColorLog, isCreator: true, status: 'ACTIVE' };
+        useQuery.mockReturnValue({ isLoading: false, isError: false, data: creatorLog });
+        fetch.mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'mock-log-id', status: 'COMPLETED' }) });
+
+        render(<LogDetailPage />);
+
+        const closeBtn = screen.getByRole('button', { name: /close/i });
+        fireEvent.click(closeBtn);
+
+        await waitFor(() => {
+            expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/api/logs/mock-log-id/close'), expect.objectContaining({ method: 'PATCH' }));
+            expect(mockInvalidateQueries).toHaveBeenCalled();
+        });
+    });
+
+    it('handles reaction clicking (add and remove)', async () => {
+        const completedLog = { ...mockColorLog, status: 'COMPLETED', reactions: { '✦': 1 } };
+        useQuery.mockReturnValue({ isLoading: false, isError: false, data: completedLog });
+        
+        // Add reaction mock
+        fetch.mockResolvedValueOnce({ ok: true, json: async () => ({ count: 2 }) });
+
+        render(<LogDetailPage />);
+
+        // Click a reaction that hasn't been "reacted" by the current user (mock state is local)
+        const reactionBtn = screen.getByText('◎');
+        fireEvent.click(reactionBtn);
+
+        await waitFor(() => {
+            expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/api/logs/mock-log-id/reactions'), expect.objectContaining({ method: 'POST' }));
+        });
+    });
+
+    it('renders private log access code input and conditional WriteZone', async () => {
+        const privateLog = { 
+            ...mockColorLog, 
+            accessMode: 'PRIVATE', 
+            isMyTurn: true, 
+            myWriter: null,
+            turns: [],
+            writers: [] 
+        };
+        useQuery.mockReturnValue({ isLoading: false, isError: false, data: privateLog });
+
+        render(<LogDetailPage />);
+
+        expect(screen.getByPlaceholderText(/enter code/i)).toBeInTheDocument();
+        // WriteZone shouldn't be visible yet because accessCode is empty
+        expect(screen.queryByPlaceholderText(/continue the piece/i)).not.toBeInTheDocument();
+
+        fireEvent.change(screen.getByPlaceholderText(/enter code/i), { target: { value: 'secret123' } });
+
+        // Now WriteZone should appear
+        expect(screen.getByPlaceholderText(/continue the piece/i)).toBeInTheDocument();
+    });
+
+    it('filters out skipped turns from the visible list', () => {
+        const logWithSkip = {
+            ...mockColorLog,
+            turns: [
+                { id: 't1', content: 'Visible', isSkip: false },
+                { id: 't2', content: 'Invisible', isSkip: true },
+            ]
+        };
+        useQuery.mockReturnValue({ isLoading: false, isError: false, data: logWithSkip });
+        render(<LogDetailPage />);
+
+        expect(screen.getByText('Visible')).toBeInTheDocument();
+        expect(screen.queryByText('Invisible')).not.toBeInTheDocument();
+    });
+
+    it('displays next writer waiting message when it is NOT the user\'s turn', () => {
+        const notMyTurnLog = {
+            ...mockColorLog,
+            isMyTurn: false,
+            nextWriter: { id: 'w2', nickname: 'Bob', colorHex: '#00F' }
+        };
+        useQuery.mockReturnValue({ isLoading: false, isError: false, data: notMyTurnLog });
+        render(<LogDetailPage />);
+
+        expect(screen.getByText(/waiting for Bob/i)).toBeInTheDocument();
+    });
+
+    it('shows error box when submission fails', async () => {
+        const activeLog = { ...mockColorLog, isMyTurn: true, myWriter: { id: 'w1' } };
+        useQuery.mockReturnValue({ isLoading: false, isError: false, data: activeLog });
+        
+        fetch.mockResolvedValueOnce({
+            ok: false,
+            json: async () => ({ error: 'Invalid contribution' })
+        });
+
+        render(<LogDetailPage />);
+        fireEvent.change(screen.getByPlaceholderText(/continue the piece/i), { target: { value: 'short' } });
+        fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+        await waitFor(() => {
+            expect(screen.getByText('Invalid contribution')).toBeInTheDocument();
         });
     });
 });

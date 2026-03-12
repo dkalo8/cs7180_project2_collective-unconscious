@@ -1,0 +1,16 @@
+[0] (500,247)<div  />
+	[1] (298,128)<a href='/'>Collective Unconscious />
+	collaborative chain-writing
+	[2] (100,200)<a href='/'>feed />
+	[3] (202,200)<a href='/create'>new log />
+	[4] (314,200)<a href='/about'>about />
+	[5] (446,201)<button >中文 />
+	/
+	[6] (527,201)<button >EN />
+	/
+	[7] (596,201)<button >ES />
+	[8] (682,200)<button >sign in />
+	0 logs
+	[9] (687,317)<select  />
+	[10] (882,317)<button >Can write />
+	Nothing here yet

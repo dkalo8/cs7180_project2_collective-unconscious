@@ -1,0 +1,50 @@
+# Evaluation Report - Sprint 2
+
+This report summarizes the code quality, security, and performance metrics for the **Collective Unconscious** project as of the end of Sprint 2.
+
+## 📊 Code Quality Metrics
+
+| Metric | Server | Client | Overall |
+| :--- | :--- | :--- | :--- |
+| **Linting Pass Rate** | 100% (12 Warnings) | 100% (9 Warnings) | 100% (21 Warnings) |
+| **Test Coverage (Stmts)** | 82.35% | 58.91% | ~70% |
+| **Build Status** | Pass | Pass | Pass |
+
+### Observations:
+- **Server**: Successfully met the 80%+ coverage milestone. Core logic in `logs`, `turns`, and `reactions` is well-guarded.
+- **Client**: Coverage is lower (59%) due to untested edge cases in [LogDetailPage](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/LogDetailPage.jsx#48-391) and mock-heavy services. Components like [Header](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/components/Header.jsx#8-72), `WriteZone`, and [HomePage](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/HomePage.jsx#9-92) have strong coverage.
+- **Warnings**: Most linting warnings are related to `no-unused-vars` in test files or minor React Hook dependency warnings.
+
+## 🛡️ Security Audit
+
+Initial scan conducted via `npm audit`.
+
+| Severity | Count | Component | Recommendation |
+| :--- | :--- | :--- | :--- |
+| **Critical** | 0 | - | N/A |
+| **High** | 0 | - | N/A |
+| **Moderate** | 2 | `esbuild`, `vite` | Upgrade to Vite 7 in Next Sprint (Breaking Change) |
+| **Low** | 0 | - | N/A |
+
+### Security Posture:
+- The backend uses JWT with `httpOnly`, `Secure`, and `SameSite=None` cookies for production authentication.
+- CSRF risks are mitigated by the cookie configuration and CORS policies restricted to the specific Render subdomains.
+
+## ⚡ Performance Metrics
+
+Measured on the live production environment: [https://cs7180-project2-collective-unconscious-1.onrender.com/](https://cs7180-project2-collective-unconscious-1.onrender.com/)
+
+- **First Contentful Paint**: ~1.2s
+- **DOMContentLoaded / Load Event**: 1.76s
+- **Total Payload**: 113.6 KB (Optimized)
+- **Request Count**: 6 (Standard initial load)
+
+### Performance Highlights:
+- **Ultra-lightweight**: The entire site transfers in less than 120KB.
+- **Optimized Assets**: CSS-in-JS and Tailwind 4 minimize stylesheet bloat.
+- **Zero-Image Bloat**: The site uses CSS and standard typography, ensuring fast loads even on slower networks.
+
+## 📝 Recommendations for Sprint 3
+1. **Increase Frontend Coverage**: Target [LogDetailPage.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/LogDetailPage.jsx) and [ModerationPage.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/ModerationPage.jsx) to reach the 80% goal.
+2. **Dependency Refresh**: Upgrade to Vite 7 to resolve the moderate security advisory once the breaking changes are evaluated.
+3. **Automated Quality Gate**: Integrate a coverage reporter into GitHub Actions that blocks PRs if coverage drops below 80% on the server.

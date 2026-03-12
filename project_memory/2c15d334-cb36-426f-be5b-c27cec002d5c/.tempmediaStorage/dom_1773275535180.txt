@@ -1,0 +1,68 @@
+<current_dom_explanation>
+This is a temporary snapshot of the current page's DOM structure. The DOM will change if you navigate to or interact with another page. Use a tool like browser_get_dom to capture and preserve the DOM in your trajectory if needed for later reference.
+</current_dom_explanation>
+<current_dom>
+[0] (500,34)<div  />
+	[1] (438,34)<button class='opblock-summary-control' />
+		[2] (132,34)<span >GET />
+		[3] (518,34)<div  />
+			[4] (319,22)<span  />
+				[5] (319,22)<a class='nostyle' href='#/Auth/get_api_auth_me' />
+					[6] (319,22)<span >/api
+/auth
+/me />
+			[7] (408,47)<div >Get current authenticated user />
+	[8] (854,34)<button aria-label='authorization button unlocked' class='authorization__btn' />
+	[9] (916,34)<button aria-label='get ​/api​/auth​/me' class='opblock-control-arrow' />
+[10] (500,152)<h3  />
+	[11] (117,151)<a class='nostyle' href='#/Logs' />
+		[12] (117,151)<span >Logs />
+	[13] (515,151)<small  />
+		[14] (515,151)<div  />
+			[15] (515,151)<p >Log management and collaborative writing />
+	[16] (888,151)<button class='expand-operation' title='Collapse operation' />
+[17] (500,253)<div  />
+	[18] (468,252)<button class='opblock-summary-control' />
+		[19] (132,252)<span >GET />
+		[20] (548,252)<div  />
+			[21] (297,239)<span  />
+				[22] (297,239)<a class='nostyle' href='#/Logs/get_api_logs' />
+					[23] (297,239)<span >/api
+/logs />
+			[24] (353,264)<div >Retrieve a list of logs />
+	[25] (916,252)<button aria-label='get ​/api​/logs' class='opblock-control-arrow' />
+[26] (198,330)<div  />
+	[27] (158,330)<h4  />
+		[28] (158,330)<span >Parameters />
+[29] (822,330)<button class='btn try-out__btn cancel'>Cancel />
+Name
+Description
+category
+string
+(
+query
+)
+Filter logs by category
+[30] (596,548)<select  />
+page
+integer
+(
+query
+)
+Page number for pagination
+[31] (596,696)<input placeholder='page' />
+limit
+integer
+(
+query
+)
+Number of logs per page
+[32] (596,828)<input placeholder='limit' />
+canWrite
+boolean
+(
+query
+)
+If true, only returns logs that are open or where the user is already a participant
+
+</current_dom>

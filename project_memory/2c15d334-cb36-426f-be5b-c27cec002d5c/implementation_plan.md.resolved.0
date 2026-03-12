@@ -1,0 +1,133 @@
+# S2-1: User Registration, Profiles, JWT + Google OAuth
+
+Add full user accounts to Collective Unconscious. The existing anonymous session-token flow (Sprint 1) must remain fully intact — user accounts are an **optional upgrade** on top of it. Users who log in with Google can get a persistent display name, bio, and participation history tied to their real account.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Google OAuth credentials needed**: You'll need to create a project in [Google Cloud Console](https://console.cloud.google.com/), enable the Google+ API, and add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` to your `.env`. The callback URL for local dev will be `http://localhost:3000/api/auth/google/callback`.
+
+> [!IMPORTANT]
+> **No passwords stored** — per [.antigravityrules](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/.antigravityrules), OAuth only. Users log in exclusively via Google.
+
+> [!NOTE]
+> The [Writer](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js#74-136) model's `sessionToken` field currently links anonymous sessions to log participation. When a user logs in, we will optionally link their [Writer](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js#74-136) records to their `User` account (via a nullable `userId` FK), but this is additive — no existing data is altered.
+
+---
+
+## Proposed Changes
+
+### Database Layer
+
+#### [MODIFY] [schema.prisma](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/prisma/schema.prisma)
+- Add `User` model: [id](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js#5-41), `googleId` (unique), `email` (unique), `displayName`, `bio`, `avatarUrl`, `createdAt`, `updatedAt`
+- Add nullable `userId` FK to [Writer](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js#74-136) model (links anonymous writers to accounts when user logs in)
+- Add `RefreshToken` model: [id](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js#5-41), `token` (unique, hashed), `userId`, `expiresAt`, `createdAt`
+- Run `npx prisma migrate dev --name add_user_and_refresh_token`
+
+---
+
+### Backend
+
+#### [NEW] [server/src/services/auth.service.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/services/auth.service.js)
+- `findOrCreateUser(googleProfile)` — upsert User by googleId
+- `generateTokens(userId)` — returns `{ accessToken, refreshToken }` (JWT access: 15m, refresh: 7d)
+- `rotateRefreshToken(oldToken)` — validates old refresh token, issues new pair (rotation strategy)
+- `revokeRefreshToken(token)` — deletes from DB on logout
+
+#### [NEW] [server/src/config/passport.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/config/passport.js)
+- Configure `passport-google-oauth20` Strategy
+- On success: call `findOrCreateUser`, then issue JWT pair and set cookies
+
+#### [NEW] [server/src/controllers/auth.controller.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/controllers/auth.controller.js)
+- `redirectToGoogle` — initiates OAuth flow
+- `googleCallback` — handles callback, sets `accessToken` + `refreshToken` cookies, redirects to `/`
+- `refreshToken` — validates refresh token, returns new access token
+- `logout` — revokes refresh token, clears cookies
+- `getMe` — returns current user (from JWT), strips sensitive fields
+
+#### [NEW] [server/src/controllers/users.controller.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/controllers/users.controller.js)
+- `getProfile(userId)` — returns public profile + participation history (logs they've written in)
+- `updateProfile(userId, { displayName, bio })` — updates own profile
+
+#### [NEW] [server/src/routes/auth.routes.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/routes/auth.routes.js)
+```
+GET  /api/auth/google           → redirect to Google
+GET  /api/auth/google/callback  → googleCallback
+POST /api/auth/refresh          → refreshToken
+POST /api/auth/logout           → logout
+GET  /api/auth/me               → getMe (JWT guarded)
+```
+
+#### [NEW] [server/src/routes/users.routes.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/routes/users.routes.js)
+```
+GET   /api/users/:id            → getProfile (public)
+PATCH /api/users/me             → updateProfile (JWT guarded)
+```
+
+#### [MODIFY] [server/src/middleware/auth.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js)
+- Add `requireJwt` middleware — verifies `accessToken` cookie JWT, attaches `req.user`
+- Existing [sessionMiddleware](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js#5-41), [requireAuth](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js#42-73), [requireWriter](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js#74-136) are **unchanged**
+
+#### [MODIFY] [server/src/index.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/index.js)
+- Import and mount `auth.routes.js` and `users.routes.js`
+- Import `passport.js` config
+
+---
+
+### Frontend
+
+#### [NEW] [client/src/services/auth.service.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/services/auth.service.js)
+- `getMe()` — GET /api/auth/me
+- `logout()` — POST /api/auth/logout
+- `getProfile(userId)` — GET /api/users/:id
+
+#### [NEW] [client/src/pages/UserProfilePage.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/UserProfilePage.jsx)
+- If viewing own profile: show editable bio + display name
+- Shows participation history: list of logs user has contributed to
+- Login with Google button if not authenticated (links to `/api/auth/google`)
+
+#### [MODIFY] [client/src/components/Header.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/components/Header.jsx)
+- Add "Sign in with Google" link if no user session, or display name + link to profile if logged in
+
+#### [MODIFY] [client/src/router.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/router.jsx)
+- Ensure `/profile/:id` route correctly maps to `UserProfilePage`
+
+---
+
+## Verification Plan
+
+### New Tests (TDD — written before implementation)
+
+#### [NEW] `server/__tests__/auth.test.js`
+Tests to write first (failing), using Jest + Supertest:
+- `GET /api/auth/google` redirects to Google OAuth URL (302 + Location header matching accounts.google.com)
+- `GET /api/auth/me` with valid JWT cookie → returns `{ id, displayName, email }`
+- `GET /api/auth/me` with no/invalid JWT → 401
+- `POST /api/auth/refresh` with valid refresh token cookie → returns new access token
+- `POST /api/auth/refresh` with invalid/expired token → 401
+- `POST /api/auth/logout` → clears cookies, 204
+
+#### [NEW] `server/__tests__/users.test.js`
+- `GET /api/users/:id` for existing user → 200, returns public profile
+- `GET /api/users/:id` for non-existent user → 404
+- `PATCH /api/users/me` with valid JWT → 200, profile updated
+- `PATCH /api/users/me` without JWT → 401
+
+### Run existing tests (must stay green)
+```bash
+cd server && npm test
+```
+All 5 existing test files (`authMiddleware`, `health`, `logs`, `logs.feed`, `turns`, `schema`) must continue to pass.
+
+### Run new auth tests
+```bash
+cd server && npm test -- --testPathPattern="auth|users"
+```
+
+### Manual Verification
+1. Start the server: `cd server && npm run dev`
+2. Navigate to `http://localhost:3000/api/auth/google` in your browser
+3. Complete the Google OAuth flow
+4. After redirect back, hit `http://localhost:3000/api/auth/me` — you should see your Google profile info returned as JSON
+5. In the client (`cd client && npm run dev`), the Header should show "Sign in with Google" when logged out, and your display name when logged in

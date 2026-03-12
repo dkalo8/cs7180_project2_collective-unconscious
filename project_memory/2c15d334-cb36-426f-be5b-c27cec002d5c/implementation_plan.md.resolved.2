@@ -1,0 +1,64 @@
+# S2-2: User Profile Page
+
+Build a public profile page for each registered user, showing their display name, bio, and participation history. Owners can edit their own profile inline. The Header gets a "Sign in with Google" link for unauthenticated users.
+
+All backend endpoints are already live from S2-1:
+- `GET /api/users/:id` — public profile + participation history
+- `PATCH /api/users/me` — update display name + bio (JWT)
+- `GET /api/auth/me` — get current logged-in user (JWT)
+
+## Proposed Changes
+
+### Client — Service Layer
+
+#### [NEW] [auth.service.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/services/auth.service.js)
+- `getMe()` → `GET /api/auth/me` (returns current user or null)
+- `getProfile(id)` → `GET /api/users/:id`
+- `updateProfile({ displayName, bio })` → `PATCH /api/users/me`
+
+---
+
+### Client — Pages & Components
+
+#### [MODIFY] [UserProfilePage.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/UserProfilePage.jsx)
+Replace the placeholder with a full page:
+- On load: fetch `GET /api/users/:id` for the profile, `GET /api/auth/me` to check if viewer is the owner
+- **View mode**: display name, bio (or "No bio yet"), color swatch, list of participated logs (linked to `/logs/:id`)
+- **Edit mode** (owners only): inline form to update display name + bio via `PATCH /api/users/me`
+- If not found: show 404 message
+
+#### [MODIFY] [router.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/router.jsx)
+- Change route from `/profile/:username` → `/users/:id` to match backend URLs
+- Keep the old `/profile/:username` as a redirect for compatibility if needed
+
+#### [MODIFY] [Header.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/components/Header.jsx)
+- Add a "Sign in" link (`/api/auth/google`) when no user is logged in
+- When logged in: show display name that links to `/users/:id`
+
+---
+
+### Tests (TDD — written first)
+
+#### [NEW] `client/src/__tests__/UserProfilePage.test.jsx` (Vitest)
+- Renders display name and bio for a public profile
+- Shows "Edit" button only when viewer is the owner
+- Shows participation history list with links
+- Shows 404 message when user not found
+- Submit on edit form calls `updateProfile`
+
+---
+
+## Verification Plan
+
+### Automated Tests
+```bash
+cd client && npm test
+```
+
+### Manual
+1. Run `cd server && npm run dev` + `cd client && npm run dev`
+2. Navigate to `http://localhost:5173` — Header shows "Sign in"
+3. Click "Sign in" → Google OAuth → redirected back → Header shows display name
+4. Navigate to `/users/:your-id` — see your profile with bio + logs
+5. Click Edit → update bio → save → verify update persists
+6. Open a different user's profile (logged out) — Edit button must NOT appear

@@ -78,7 +78,7 @@ describe('CreateLogPage', () => {
 
         await waitFor(() => {
             expect(fetch).toHaveBeenCalledWith(
-                '/api/logs',
+                expect.stringContaining('/api/logs'),
                 expect.objectContaining({
                     method: 'POST',
                 })

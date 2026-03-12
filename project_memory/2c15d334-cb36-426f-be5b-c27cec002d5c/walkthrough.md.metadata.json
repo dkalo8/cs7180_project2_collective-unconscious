@@ -1,0 +1,5 @@
+{
+  "artifactType": "ARTIFACT_TYPE_WALKTHROUGH",
+  "summary": "Walkthrough of the content moderation implementation (S2-3). Includes description of schema changes, new APIs for reporting and moderation, and the frontend components for users and admins. Validated with automated tests.",
+  "updatedAt": "2026-03-11T21:56:51.011698Z"
+}

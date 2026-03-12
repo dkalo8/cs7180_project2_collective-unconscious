@@ -1,0 +1,12 @@
+# S2-5 API Documentation Verification
+
+## Checklist
+- [ ] Navigate to http://localhost:3000/api-docs
+- [ ] Verify Swagger UI loads correctly
+- [ ] Check 'Logs' tag documentation
+- [ ] Try out 'GET /api/logs' endpoint
+- [ ] Verify 200 response with data
+- [ ] Provide summary of findings
+
+## Notes
+- Server should be running on localhost:3000 (started in previous step)

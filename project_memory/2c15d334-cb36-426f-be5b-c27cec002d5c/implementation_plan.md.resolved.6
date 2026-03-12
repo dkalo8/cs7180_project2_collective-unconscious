@@ -1,0 +1,30 @@
+# S2-6: Public API Documentation
+
+This task involves documenting the Collective Unconscious API using Swagger/OpenAPI. This will provide an interactive UI for developers to explore endpoints, understand request/response structures, and test the API directly.
+
+## User Review Required
+
+> [!NOTE]
+> I will be using `swagger-jsdoc` to generate the OpenAPI specification from JSDoc comments in the code and `swagger-ui-express` to serve the interactive documentation at `/api-docs`.
+
+## Proposed Changes
+
+### [Server]
+
+| Modification | File | Description |
+| --- | --- | --- |
+| [MODIFY] | [package.json](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20(Python)/Project%202%20-%20Collective%20Unconscious/server/package.json) | Add `swagger-jsdoc` and `swagger-ui-express` dependencies. |
+| [NEW] | [src/config/swagger.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20(Python)/Project%202%20-%20Collective%20Unconscious/server/src/config/swagger.js) | Configure Swagger definitions and scan paths. |
+| [MODIFY] | [src/index.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20(Python)/Project%202%20-%20Collective%20Unconscious/server/src/index.js) | Integrate Swagger UI middleware. |
+| [MODIFY] | [src/routes/*.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20(Python)/Project%202%20-%20Collective%20Unconscious/server/src/routes/) | Add OpenAPI JSDoc comments to all route files (Auth, Logs, Moderation, Reactions). |
+
+## Verification Plan
+
+### Automated Tests
+- None, but I will verify that the Swagger JSON is valid by visiting the `/api-docs` endpoint.
+
+### Manual Verification
+1. Start the server: `npm start`.
+2. Navigate to `http://localhost:3000/api-docs`.
+3. Verify that all endpoints (Auth, Logs, Moderation, Reactions) are listed.
+4. Test one endpoint (e.g., `GET /api/logs`) using the "Try it out" feature in the Swagger UI.

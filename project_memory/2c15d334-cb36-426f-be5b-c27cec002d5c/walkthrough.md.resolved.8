@@ -1,0 +1,47 @@
+# Sprint 2 Milestone: Accounts, Moderation & Deployment - Walkthrough
+
+I have completed the core features for Sprint 2, including user accounts, content moderation, image sharing, API documentation, and production readiness.
+
+## Changes Made
+
+### S2-1 to S2-3: Accounts & Moderation
+- **Database Schema**: Added [User](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/UserProfilePage.jsx#6-129), [Report](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/controllers/moderation.controller.js#4-36), and `ModerationAction` models. Moved to Prisma Enums for all categorical fields.
+- **Backend Implementation**: Integrated Google OAuth with Passport.js and implemented a full moderation lifecycle with [requireAdmin](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js#156-192) guards.
+- **Frontend Implementation**: Added a [ModerationPage](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/ModerationPage.jsx#4-118) admin dashboard and [ReportButton](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/components/ReportButton.jsx#4-92) components across the UI.
+
+### S2-4: Screenshot Sharing Flow
+- **Themed Export**: Users can now export completed logs as PNG images with Minimal, Nocturne, or Parchment themes using `html-to-image`.
+- **Integration**: Added sharing capabilities to the [LogDetailPage](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/LogDetailPage.jsx#37-366) for completed works.
+
+### S2-5: Prisma Enum Refactoring
+- **Objective**: Improved data integrity by replacing raw string fields with formal Prisma `enum` types (`LogStatus`, `Category`, `AccessMode`, etc.).
+- **Consistency**: Synchronized backend Zod schemas and frontend translation maps with the new Enum structure.
+
+### S2-6: Public API Documentation
+- **Tooling**: Integrated `swagger-jsdoc` and `swagger-ui-express`.
+- **Scope**: Fully documented Logs, Auth, Moderation, Reactions, and User Profile APIs.
+- **Accessibility**: Available at `/api-docs` on the server.
+
+### S2-7: Production Deployment & CI Integration
+- **Infrastructure**: Created [render.yaml](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/render.yaml) Blueprint to automate the deployment of the PostgreSQL database, Node.js API, and Static UI.
+- **CI/CD**: Verified that GitHub Actions correctly handles linting and testing for both client and server on every PR.
+- **Environment**: Provided a comprehensive [.env.example](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/.env.example) and resolved all lingering TypeScript/Environment issues in [prisma/seed.ts](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/prisma/seed.ts) by installing `@types/node`.
+- **Database Consistency**: Applied missing migrations to synchronize the local environment with the partner-merged Reactions API and the Enum refactor.
+
+## Verification Results
+
+### Automated Tests
+- **All 80 server tests and 33 client tests are PASSING.**
+- Verified that `prisma generate` and `prisma migrate dev` work cleanly in the monorepo structure.
+
+```bash
+Test Suites: 12 passed, 12 total
+Tests:       80 passed, 80 total
+```
+
+### Manual Verification
+![Swagger API Documentation](/Users/danielkalo/.gemini/antigravity/brain/2c15d334-cb36-426f-be5b-c27cec002d5c/verify_swagger_docs_1773275496278.webp)
+
+1. **Seeding**: Confirmed `npx prisma db seed` runs without errors and populates the database with valid Enum-based data.
+2. **Editor Integrity**: Installed `@types/node` at the root to resolve "Cannot find name 'process'" errors in TypeScript files.
+3. **Blueprint**: Validated the [render.yaml](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/render.yaml) structure for monorepo support.

@@ -1,0 +1,20 @@
+[0] (500,346)<div  />
+	[1] (324,159)<a href='/'>Collective Unconscious />
+	collaborative chain-writing
+	[2] (105,262)<a href='/'>feed />
+	[3] (224,262)<a href='/create'>new log />
+	[4] (353,262)<a href='/about'>about />
+	[5] (492,263)<button >中文 />
+	/
+	[6] (570,263)<button >EN />
+	/
+	[7] (637,263)<button >ES />
+	[8] (734,262)<a href='https://cs7180-project2-collective-unconscious.onrender.com/api/auth/google'>sign in />
+	1 logs
+	[9] (657,380)<select  />
+	[10] (873,380)<button >Can write />
+	[11] (58,475)<a class='log-entry-title' href='/logs/10963722-5220-4f99-bb77-9bfd6a946a25'>hi />
+	(
+	Freewriting
+	)
+	Nothing here yet

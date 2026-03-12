@@ -1,0 +1,6 @@
+# Task Checklist
+- [ ] Visit https://cs7180-project2-collective-unconscious-1.onrender.com/
+- [ ] Inspect 'sign in' link for `href`
+- [ ] Check `window.location.origin`
+- [ ] Report if `href` is absolute or relative
+- [ ] Check console for errors

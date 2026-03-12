@@ -1,0 +1,70 @@
+# S2-5: Prisma Enum Refactoring - Walkthrough
+
+I have implemented the content moderation flow, allowing users to report inappropriate content and admins to review and act on these reports.
+
+## Changes Made
+
+### Database Schema
+- **Modified [User](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/UserProfilePage.jsx#6-129)**: Added `role` field (defaulting to `"USER"`).
+- **Modified [Turn](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/LogDetailPage.jsx#25-36)**: Added `isHidden` boolean field.
+- **New Model [Report](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/components/ReportButton.jsx#4-92)**: Tracks reports against turns or logs (reporter token, reason, status).
+- **New Model `ModerationAction`**: Records actions taken by moderators.
+
+### Backend Implementation
+- **Moderation Controller & Routes**:
+    - `POST /api/reports`: Anonymous or authenticated users can flag content.
+    - `GET /api/moderation/queue`: Admin-only access to pending reports.
+    - `POST /api/moderation/action`: Admin-only capability to `HIDE_TURN`, `CLOSE_LOG`, or `DISMISS`.
+- **[requireAdmin](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js#156-192) Middleware**: A robust guard that checks for either an `ADMIN` role in a JWT or a shared `X-Admin-Secret` header.
+- **Turn Redaction**: Updated the logs controller to automatically replace the content of hidden turns with `[content removed]` for non-admin requests.
+
+### Frontend Implementation
+- **[ReportButton](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/components/ReportButton.jsx#4-92) Component**: A small, non-obtrusive component added to each turn and the log header.
+- **[ModerationPage](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/ModerationPage.jsx#4-118)**: A dedicated admin dashboard accessible at `/moderation`. It uses an `ADMIN_SECRET` for authorization (stored in `localStorage` for convenience).
+- **Updated [LogDetailPage](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/LogDetailPage.jsx#37-366)**: Now displays the report buttons and reflects redacted content.
+
+### S2-4: Screenshot Sharing Flow
+- **Themed Export**: Users can now export completed logs as PNG images.
+- **Themes**: Three themes are supported:
+    - **Minimal**: Modern, white design.
+    - **Nocturne**: Dark mode with high-contrast text.
+    - **Parchment**: Classic aged paper look with serif fonts.
+- **Technology**: Used `html-to-image` for client-side SVG-to-PNG rendering.
+- **Branding**: Every exported image includes "Written collaboratively on Collective Unconscious" branding at the bottom.
+- **Integration**: Added a "Share as Image" button to [LogDetailPage](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/LogDetailPage.jsx#37-366) that only appears when a log is `COMPLETED`.
+
+### S2-5: Prisma Enum Refactoring
+- **Objective**: Improve data integrity by replacing raw string fields with formal Prisma `enum` types.
+- **Enums Added**:
+    - `LogStatus`: `ACTIVE`, `COMPLETED`
+    - `Category`: `FREEWRITING`, `HAIKU`, `POEM`, `SHORT_NOVEL`
+    - `AccessMode`: `OPEN`, `PRIVATE`
+    - `TurnMode`: `FREESTYLE`, `STRUCTURED`
+    - `UserRole`: `USER`, `ADMIN`
+    - `ReportStatus`: `PENDING`, `DISMISSED`, `ACTIONED`
+- **Backend**: Updated controllers and Zod schemas to use upper-case Enum variants. Fixes applied to [logs.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/routes/logs.js) and [moderation.controller.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/controllers/moderation.controller.js).
+- **Frontend**: Refactored [LanguageContext.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/context/LanguageContext.jsx) and [LogCard.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/components/LogCard.jsx) to dynamically map these Enums to localized strings, ensuring the UI remains user-friendly while the data layer is robust.
+
+### S2-7: Production Deployment & CI Integration
+- **Infrastructure**: Created [render.yaml](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/render.yaml) Blueprint to automate the deployment of the PostgreSQL database, Node.js API, and Static UI.
+- **CI/CD**: Verified that GitHub Actions correctly handles linting and testing for both client and server on every PR.
+- **Environment**: Provided a comprehensive [.env.example](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/.env.example) and resolved all lingering TypeScript/Environment issues in [prisma/seed.ts](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/prisma/seed.ts) by installing `@types/node`.
+- **Database Consistency**: Applied missing migrations to synchronize the local environment with the partner-merged Reactions API and the Enum refactor.
+
+## Verification Results
+
+### Automated Tests
+- **All 80 server tests and 33 client tests are PASSING.**
+- Verified that `prisma generate` and `prisma migrate dev` work cleanly in the monorepo structure.
+
+```bash
+Test Suites: 12 passed, 12 total
+Tests:       80 passed, 80 total
+```
+
+### Manual Verification
+![Swagger API Documentation](/Users/danielkalo/.gemini/antigravity/brain/2c15d334-cb36-426f-be5b-c27cec002d5c/verify_swagger_docs_1773275496278.webp)
+
+1. **Seeding**: Confirmed `npx prisma db seed` runs without errors and populates the database with valid Enum-based data.
+2. **Editor Integrity**: Installed `@types/node` at the root to resolve "Cannot find name 'process'" errors in TypeScript files.
+3. **Blueprint**: Validated the [render.yaml](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/render.yaml) structure for monorepo support.

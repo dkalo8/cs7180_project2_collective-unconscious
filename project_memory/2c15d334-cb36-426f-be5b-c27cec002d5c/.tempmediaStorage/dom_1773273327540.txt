@@ -1,0 +1,40 @@
+<current_dom_explanation>
+This is a temporary snapshot of the current page's DOM structure. The DOM will change if you navigate to or interact with another page. Use a tool like browser_get_dom to capture and preserve the DOM in your trajectory if needed for later reference.
+</current_dom_explanation>
+<current_dom>
+[0] (500,547)<div  />
+	[1] (253,103)<a href='/'>Collective Unconscious />
+	collaborative chain-writing
+	[2] (93,153)<a href='/'>feed />
+	[3] (200,153)<a href='/create'>new log />
+	[4] (316,153)<a href='/about'>about />
+	|
+	[5] (442,154)<button >中文 />
+	/
+	[6] (528,154)<button >EN />
+	/
+	[7] (604,154)<button >ES />
+	|
+	[8] (726,153)<button >sign in />
+	New Log
+	[9] (137,399)<label >Title
+* />
+		Title
+		*
+	[10] (508,444)<input id='log-title' placeholder='give it a name' />
+	[11] (161,510)<label >Category />
+		Category
+	[12] (180,554)<select id='log-category' />
+	Access
+	[13] (155,664)<label >Open />
+		[14] (111,665)<input  />
+	Private (access code)
+	Turn mode
+	[15] (183,778)<label >Freestyle />
+		[16] (111,779)<input  />
+	Structured
+	[17] (213,871)<button >▸
+Advanced settings />
+	[18] (144,966)<button id='submit-btn'>Create />
+
+</current_dom>

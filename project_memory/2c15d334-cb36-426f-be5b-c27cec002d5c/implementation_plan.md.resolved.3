@@ -1,0 +1,59 @@
+# S2-3: Content Moderation Flow
+
+Add flagging/reporting for turns and logs, a moderator review queue, and hide/close actions.
+
+> **Note on auth:** S2-1 (JWT) is in review but not yet merged. Reports use the **session token** as reporter identity (already exists). The moderator endpoints are gated by `ADMIN_SECRET` env var via a header — upgradeable to role-based JWT once S2-1 merges.
+
+## Proposed Changes
+
+### Database
+
+#### [MODIFY] [schema.prisma](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/prisma/schema.prisma)
+- Add `isHidden Boolean @default(false)` to `Turn`
+- Add `Report` model: [id](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js#5-42), `reporterToken`, `reason`, `targetType` (TURN/LOG), `targetId`, `status` (PENDING/DISMISSED/ACTIONED), `createdAt`
+- Add `ModerationAction` model: [id](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js#5-42), `moderatorToken`, `action` (HIDE_TURN/CLOSE_LOG/DISMISS), `reportId`, `targetId`, `note?`, `createdAt`
+
+---
+
+### Backend
+
+#### [NEW] [moderation.controller.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/controllers/moderation.controller.js)
+- `createReport` — `POST /api/reports` (session required)
+- `getQueue` — `GET /api/moderation/queue` (admin required)
+- `takeAction` — `POST /api/moderation/action` (admin required): hides turn, closes log, or dismisses
+
+#### [NEW] [moderation.routes.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/routes/moderation.routes.js)
+
+#### [MODIFY] [auth.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js)
+- Add `requireAdmin`: checks `req.headers['x-admin-secret'] === process.env.ADMIN_SECRET`
+
+#### [MODIFY] [logs.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/controllers/logs.js)
+- Redact hidden turn content to `"[content removed]"` in all turn-returning endpoints
+
+#### [MODIFY] [index.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/index.js)
+- Mount the moderation routes
+
+---
+
+### Frontend
+
+#### [NEW] `client/src/components/ReportButton.jsx`
+- Small "report" link per turn; inline reason picker; calls `POST /api/reports`; shows confirmation
+
+#### [NEW] `client/src/pages/ModerationPage.jsx`
+- Route: `/moderation` — shows pending report queue; Dismiss / Hide turn / Close log actions
+
+#### [MODIFY] [router.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/router.jsx) — add `/moderation` route
+
+#### [MODIFY] [LogDetailPage.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/LogDetailPage.jsx)
+- Show `"[content removed]"` when `turn.isHidden`; add `<ReportButton>` per turn
+
+---
+
+## Verification Plan
+
+### Automated Tests (TDD first)
+`server/__tests__/moderation.test.js`:
+- `POST /api/reports` creates a report; returns 401 without session
+- `GET /api/moderation/queue` returns pending reports with correct secret; 403 without
+- `POST /api/moderation/action` with `HIDE_TURN` sets `isHidden=true` on turn

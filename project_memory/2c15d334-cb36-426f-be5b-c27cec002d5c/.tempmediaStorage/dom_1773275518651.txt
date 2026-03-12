@@ -1,0 +1,104 @@
+<current_dom_explanation>
+This is a temporary snapshot of the current page's DOM structure. The DOM will change if you navigate to or interact with another page. Use a tool like browser_get_dom to capture and preserve the DOM in your trajectory if needed for later reference.
+</current_dom_explanation>
+<current_dom>
+[0] (500,66)<h3  />
+	[1] (115,65)<a class='nostyle' href='#/Auth' />
+		[2] (115,65)<span >Auth />
+	[3] (513,65)<small  />
+		[4] (513,65)<div  />
+			[5] (513,65)<p >User authentication and Google OAuth />
+	[6] (888,65)<button class='expand-operation' title='Collapse operation' />
+[7] (500,166)<div  />
+	[8] (468,166)<button class='opblock-summary-control' />
+		[9] (132,166)<span >GET />
+		[10] (548,166)<div  />
+			[11] (348,153)<span  />
+				[12] (348,153)<a class='nostyle' href='#/Auth/get_api_auth_google' />
+					[13] (348,153)<span >/api
+/auth
+/google />
+			[14] (388,178)<div >Redirect to Google OAuth2 />
+	[15] (916,165)<button aria-label='get ​/api​/auth​/google' class='opblock-control-arrow' />
+[16] (500,262)<div  />
+	[17] (468,262)<button class='opblock-summary-control' />
+		[18] (132,262)<span >GET />
+		[19] (548,262)<div  />
+			[20] (413,249)<span  />
+				[21] (413,249)<a class='nostyle' href='#/Auth/get_api_auth_google_callback' />
+					[22] (413,249)<span >/api
+/auth
+/google
+/callback />
+			[23] (372,274)<div >Google OAuth2 callback />
+	[24] (916,262)<button aria-label='get ​/api​/auth​/google​/callback' class='opblock-control-arrow' />
+[25] (500,359)<div  />
+	[26] (468,359)<button class='opblock-summary-control' />
+		[27] (132,359)<span >POST />
+		[28] (548,359)<div  />
+			[29] (355,346)<span  />
+				[30] (355,346)<a class='nostyle' href='#/Auth/post_api_auth_refresh' />
+					[31] (355,346)<span >/api
+/auth
+/refresh />
+			[32] (343,371)<div >Refresh JWT token />
+	[33] (916,359)<button aria-label='post ​/api​/auth​/refresh' class='opblock-control-arrow' />
+[34] (500,455)<div  />
+	[35] (468,455)<button class='opblock-summary-control' />
+		[36] (132,455)<span >POST />
+		[37] (548,455)<div  />
+			[38] (348,442)<span  />
+				[39] (348,442)<a class='nostyle' href='#/Auth/post_api_auth_logout' />
+					[40] (348,442)<span >/api
+/auth
+/logout />
+			[41] (301,467)<div >Logout user />
+	[42] (916,455)<button aria-label='post ​/api​/auth​/logout' class='opblock-control-arrow' />
+[43] (500,552)<div  />
+	[44] (438,552)<button class='opblock-summary-control' />
+		[45] (132,552)<span >GET />
+		[46] (518,552)<div  />
+			[47] (319,539)<span  />
+				[48] (319,539)<a class='nostyle' href='#/Auth/get_api_auth_me' />
+					[49] (319,539)<span >/api
+/auth
+/me />
+			[50] (408,564)<div >Get current authenticated user />
+	[51] (854,552)<button aria-label='authorization button unlocked' class='authorization__btn' />
+	[52] (916,552)<button aria-label='get ​/api​/auth​/me' class='opblock-control-arrow' />
+[53] (500,669)<h3  />
+	[54] (117,668)<a class='nostyle' href='#/Logs' />
+		[55] (117,668)<span >Logs />
+	[56] (515,668)<small  />
+		[57] (515,668)<div  />
+			[58] (515,668)<p >Log management and collaborative writing />
+	[59] (888,668)<button class='expand-operation' title='Collapse operation' />
+[60] (500,769)<div  />
+	[61] (468,769)<button class='opblock-summary-control' />
+		[62] (132,769)<span >GET />
+		[63] (548,769)<div  />
+			[64] (297,756)<span  />
+				[65] (297,756)<a class='nostyle' href='#/Logs/get_api_logs' />
+					[66] (297,756)<span >/api
+/logs />
+			[67] (353,781)<div >Retrieve a list of logs />
+	[68] (916,769)<button aria-label='get ​/api​/logs' class='opblock-control-arrow' />
+[69] (500,866)<div  />
+	[70] (438,866)<button class='opblock-summary-control' />
+		[71] (132,866)<span >POST />
+		[72] (518,866)<div  />
+			[73] (297,853)<span  />
+				[74] (297,853)<a class='nostyle' href='#/Logs/post_api_logs' />
+					[75] (297,853)<span >/api
+/logs />
+			[76] (330,878)<div >Create a new log />
+	[77] (854,865)<button aria-label='authorization button unlocked' class='authorization__btn' />
+	[78] (916,865)<button aria-label='post ​/api​/logs' class='opblock-control-arrow' />
+[79] (132,962)<span >GET />
+/api
+/logs
+/{id}
+Get a log by ID
+[80] (916,962)<button aria-label='get ​/api​/logs​/{id}' class='opblock-control-arrow' />
+
+</current_dom>

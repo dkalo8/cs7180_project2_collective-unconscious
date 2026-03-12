@@ -1,0 +1,38 @@
+# S2-5: Prisma Enum Migration
+
+Refactor the database schema to use formal Prisma `enum` types for fields that represent a fixed set of values (e.g., statuses, modes, and roles).
+
+## Proposed Changes
+
+### [Database] [prisma/schema.prisma](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/prisma/schema.prisma) [MODIFY]
+Create the following enums and update the corresponding models:
+
+- **`enum AccessMode`**: `OPEN`, `PRIVATE`
+- **`enum TurnMode`**: `FREESTYLE`, `STRUCTURED`
+- **`enum LogStatus`**: `ACTIVE`, `COMPLETED`
+- **`enum Category`**: `FREEWRITING`, `HAIKU`, `POEM`, `SHORT_NOVEL`
+- **`enum UserRole`**: `USER`, `ADMIN`
+- **`enum TargetType`**: `TURN`, `LOG`
+- **`enum ReportStatus`**: `PENDING`, `DISMISSED`, `ACTIONED`
+- **`enum ModAction`**: `HIDE_TURN`, `CLOSE_LOG`, `DISMISS`
+
+**Note**: For `Category`, I will convert the existing mixed-case strings (e.g., "Freewriting") to upper-case enum variants (e.g., `FREEWRITING`) for consistency, and update the existing data in the migration.
+
+### [Backend] Controllers & Services [MODIFY]
+Update all logic that sets or compares these values. 
+- `logs.controller.js`: Update category handling and status checks.
+- [moderation.controller.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/controllers/moderation.controller.js): Update target type and report status checks.
+- [auth.js](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js): Update role checks.
+
+### [Frontend] Client Constants [MODIFY]
+- Update [client/src/pages/HomePage.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/HomePage.jsx): Update category list to match NEW upper-case enums.
+- Update [client/src/pages/CreateLogPage.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/CreateLogPage.jsx): Update category selection.
+
+## Verification Plan
+
+### Automated Tests
+- Run `npm test` in the `server` folder to ensure all 74 tests pass (test data usually matches the existing strings, so we must ensure the enum conversion is smooth).
+
+### Manual Verification
+- Create a log with a specific category and verify it appears in the feed.
+- Submit a report and verify it appears in the moderation queue with the correct Enum status.

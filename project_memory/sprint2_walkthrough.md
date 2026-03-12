@@ -1,0 +1,53 @@
+# Sprint 2 Milestone: Accounts, Moderation & Deployment - Walkthrough
+
+I have completed the core features for Sprint 2, including user accounts, content moderation, image sharing, API documentation, and production readiness.
+
+## Changes Made
+
+### S2-1 to S2-3: Accounts & Moderation
+- **Database Schema**: Added `User`, `Report`, and `ModerationAction` models. Moved to Prisma Enums for all categorical fields.
+- **Backend Implementation**: Integrated Google OAuth with Passport.js and implemented a full moderation lifecycle with `requireAdmin` guards.
+- **Frontend Implementation**: Added a `ModerationPage` admin dashboard and `ReportButton` components across the UI.
+
+### S2-4: Screenshot Sharing Flow
+- **Themed Export**: Users can now export completed logs as PNG images with Minimal, Nocturne, or Parchment themes using `html-to-image`.
+- **Integration**: Added sharing capabilities to the `LogDetailPage` for completed works.
+
+### S2-5: Prisma Enum Refactoring
+- **Objective**: Improved data integrity by replacing raw string fields with formal Prisma `enum` types (`LogStatus`, `Category`, `AccessMode`, etc.).
+- **Consistency**: Synchronized backend Zod schemas and frontend translation maps with the new Enum structure.
+
+### S2-6: Public API Documentation
+- **Tooling**: Integrated `swagger-jsdoc` and `swagger-ui-express`.
+- **Scope**: Fully documented Logs, Auth, Moderation, Reactions, and User Profile APIs.
+- **Accessibility**: Available at `/api-docs` on the server.
+
+### S2-7: Production Deployment & CI Integration
+- **Infrastructure**: Created `render.yaml` Blueprint to automate the deployment of the PostgreSQL database, Node.js API, and Static UI.
+- **CI/CD**: Verified that GitHub Actions correctly handles linting and testing for both client and server on every PR.
+- **Environment**: Provided a comprehensive `.env.example` and resolved all lingering TypeScript/Environment issues in `prisma/seed.ts` by installing `@types/node`.
+- **Database Consistency**: Applied missing migrations to synchronize the local environment with the partner-merged Reactions API and the Enum refactor.
+
+## Verification Results
+
+### Automated Tests
+- **All 80 server tests and 33 client tests are PASSING.**
+- Verified that `prisma generate` and `prisma migrate dev` work cleanly in the monorepo structure.
+
+```bash
+Test Suites: 12 passed, 12 total
+Tests:       80 passed, 80 total
+```
+
+### Manual Verification
+![Swagger API Documentation](/Users/danielkalo/.gemini/antigravity/brain/2c15d334-cb36-426f-be5b-c27cec002d5c/verify_swagger_docs_1773275496278.webp)
+
+1. **Seeding**: Confirmed `npx prisma db seed` runs without errors and populates the database with valid Enum-based data.
+2. **Editor Integrity**: Installed `@types/node` at the root to resolve "Cannot find name 'process'" errors in TypeScript files.
+3. **Blueprint**: Validated the `render.yaml` structure for monorepo support and corrected the Prisma schema path (`--schema ../prisma/schema.prisma`) for isolated directory builds.
+4. **CI/CD**: Resolved a GitHub Actions failure by updating `LogCard.test.jsx` to handle localize text nodes and match the updated Prisma Enum structure.
+5. **Production Fixes**: 
+    - Resolved the "funky" appearance by initializing Tailwind 4 in `index.css`.
+    - Fixed "Failed to load" connectivity by refactoring all services to use a configurable `VITE_API_URL`.
+    - Converted the "Sign In" button to a standard `<a>` link to resolve responsiveness issues caused by browser-level cross-site redirect blocks.
+    - Identified a subdomain mismatch (`...-1` vs `...`) that affects session persistence and provided a configuration guide to unify them.

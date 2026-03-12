@@ -1,0 +1,8 @@
+# Performance Measurement Tasks
+
+- [ ] Visit the website: https://cs7180-project2-collective-unconscious-1.onrender.com/
+- [ ] Measure Page Load Time (DOMContentLoaded and Load events)
+- [ ] Report number of requests and total transferred size
+- [ ] Check for large unoptimized images
+- [ ] Check for long-running scripts
+- [ ] Take a screenshot of the homepage

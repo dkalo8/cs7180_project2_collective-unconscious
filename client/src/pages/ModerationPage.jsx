@@ -64,8 +64,9 @@ export default function ModerationPage() {
       <div style={S.body}>
         <h2>Moderation Access</h2>
         <div style={S.fieldGroup}>
-          <label style={S.label}>Admin Secret</label>
+          <label htmlFor="adminSecret" style={S.label}>Admin Secret</label>
           <input
+            id="adminSecret"
             type="password"
             style={S.input}
             value={adminSecret}

@@ -1,0 +1,25 @@
+# Task Checklist - Sprint 2
+
+- [x] S2-1: User Registration, Profiles, JWT + Google OAuth
+- [x] S2-2: User Profile Page (bio, display name, participation history)
+- [x] S2-3: Content moderation flow / review queues for public logs
+    - [x] Update schema: User role, isHidden on Turn, Report & ModerationAction models
+    - [x] Backend: Implement Report and Moderation controllers/routes
+    - [x] Backend: Add requireAdmin middleware
+    - [x] Frontend: Add ReportButton component
+    - [x] Frontend: Implement ModerationPage queue
+    - [x] Verification: Automated tests and manual validation
+- [x] S2-4: Screenshot sharing / social cards (OpenGraph)
+- [x] S2-5: Move text fields to Prisma Enums where appropriate
+- [x] S2-6: Public API documentation
+    - [x] Research documentation tools (Swagger/OpenAPI vs JSDoc)
+    - [x] Document Authentication/Session management
+    - [x] Document Logs API (Create, List, Detail, Close)
+    - [x] Document Moderation API
+    - [x] Document Reactions API (New from partner merge)
+    - [x] Verification: Generate and host/preview doc
+- [x] S2-7: Production Deployment & CI Integration
+    - [x] Fix prisma/seed.ts TypeScript/Environment errors
+    - [x] Create render.yaml for Blueprint deployment
+    - [x] Configure .github/workflows/ci.yml for production checks
+    - [x] Verification: Deploy to Render and verify URL

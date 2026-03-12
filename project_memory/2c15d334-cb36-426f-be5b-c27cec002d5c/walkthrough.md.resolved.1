@@ -1,0 +1,52 @@
+# S2-3: Content Moderation Flow - Walkthrough
+
+I have implemented the content moderation flow, allowing users to report inappropriate content and admins to review and act on these reports.
+
+## Changes Made
+
+### Database Schema
+- **Modified [User](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/UserProfilePage.jsx#6-129)**: Added `role` field (defaulting to `"USER"`).
+- **Modified [Turn](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/LogDetailPage.jsx#24-35)**: Added `isHidden` boolean field.
+- **New Model [Report](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/controllers/moderation.controller.js#4-36)**: Tracks reports against turns or logs (reporter token, reason, status).
+- **New Model `ModerationAction`**: Records actions taken by moderators.
+
+### Backend Implementation
+- **Moderation Controller & Routes**:
+    - `POST /api/reports`: Anonymous or authenticated users can flag content.
+    - `GET /api/moderation/queue`: Admin-only access to pending reports.
+    - `POST /api/moderation/action`: Admin-only capability to `HIDE_TURN`, `CLOSE_LOG`, or `DISMISS`.
+- **[requireAdmin](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/src/middleware/auth.js#156-192) Middleware**: A robust guard that checks for either an `ADMIN` role in a JWT or a shared `X-Admin-Secret` header.
+- **Turn Redaction**: Updated the logs controller to automatically replace the content of hidden turns with `[content removed]` for non-admin requests.
+
+### Frontend Implementation
+- **[ReportButton](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/components/ReportButton.jsx#4-92) Component**: A small, non-obtrusive component added to each turn and the log header.
+- **[ModerationPage](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/ModerationPage.jsx#4-118)**: A dedicated admin dashboard accessible at `/moderation`. It uses an `ADMIN_SECRET` for authorization (stored in `localStorage` for convenience).
+- **Updated [LogDetailPage](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/LogDetailPage.jsx#36-303)**: Now displays the report buttons and reflects redacted content.
+
+### S2-4: Screenshot Sharing Flow
+- **Themed Export**: Users can now export completed logs as PNG images.
+- **Themes**: Three themes are supported:
+    - **Minimal**: Modern, white design.
+    - **Nocturne**: Dark mode with high-contrast text.
+    - **Parchment**: Classic aged paper look with serif fonts.
+- **Technology**: Used `html-to-image` for client-side SVG-to-PNG rendering.
+- **Branding**: Every exported image includes "Written collaboratively on Collective Unconscious" branding at the bottom.
+- **Integration**: Added a "Share as Image" button to [LogDetailPage](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/LogDetailPage.jsx#36-303) that only appears when a log is `COMPLETED`.
+
+## Verification Results
+
+### Automated Tests
+- Added [client/src/__tests__/ShareModal.test.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/__tests__/ShareModal.test.jsx) (Pass).
+- Added visibility tests in [client/src/pages/LogDetailPage.test.jsx](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/client/src/pages/LogDetailPage.test.jsx) (Pass).
+- **All 74 server tests and 33 client tests are PASSING.**
+
+```bash
+Test Suites: 11 passed, 11 total
+Tests:       74 passed, 74 total
+```
+
+### Manual Verification Steps
+1. **Reporting**: Click the `[report]` link next to any turn, select a reason, and submit.
+2. **Moderation**: Visit `/moderation`, enter your `ADMIN_SECRET` (if not set in [.env](file:///Users/danielkalo/Documents/CS%207180%20-%20Vibe%20Coding%20%28Python%29/Project%202%20-%20Collective%20Unconscious/server/.env), the middleware uses it), and review the queue.
+3. **Action**: Click "Hide Turn".
+4. **Validation**: Go back to the log; the turn content should now show `[content removed]`.
