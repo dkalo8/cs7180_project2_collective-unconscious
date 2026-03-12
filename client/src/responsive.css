@@ -101,6 +101,18 @@
   }
 }
 
+/* ── Log detail header mobile ──────────────────────────────────────────── */
+@media (max-width: 479px) {
+  .log-detail-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .log-detail-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
 /* ── Global inputs / buttons touch sizing on mobile ────────────────────── */
 @media (max-width: 479px) {
   input[type="text"],

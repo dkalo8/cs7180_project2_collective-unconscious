@@ -187,7 +187,7 @@ describe('POST /api/logs/:id/turns', () => {
                 .send({ content: 'Me skip' });
             expect(wrongRes3.status).toBe(403);
 
-            // W2 goes
+            // W2 goes (nickname/color locked after first turn — server ignores updates for returning writers)
             const rightRes = await request(app)
                 .post(`/api/logs/${structuredLogId}/turns`)
                 .set('Cookie', writer2Cookie)
@@ -195,9 +195,9 @@ describe('POST /api/logs/:id/turns', () => {
             expect(rightRes.status).toBe(201);
             expect(rightRes.body.turns).toHaveLength(2);
 
-            // Check if nickname got saved
+            // Nickname should NOT have been updated (returning writers keep their original identity)
             const writer2 = await prisma.writer.findFirst({ where: { logId: structuredLogId, joinOrder: 2 } });
-            expect(writer2.nickname).toBe('Fast W2');
+            expect(writer2.nickname).not.toBe('Fast W2');
         });
 
         it('requires Writer #3 to go third (Mid-log joins)', async () => {

@@ -107,7 +107,7 @@ describe('Creator & Join Order Scenarios (Join == First Turn)', () => {
         // so system advances pointer to A to avoid consecutive same-writer.
         const resB2early = await submitTurn(logId, userBCookie, 'B tries again too soon');
         expect(resB2early.status).toBe(403);
-        expect(resB2early.body.error).toMatch(/Not your turn/i);
+        expect(resB2early.body.error).toMatch(/Consecutive turns|Not your turn/i);
 
         // A goes (pointer was advanced to A)
         const resA2 = await submitTurn(logId, userACookie, 'A2');

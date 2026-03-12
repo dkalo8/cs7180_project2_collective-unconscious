@@ -108,3 +108,21 @@
     cursor: pointer;
     background: none;
 }
+
+/* ── Disabled states for returning writers ──────────────────────────────── */
+.nickname-input:disabled {
+    background-color: #f0f0f0;
+    color: #999;
+    border-color: #ddd;
+    cursor: not-allowed;
+}
+
+.color-option:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.custom-color-picker:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
