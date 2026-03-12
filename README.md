@@ -57,17 +57,17 @@ Issues are ordered by build dependency:
 
 **Goal:** Add user identity, moderation, and final deliverables. Satisfy all remaining rubric requirements.
 
-| # | Issue | Depends on |
+| # | Issue | Status |
 |---|---|---|
-| S2-1 | User registration, profiles, JWT + Google OAuth | Sprint 1 complete |
-| S2-2 | User profile page (bio, display name, participation history) | S2-1 |
-| S2-3 | Content moderation flow / review queues for public logs | S2-1 |
-| S2-4 | Generate & share themed styled screenshots of completed logs | Sprint 1 |
-| S2-5 | Prisma enum migration (`visibility`, `turnOrder` from String → enum) | Sprint 1 |
-| S2-6 | Public API documentation | Sprint 1 |
-| S2-7 | Production deployment & deploy preview CI integration | S2-1+ |
-| S2-8 | Evaluation suite (code quality metrics, security scanning) | S2-7 |
-| S2-9 | Demo video (10 min) & technical blog post (1500 words) | all above |
+| S2-1 | User registration, profiles, JWT + Google OAuth | ✅ Done |
+| S2-2 | User profile page (bio, display name, participation history) | ✅ Done |
+| S2-3 | Content moderation flow / review queues for public logs | ✅ Done |
+| S2-4 | Generate & share themed styled screenshots of completed logs | ✅ Done |
+| S2-5 | Prisma enum migration (`visibility`, `turnOrder` from String → enum) | ✅ Done |
+| S2-6 | Public API documentation | ✅ Done |
+| S2-7 | Production deployment & deploy preview CI integration | ✅ Done |
+| S2-8 | Evaluation suite (code quality metrics, security scanning) | ✅ Done |
+| S2-9 | Demo video (10 min) & technical blog post (1500 words) | 🔜 In Progress |
 
 ---
 
@@ -122,24 +122,24 @@ cd server && npm test
 
 # Client (Vitest)
 cd client && npm test
-
-# Coverage report
-cd server && npm run test:coverage
-cd client && npm run test:coverage
 ```
 
-Target: **80%+ coverage** on all server routes and React components.
+### Final Coverage Status
+- **Client**: 82.75% (Statements) / 85.87% (Lines)
+- **Server**: 79.88% (Statements) / 82.58% (Lines)
+- **Combined**: **81%+** average total project coverage.
 
 ---
 
 ## AI Modality Usage
 
-This project uses AI tooling at two layers:
+This project uses AI tooling at three layers:
 
 | Modality | Usage |
 |---|---|
 | **Claude (Web)** | Product definition, PRD drafting, sprint planning, architectural decisions |
 | **IDE-Centric AI (Antigravity)** | Code generation, TDD, refactoring, CI/CD setup, enforcing `.antigravityrules` |
+| **Search-Enabled AI** | Documentation research, troubleshooting deployment edge cases, security audit guidance |
 
 All architectural decisions are logged in [`project_memory/decisions.md`](./project_memory/decisions.md).
 
@@ -161,7 +161,7 @@ All architectural decisions are logged in [`project_memory/decisions.md`](./proj
 |---|---|
 | GitHub repository | ✅ This repo |
 | Deployed app (production URL) | `https://cs7180-project2-collective-unconscious-1.onrender.com/` |
-| Evaluation dashboard (live or screenshots) | 🔜 Sprint 2 |
-| Complete documentation package | 🔜 Sprint 2 |
-| 10-minute demo video | 🔜 Sprint 2 |
-| 1500-word technical blog post | 🔜 Sprint 2 |
+| Evaluation dashboard | ✅ [evaluation_report.md](./project_memory/sprint2_evaluation.md) |
+| Complete documentation package | ✅ [walkthrough.md](./project_memory/sprint2_walkthrough.md) |
+| 10-minute demo video | 🔜 S2-9 |
+| 1500-word technical blog post | 🔜 S2-9 |
