@@ -9,6 +9,7 @@ function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit, myWriter = nu
     const { t, lang } = useLanguage();
     const [content, setContent] = useState('');
     const [nickname, setNickname] = useState(myWriter?.nickname || '');
+    const [placeholderNick] = useState(() => randomNick(lang));
     const [selectedColor, setSelectedColor] = useState(myWriter?.colorHex || colorHex || '#000000');
     const isReturningWriter = !!myWriter;
 
@@ -20,7 +21,7 @@ function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit, myWriter = nu
         }
 
         if (onSubmit) {
-            await onSubmit({ content, nickname: nickname.trim(), colorHex: selectedColor });
+            await onSubmit({ content, nickname: nickname.trim() || placeholderNick, colorHex: selectedColor });
         }
 
         setContent('');
@@ -47,7 +48,7 @@ function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit, myWriter = nu
                         type="text"
                         value={nickname}
                         onChange={(e) => setNickname(e.target.value)}
-                        placeholder={`${t.log.nickLabel} ${randomNick(lang)}`}
+                        placeholder={`${t.log.nickLabel} ${placeholderNick}`}
                         className="nickname-input"
                         disabled={isReturningWriter}
                     />
