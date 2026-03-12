@@ -32,6 +32,7 @@ export default function HomePage() {
     };
 
     loadLogs();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canWriteOnly, category]);
 
   return (

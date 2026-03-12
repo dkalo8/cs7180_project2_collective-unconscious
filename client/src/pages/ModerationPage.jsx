@@ -34,6 +34,7 @@ export default function ModerationPage() {
     } else {
       setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAction = async (reportId, action) => {

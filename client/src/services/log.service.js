@@ -11,7 +11,7 @@ export const fetchLogs = async ({ category, page = 1, limit = 20, canWrite = fal
         url += '&canWrite=true';
     }
 
-    const response = await fetch(url);
+    const response = await fetch(url, { credentials: 'include' });
     if (!response.ok) {
         throw new Error('Failed to fetch logs');
     }
@@ -20,7 +20,7 @@ export const fetchLogs = async ({ category, page = 1, limit = 20, canWrite = fal
 };
 
 export const getLogById = async (id) => {
-    const response = await fetch(`${API_BASE}/${id}`);
+    const response = await fetch(`${API_BASE}/${id}`, { credentials: 'include' });
     if (!response.ok) {
         if (response.status === 404) {
             throw new Error('Log not found');
@@ -35,6 +35,7 @@ export const closeLog = async (logId) => {
     const response = await fetch(`${API_BASE}/${logId}/close`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
     });
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

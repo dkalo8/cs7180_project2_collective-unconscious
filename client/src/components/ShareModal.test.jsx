@@ -19,7 +19,7 @@ describe('ShareModal', () => {
     ],
     writers: [{ id: 'w1', name: 'Alice', colorHex: '#ff0000' }]
   };
-  
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -33,8 +33,8 @@ describe('ShareModal', () => {
 
   it('handles theme switching', () => {
     render(<ShareModal log={mockLog} onClose={mockOnClose} />);
-    
-    TRIAL_THEMES: ['Minimal', 'Nocturne', 'Parchment'].forEach(theme => {
+
+    ['Minimal', 'Nocturne', 'Parchment'].forEach(theme => {
       const btn = screen.getByRole('button', { name: new RegExp(theme, 'i') });
       fireEvent.click(btn);
       expect(btn).toHaveStyle({ fontWeight: 'bold' });
@@ -44,17 +44,17 @@ describe('ShareModal', () => {
   it('handles download logic', async () => {
     htmlToImage.toPng.mockResolvedValue('data:image/png;base64,123');
     const linkClickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
-    
+
     render(<ShareModal log={mockLog} onClose={mockOnClose} />);
     const downloadBtn = screen.getByRole('button', { name: /download png/i });
     fireEvent.click(downloadBtn);
 
     expect(downloadBtn).toHaveTextContent(/generating/i);
-    
+
     await waitFor(() => {
       expect(htmlToImage.toPng).toHaveBeenCalled();
     });
-    
+
     expect(downloadBtn).toHaveTextContent(/download png/i);
     linkClickSpy.mockRestore();
   });
@@ -62,7 +62,7 @@ describe('ShareModal', () => {
   it('handles download error', async () => {
     const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     htmlToImage.toPng.mockRejectedValue(new Error('Fail'));
-    
+
     render(<ShareModal log={mockLog} onClose={mockOnClose} />);
     fireEvent.click(screen.getByRole('button', { name: /download png/i }));
 

@@ -14,13 +14,14 @@ const submitTurnApi = async ({ logId, content, nickname, colorHex, accessCode })
     const res = await fetch(`${API_BASE_URL}/api/logs/${logId}/turns`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ content, nickname, colorHex, ...(accessCode ? { accessCode } : {}) })
     });
     if (!res.ok) {
         let errorData = {};
         try {
             errorData = await res.json();
-        } catch (e) {
+        } catch {
             // No JSON body
         }
         throw new Error(errorData.error || 'Failed to submit turn');
@@ -31,13 +32,14 @@ const submitTurnApi = async ({ logId, content, nickname, colorHex, accessCode })
 const skipTurnApi = async (logId) => {
     const res = await fetch(`${API_BASE_URL}/api/logs/${logId}/skip`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
     });
     if (!res.ok) {
         let errorData = {};
         try {
             errorData = await res.json();
-        } catch (e) {
+        } catch {
             // No JSON body
         }
         throw new Error(errorData.error || 'Failed to skip turn');

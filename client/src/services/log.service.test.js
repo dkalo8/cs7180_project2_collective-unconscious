@@ -16,10 +16,12 @@ describe('log.service', () => {
 
     const result = await logService.fetchLogs({ category: 'HAIKU', page: 2, limit: 10, canWrite: true });
     
-    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('category=HAIKU'));
-    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('page=2'));
-    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('limit=10'));
-    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('canWrite=true'));
+    const [calledUrl] = fetch.mock.calls[0];
+    expect(calledUrl).toContain('category=HAIKU');
+    expect(calledUrl).toContain('page=2');
+    expect(calledUrl).toContain('limit=10');
+    expect(calledUrl).toContain('canWrite=true');
+    expect(fetch).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ credentials: 'include' }));
     expect(result.totalPages).toBe(1);
   });
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { LANG_OPTIONS } from '../utils/i18n';
 import { S } from '../utils/styles';
-import { getMe, loginWithGoogle, logout } from '../services/auth.service';
+import { getMe, logout } from '../services/auth.service';
 import { API_BASE_URL } from '../config';
 
 export default function Header({ t, lang, setLang }) {

@@ -15,7 +15,7 @@ describe('LogCard Component', () => {
         createdAt: '2026-03-01T10:00:00Z'
     };
 
-    const renderWithContext = (ui, lang = 'zh') => {
+    const renderWithContext = (ui) => {
         return render(
             <BrowserRouter>
                 <LanguageProvider>
