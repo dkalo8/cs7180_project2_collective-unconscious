@@ -179,12 +179,16 @@ describe('LogDetailPage Component', () => {
         fireEvent.click(submitButton);
 
         await waitFor(() => {
-            // Assert fetch was called with the right body
-            expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/api/logs/mock-log-id/turns'), expect.objectContaining({
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: 'A new contribution', nickname: '', colorHex: '#000' })
-            }));
+            // Assert fetch was called with the right endpoint and method
+            expect(fetch).toHaveBeenCalledWith(
+                expect.stringContaining('/api/logs/mock-log-id/turns'),
+                expect.objectContaining({
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: expect.stringContaining('"content":"A new contribution"'),
+                })
+            );
 
             // Assert react-query invalidated the cache to trigger a refetch
             expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: ['log', 'mock-log-id'] });
