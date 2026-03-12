@@ -58,6 +58,7 @@ export default function CreateLogPage() {
             const res = await fetch(`${API_BASE_URL}/api/logs`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({
                     title: title.trim(),
                     category,

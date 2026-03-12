@@ -22,6 +22,7 @@ export default function ReportButton({ targetType, targetId, onReported }) {
       const res = await fetch(`${API_BASE_URL}/api/reports`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ targetType, targetId, reason }),
       });
 
