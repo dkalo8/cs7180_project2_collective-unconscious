@@ -103,22 +103,26 @@ describe('Creator & Join Order Scenarios (Join == First Turn)', () => {
         // B submits B1 → isOutOfRotation (A1 is in-rotation)
         await submitTurn(logId, userBCookie, 'B1');
 
-        // Last in-rotation = A1. Next expected = B. So B must go.
-        const resA2 = await submitTurn(logId, userACookie, 'A tries but its B turn');
-        expect(resA2.status).toBe(403);
-        expect(resA2.body.error).toMatch(/Not your turn/i);
+        // B just wrote (OOR). Pointer was going to B, but B just wrote,
+        // so system advances pointer to A to avoid consecutive same-writer.
+        const resB2early = await submitTurn(logId, userBCookie, 'B tries again too soon');
+        expect(resB2early.status).toBe(403);
+        expect(resB2early.body.error).toMatch(/Not your turn/i);
 
-        // B goes (its rotation turn)
+        // A goes (pointer was advanced to A)
+        const resA2 = await submitTurn(logId, userACookie, 'A2');
+        expect(resA2.status).toBe(201);
+
+        // Now B's rotation turn
         const resB2 = await submitTurn(logId, userBCookie, 'B2');
         expect(resB2.status).toBe(201);
 
-        // Now A goes
-        const resA3 = await submitTurn(logId, userACookie, 'A2');
-        expect(resA3.status).toBe(201);
+        // A's turn again. B can't go.
+        const resBbad = await submitTurn(logId, userBCookie, 'B tries out of order');
+        expect(resBbad.status).toBe(403);
 
-        // Now B's turn again. A can't go.
-        const resA4 = await submitTurn(logId, userACookie, 'A tries out of order');
-        expect(resA4.status).toBe(403);
+        const resA3 = await submitTurn(logId, userACookie, 'A3');
+        expect(resA3.status).toBe(201);
 
         const logDetail = await request(app).get(`/api/logs/${logId}`);
         expect(logDetail.body.writers).toHaveLength(2);
@@ -244,12 +248,12 @@ describe('Creator & Join Order Scenarios (Join == First Turn)', () => {
 
         // Turn 1: A1 (in-rotation)
         await submitTurn(logId, userACookie, 'A1');
-        // Turn 2: B1 (OOR, but still counts toward turnLimit)
+        // Turn 2: B1 (OOR — pointer advances past B since B just wrote)
         await submitTurn(logId, userBCookie, 'B1');
-        // Turn 3: B2 (rotation)
-        await submitTurn(logId, userBCookie, 'B2');
-        // Turn 4: A2 (rotation) → 4th real turn → COMPLETED
-        const finalRes = await submitTurn(logId, userACookie, 'A2');
+        // Turn 3: A2 (A is next after pointer advance)
+        await submitTurn(logId, userACookie, 'A2');
+        // Turn 4: B2 (B's rotation turn) → 4th real turn → COMPLETED
+        const finalRes = await submitTurn(logId, userBCookie, 'B2');
         expect(finalRes.status).toBe(201);
 
         const logDetail = await request(app).get(`/api/logs/${logId}`);
