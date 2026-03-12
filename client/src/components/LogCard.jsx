@@ -3,11 +3,11 @@ import { useLanguage, CAT_KEY_MAP } from '../context/LanguageContext';
 import './LogCard.css';
 
 const LogCard = ({ log }) => {
-  const { cat } = useLanguage();
+  const { cat, t } = useLanguage();
   const catKey = CAT_KEY_MAP[log.category];
   const translatedCategory = catKey ? cat[catKey] : log.category;
   
-  const statusSuffix = log.status === 'COMPLETED' ? ', 已完成' : '';
+  const statusSuffix = log.status === 'COMPLETED' ? `, ${t.feed.status.completed}` : '';
 
   return (
     <div className="log-entry" data-testid="log-card">
@@ -21,7 +21,7 @@ const LogCard = ({ log }) => {
       </div>
       
       <div className="log-entry-excerpt">
-        {log.excerpt || "暂无内容"}
+        {log.excerpt || t.feed.empty}
       </div>
     </div>
   );
