@@ -25,7 +25,7 @@ services:
         sync: false
       - key: CLIENT_URL
         fromService:
-          type: static
+          type: static_site
           name: collective-unconscious-ui
           property: host
 
