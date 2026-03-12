@@ -139,7 +139,7 @@ export default function LogDetailPage() {
     const resolvedSkipTarget = skipTargetId || (log.nextWriter?.id ?? '');
 
     return (
-        <div style={{ maxWidth: 800, margin: '0 auto', padding: '40px 20px' }}>
+        <div className="log-detail">
             {/* Header */}
             <div style={{ borderBottom: '2px solid #ccc', paddingBottom: 16, marginBottom: 24 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>

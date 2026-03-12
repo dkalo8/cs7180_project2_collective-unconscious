@@ -121,7 +121,7 @@ export default function CreateLogPage() {
     };
 
     return (
-        <div style={{ padding: '24px', maxWidth: 600 }}>
+        <div className="create-form">
             <h1>{t.create.title}</h1>
 
             {error && (
@@ -329,6 +329,7 @@ export default function CreateLogPage() {
                     type="button"
                     onClick={handleSubmit}
                     disabled={isLoading}
+                    className="touch-target"
                 >
                     {isLoading ? '...' : t.create.submit}
                 </button>

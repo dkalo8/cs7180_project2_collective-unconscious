@@ -19,45 +19,47 @@ export default function Header({ t, lang, setLang }) {
   };
 
   return (
-    <div style={S.header}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-        <Link to="/" style={{ ...S.link, textDecoration: 'none', fontWeight: 'bold' }}>
+    <header className="site-header">
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+        <Link to="/" style={{
+          fontSize: '24px',
+          fontWeight: 'bold',
+          color: '#000',
+          textDecoration: 'none'
+        }}>
           {t.siteName}
         </Link>
-        <span style={S.muted}>{t.tagline}</span>
+        <span style={{ fontSize: '14px', color: '#999' }}>
+          {t.tagline}
+        </span>
       </div>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'baseline', fontSize: 14 }}>
-        <Link to="/" style={S.link}>{t.nav.feed}</Link>
-        <Link to="/create" style={S.link}>{t.nav.create}</Link>
-        <Link to="/about" style={S.link}>{t.nav?.about || 'about'}</Link>
-        <span style={{ color: '#ccc' }}>|</span>
 
-        {/* Language toggle */}
-        <div style={{ display: 'flex', gap: 6 }}>
+      <nav className="site-nav">
+        <Link to="/" style={{ color: '#0033cc' }}>{t.nav.feed}</Link>
+        <Link to="/create" style={{ color: '#0033cc' }}>{t.nav.create}</Link>
+        <Link to="/about" style={{ color: '#0033cc' }}>{t.nav?.about || 'about'}</Link>
+
+        <div style={{ marginLeft: '20px', fontSize: '14px' }}>
           {LANG_OPTIONS.map((l, i) => (
-            <span key={l.code} style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            <span key={l.code}>
+              {i > 0 && <span style={{ color: '#ccc' }}> / </span>}
               <button style={S.langBtn(lang === l.code)} onClick={() => setLang(l.code)}>
                 {l.label}
               </button>
-              {i < LANG_OPTIONS.length - 1 && (
-                <span style={{ color: '#ccc', fontSize: 12 }}>/</span>
-              )}
             </span>
           ))}
         </div>
 
-        <span style={{ color: '#ccc' }}>|</span>
-
         {/* Auth section */}
         {user === undefined ? null : user ? (
           <>
-            <Link to={`/users/${user.id}`} style={S.link}>{user.displayName}</Link>
-            <button style={S.link} onClick={handleLogout}>sign out</button>
+            <Link to={`/users/${user.id}`} style={{ color: '#0033cc' }}>{user.displayName}</Link>
+            <button style={{ ...S.link, color: '#0033cc' }} onClick={handleLogout}>sign out</button>
           </>
         ) : (
-          <button style={S.link} onClick={loginWithGoogle}>sign in</button>
+          <button style={{ ...S.link, color: '#0033cc' }} onClick={loginWithGoogle}>sign in</button>
         )}
-      </div>
-    </div>
+      </nav>
+    </header>
   );
 }
