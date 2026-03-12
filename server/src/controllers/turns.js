@@ -6,22 +6,38 @@ const prisma = new PrismaClient();
 // Shared helper: compute the next expected joinOrder in a STRUCTURED rotation.
 // Looks at the last in-rotation turn (not isOutOfRotation) to advance the pointer.
 // Skip turns DO count (they consume the writer's rotation slot).
+// If the computed next writer just wrote an isOutOfRotation (entrance) turn,
+// advance the pointer one more to avoid consecutive same-writer turns.
 // =======================
 function computeNextExpectedJoinOrder(turns, writers) {
     if (writers.length === 0) return null;
 
     const lastInRotation = [...turns].reverse().find(t => !t.isOutOfRotation);
 
+    let nextJoinOrder;
     if (!lastInRotation) {
         // No rotation turn yet → first writer is next
-        return writers[0].joinOrder;
+        nextJoinOrder = writers[0].joinOrder;
+    } else {
+        const lastWriter = writers.find(w => w.id === lastInRotation.writerId);
+        if (!lastWriter) return writers[0].joinOrder;
+        const later = writers.filter(w => w.joinOrder > lastWriter.joinOrder);
+        nextJoinOrder = later.length > 0 ? later[0].joinOrder : writers[0].joinOrder;
     }
 
-    const lastWriter = writers.find(w => w.id === lastInRotation.writerId);
-    if (!lastWriter) return writers[0].joinOrder;
+    // If the last actual turn (including entrance turns, excluding skips) was
+    // written by whoever is computed as next, advance one more to prevent
+    // the same writer going twice in a row.
+    const lastActualTurn = [...turns].reverse().find(t => !t.isSkip);
+    if (lastActualTurn) {
+        const lastActualWriter = writers.find(w => w.id === lastActualTurn.writerId);
+        if (lastActualWriter && lastActualWriter.joinOrder === nextJoinOrder) {
+            const later = writers.filter(w => w.joinOrder > nextJoinOrder);
+            nextJoinOrder = later.length > 0 ? later[0].joinOrder : writers[0].joinOrder;
+        }
+    }
 
-    const later = writers.filter(w => w.joinOrder > lastWriter.joinOrder);
-    return later.length > 0 ? later[0].joinOrder : writers[0].joinOrder;
+    return nextJoinOrder;
 }
 
 // =======================
