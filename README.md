@@ -162,6 +162,7 @@ All architectural decisions are logged in [`project_memory/decisions.md`](./proj
 | GitHub repository | ✅ This repo |
 | Deployed app (production URL) | `https://cs7180-project2-collective-unconscious-1.onrender.com/` |
 | Evaluation dashboard | ✅ [evaluation_report.md](./project_memory/sprint2_evaluation.md) |
-| Complete documentation package | ✅ [walkthrough.md](./project_memory/sprint2_walkthrough.md) |
+| Complete documentation package | ✅ [walkthrough.md](./project_memory/sprint2_walkthrough.md) 
+[decisions.md](./project_memory/decisions.md)|
 | 10-minute demo video | 🔜 S2-9 |
 | 1500-word technical blog post | 🔜 S2-9 |
