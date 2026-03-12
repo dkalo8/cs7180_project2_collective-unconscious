@@ -160,7 +160,7 @@ All architectural decisions are logged in [`project_memory/decisions.md`](./proj
 | Deliverable | Status |
 |---|---|
 | GitHub repository | ✅ This repo |
-| Deployed app (production URL) | 🔜 Sprint 2 |
+| Deployed app (production URL) | `https://cs7180-project2-collective-unconscious-1.onrender.com/` |
 | Evaluation dashboard (live or screenshots) | 🔜 Sprint 2 |
 | Complete documentation package | 🔜 Sprint 2 |
 | 10-minute demo video | 🔜 Sprint 2 |

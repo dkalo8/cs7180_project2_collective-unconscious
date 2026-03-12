@@ -57,7 +57,12 @@ export default function Header({ t, lang, setLang }) {
             <button style={{ ...S.link, color: '#0033cc' }} onClick={handleLogout}>sign out</button>
           </>
         ) : (
-          <button style={{ ...S.link, color: '#0033cc' }} onClick={loginWithGoogle}>sign in</button>
+          <a 
+            href={`${API_BASE_URL}/api/auth/google`} 
+            style={{ ...S.link, color: '#0033cc', textDecoration: 'none' }}
+          >
+            sign in
+          </a>
         )}
       </nav>
     </header>
