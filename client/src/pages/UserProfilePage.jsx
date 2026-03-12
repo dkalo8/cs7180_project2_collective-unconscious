@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getProfile, getMe, updateProfile } from '../services/auth.service';
+import { getProfile, getMe, updateProfile, logout } from '../services/auth.service';
 import { S } from '../utils/styles';
 
 export default function UserProfilePage() {
@@ -27,6 +27,11 @@ export default function UserProfilePage() {
       setCurrentUser(me);
     });
   }, [id]);
+
+      const handleLogout = async () => {
+    await logout();
+    window.location.href = '/';
+  };
 
   const isOwner = currentUser && profile && currentUser.id === profile.id;
 
@@ -96,7 +101,10 @@ export default function UserProfilePage() {
               {profile.bio || <span style={S.muted}>No bio yet.</span>}
             </p>
             {isOwner && (
-              <button style={S.btn} onClick={() => setEditing(true)}>Edit</button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button style={S.btn} onClick={() => setEditing(true)}>Edit</button>
+                <button style={{ ...S.btn, color: 'red' }} onClick={handleLogout}>Sign out</button>
+              </div>
             )}
           </>
         )}

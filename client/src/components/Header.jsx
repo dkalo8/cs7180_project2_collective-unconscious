@@ -10,20 +10,13 @@ export default function Header({ t, lang, setLang }) {
 
   useEffect(() => {
     getMe()
-      .then(u => {
-        console.log('Auth check:', u);
-        setUser(u);
-      })
-      .catch((err) => {
-        console.error('Auth check error:', err);
-        setUser(null);
-      });
+      .then(setUser)
+      .catch(() => setUser(null));
   }, []);
 
   const navigate = useNavigate();
   
-  const handleLogout = async (e) => {
-    e.preventDefault();
+  const handleLogout = async () => {
     await logout();
     setUser(null);
     navigate('/');
@@ -64,20 +57,15 @@ export default function Header({ t, lang, setLang }) {
 
         {/* Auth section */}
         {user === undefined ? null : user ? (
-          <span style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-            <Link 
-              to={`/users/${user.id}`} 
-              style={{ color: '#0033cc', fontWeight: 'bold', textDecoration: 'none' }}
+          <>
+            <Link to={`/users/${user.id}`} style={{ color: '#0033cc', fontWeight: 'bold' }}>{user.displayName}</Link>
+            <button 
+              onClick={handleLogout} 
+              style={{ ...S.link, color: '#666', fontSize: '14px', marginLeft: '4px' }}
             >
-              {user.displayName || 'User'} 
-              <span 
-                onClick={handleLogout}
-                style={{ color: '#ff0000', marginLeft: '10px', textDecoration: 'underline', cursor: 'pointer' }}
-              >
-                (sign out)
-              </span>
-            </Link>
-          </span>
+              (sign out)
+            </button>
+          </>
         ) : (
           <a 
             href={`${API_BASE_URL}/api/auth/google`} 
