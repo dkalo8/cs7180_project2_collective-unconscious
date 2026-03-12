@@ -16,7 +16,6 @@ function computeNextExpectedJoinOrder(turns, writers) {
 
     let nextJoinOrder;
     if (!lastInRotation) {
-        // No rotation turn yet → first writer is next
         nextJoinOrder = writers[0].joinOrder;
     } else {
         const lastWriter = writers.find(w => w.id === lastInRotation.writerId);
@@ -25,15 +24,25 @@ function computeNextExpectedJoinOrder(turns, writers) {
         nextJoinOrder = later.length > 0 ? later[0].joinOrder : writers[0].joinOrder;
     }
 
-    // If the last actual turn (including entrance turns, excluding skips) was
-    // written by whoever is computed as next, advance one more to prevent
-    // the same writer going twice in a row.
-    const lastActualTurn = [...turns].reverse().find(t => !t.isSkip);
-    if (lastActualTurn) {
-        const lastActualWriter = writers.find(w => w.id === lastActualTurn.writerId);
-        if (lastActualWriter && lastActualWriter.joinOrder === nextJoinOrder) {
-            const later = writers.filter(w => w.joinOrder > nextJoinOrder);
-            nextJoinOrder = later.length > 0 ? later[0].joinOrder : writers[0].joinOrder;
+    // Collect all writers who have already written since the last in-rotation turn
+    // (OOR entrance turns). They cannot be next — advance past them.
+    const lastInRotationIdx = lastInRotation
+        ? turns.findIndex(t => t.id === lastInRotation.id)
+        : -1;
+    const alreadyWroteIds = new Set(
+        turns.slice(lastInRotationIdx + 1)
+            .filter(t => !t.isSkip)
+            .map(t => t.writerId)
+    );
+
+    // Starting from the computed next, find the first writer who hasn't
+    // already written since the last in-rotation turn.
+    const ordered = [...writers].sort((a, b) => a.joinOrder - b.joinOrder);
+    const start = ordered.findIndex(w => w.joinOrder === nextJoinOrder);
+    for (let i = 0; i < ordered.length; i++) {
+        const candidate = ordered[(start + i) % ordered.length];
+        if (!alreadyWroteIds.has(candidate.id)) {
+            return candidate.joinOrder;
         }
     }
 
