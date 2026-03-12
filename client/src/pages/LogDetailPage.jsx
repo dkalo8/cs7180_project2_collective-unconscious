@@ -5,30 +5,41 @@ import ReportButton from '../components/ReportButton';
 import { useState } from 'react';
 import ShareModal from '../components/ShareModal';
 
+import { API_BASE_URL } from '../config';
 import { getLogById, closeLog } from '../services/log.service';
 import { addReaction, removeReaction } from '../services/reaction.service';
 import { useLanguage } from '../context/LanguageContext';
 
 const submitTurnApi = async ({ logId, content, nickname, colorHex, accessCode }) => {
-    const res = await fetch(`/api/logs/${logId}/turns`, {
+    const res = await fetch(`${API_BASE_URL}/api/logs/${logId}/turns`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content, nickname, colorHex, ...(accessCode ? { accessCode } : {}) })
     });
     if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
+        let errorData = {};
+        try {
+            errorData = await res.json();
+        } catch (e) {
+            // No JSON body
+        }
         throw new Error(errorData.error || 'Failed to submit turn');
     }
     return res.json();
 };
 
 const skipTurnApi = async (logId) => {
-    const res = await fetch(`/api/logs/${logId}/skip`, {
+    const res = await fetch(`${API_BASE_URL}/api/logs/${logId}/skip`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
     });
     if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
+        let errorData = {};
+        try {
+            errorData = await res.json();
+        } catch (e) {
+            // No JSON body
+        }
         throw new Error(errorData.error || 'Failed to skip turn');
     }
     return res.json();
