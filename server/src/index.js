@@ -61,8 +61,8 @@ if (process.env.NODE_ENV !== 'production') {
     app.use('/api/dev', devRouter);
 }
 
-// Swagger API Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Swagger API Documentation (Serving at /api/docs to work with proxy)
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

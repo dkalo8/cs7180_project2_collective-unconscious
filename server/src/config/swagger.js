@@ -10,6 +10,10 @@ const options = {
     },
     servers: [
       {
+        url: 'https://cs7180-project2-collective-unconscious-1.onrender.com/api',
+        description: 'Production (via Proxy)',
+      },
+      {
         url: 'http://localhost:3000',
         description: 'Development server',
       },
