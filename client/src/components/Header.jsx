@@ -64,16 +64,20 @@ export default function Header({ t, lang, setLang }) {
 
         {/* Auth section */}
         {user === undefined ? null : user ? (
-          <>
-            <Link to={`/users/${user.id}`} style={{ color: '#0033cc', fontWeight: 'bold' }}>{user.displayName}</Link>
-            <a 
-              href="#"
-              onClick={handleLogout}
-              style={{ color: '#666', fontSize: '14px', textDecoration: 'underline' }}
+          <span style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+            <Link 
+              to={`/users/${user.id}`} 
+              style={{ color: '#0033cc', fontWeight: 'bold', textDecoration: 'none' }}
             >
-              sign out
-            </a>
-          </>
+              {user.displayName || 'User'} 
+              <span 
+                onClick={handleLogout}
+                style={{ color: '#ff0000', marginLeft: '10px', textDecoration: 'underline', cursor: 'pointer' }}
+              >
+                (sign out)
+              </span>
+            </Link>
+          </span>
         ) : (
           <a 
             href={`${API_BASE_URL}/api/auth/google`} 
