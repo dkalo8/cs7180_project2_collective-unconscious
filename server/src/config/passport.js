@@ -4,7 +4,7 @@ const { findOrCreateUser, generateTokens } = require('../services/auth.service')
 
 const COOKIE_OPTS = {
   httpOnly: true,
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  sameSite: 'lax', // Now same-domain via proxy
   secure: process.env.NODE_ENV === 'production',
 };
 

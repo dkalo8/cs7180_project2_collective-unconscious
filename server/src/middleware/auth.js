@@ -31,7 +31,7 @@ const sessionMiddleware = (req, res, next) => {
         
         res.cookie('sessionToken', token, {
             httpOnly: true,
-            sameSite: isProduction ? 'none' : 'lax',
+            sameSite: 'lax', // Now same-domain via proxy
             secure: isProduction,
             maxAge: maxAge,
         });
