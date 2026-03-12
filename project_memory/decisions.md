@@ -51,6 +51,21 @@
 ### PRD Cleanup (`PRD.md`)
 - Resolved open question "How are user colors assigned?" — answered by the new 6-color default palette + custom color picker.
 - Updated user story US-05 to reference text color and color picker.
+## 2026-03-11: Symbol Reactions (S1-10)
+
+### Schema (`prisma/schema.prisma`)
+- Added `Reaction` model: `id`, `sessionToken`, `symbol`, `logId`, `createdAt`. Unique constraint on `(sessionToken, logId, symbol)` — one reaction per symbol per session per log.
+
+### API (`server/src/controllers/reactions.js`, `server/src/routes/logs.js`)
+- `POST /api/logs/:id/reactions` — adds a reaction; 400 on invalid symbol, 403 on active log, 409 on duplicate.
+- `DELETE /api/logs/:id/reactions` — removes a reaction by `(sessionToken, logId, symbol)`.
+- `GET /api/logs/:id` now returns `reactions: { '✦': 3, '◎': 1, ... }` aggregate counts.
+- Valid symbols: ✦ ◎ ∿ ⌖ (enforced server-side).
+
+### Frontend (`client/src/pages/LogDetailPage.jsx`, `client/src/services/reaction.service.js`)
+- Reaction bar on completed logs: clicking a symbol toggles the reaction via API, updates count optimistically.
+- Dim (opacity 0.4) when not reacted, full opacity when reacted — consistent with `LogPage.jsx` pattern.
+
 ## 2026-03-11: Color Toggle (S1-7)
 
 ### Feature (`LogDetailPage.jsx`, `LogDetailPage.test.jsx`)

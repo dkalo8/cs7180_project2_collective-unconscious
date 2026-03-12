@@ -2,10 +2,11 @@ import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import WriteZone from '../components/WriteZone';
 import ReportButton from '../components/ReportButton';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ShareModal from '../components/ShareModal';
 
 import { getLogById, closeLog } from '../services/log.service';
+import { addReaction, removeReaction } from '../services/reaction.service';
 import { useLanguage } from '../context/LanguageContext';
 
 const submitTurnApi = async ({ logId, content, nickname, colorHex, accessCode }) => {
@@ -53,6 +54,8 @@ export default function LogDetailPage() {
         });
     };
     const [showShareModal, setShowShareModal] = useState(false);
+    const [reactions, setReactions] = useState({});
+    const [reacted, setReacted] = useState({});
 
     const { data: log, isLoading, isError, error } = useQuery({
         queryKey: ['log', id],
@@ -104,6 +107,27 @@ export default function LogDetailPage() {
     if (!log) return null;
 
     const isCompleted = log.status === 'COMPLETED';
+
+    // Seed reaction counts from server data (only on first load)
+    if (log.reactions && Object.keys(reactions).length === 0 && Object.keys(log.reactions).length > 0) {
+        setReactions(log.reactions);
+    }
+
+    const handleReact = async (symbol) => {
+        if (reacted[symbol]) {
+            try {
+                const { count } = await removeReaction(id, symbol);
+                setReactions(prev => ({ ...prev, [symbol]: count }));
+                setReacted(prev => ({ ...prev, [symbol]: false }));
+            } catch (e) { console.error(e); }
+        } else {
+            try {
+                const { count } = await addReaction(id, symbol);
+                setReactions(prev => ({ ...prev, [symbol]: count }));
+                setReacted(prev => ({ ...prev, [symbol]: true }));
+            } catch (e) { console.error(e); }
+        }
+    };
 
     // All turns are visible except skipped ones (skipped turns are invisible per design)
     const visibleTurns = (log.turns || []).filter(t => !t.isSkip);
@@ -199,10 +223,24 @@ export default function LogDetailPage() {
                         Share as Image
                     </button>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: 24, fontSize: 28, fontWeight: 'normal', color: '#666' }}>
-                        <span style={{ cursor: 'pointer' }} title="Spark">✦</span>
-                        <span style={{ cursor: 'pointer' }} title="Ripple">◎</span>
-                        <span style={{ cursor: 'pointer' }} title="Wave">∿</span>
-                        <span style={{ cursor: 'pointer' }} title="Target">⌖</span>
+                        {['✦', '◎', '∿', '⌖'].map(sym => (
+                            <button
+                                key={sym}
+                                onClick={() => handleReact(sym)}
+                                style={{
+                                    background: 'none', border: 'none', fontFamily: 'inherit',
+                                    fontSize: 28, cursor: 'pointer',
+                                    opacity: reacted[sym] ? 1 : 0.4,
+                                    padding: '2px 4px',
+                                    display: 'flex', alignItems: 'center', gap: 4,
+                                }}
+                            >
+                                {sym}
+                                {(reactions[sym] || 0) > 0 && (
+                                    <span style={{ fontSize: 12, color: '#888' }}>{reactions[sym]}</span>
+                                )}
+                            </button>
+                        ))}
                     </div>
                 </div>
             ) : (

@@ -39,6 +39,7 @@ model Log {
 
   writers            Writer[]
   turns              Turn[]
+  reactions          Reaction[]
 }
 
 model User {
@@ -120,6 +121,18 @@ model Report {
   createdAt     DateTime @default(now())
   
   actions       ModerationAction[]
+}
+
+model Reaction {
+  id           String   @id @default(uuid())
+  sessionToken String
+  symbol       String   // one of: ✦ ◎ ∿ ⌖
+  logId        String
+  log          Log      @relation(fields: [logId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now())
+
+  @@unique([sessionToken, logId, symbol])
 }
 
 model ModerationAction {

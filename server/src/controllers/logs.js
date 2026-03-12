@@ -181,6 +181,9 @@ const getLogById = async (req, res) => {
                 turns: {
                     orderBy: { turnOrder: 'asc' },
                 },
+                reactions: {
+                    select: { symbol: true },
+                },
                 writers: {
                     select: {
                         id: true,
@@ -268,10 +271,17 @@ const getLogById = async (req, res) => {
             return t;
         });
 
+        // Aggregate reactions into { '✦': 3, '◎': 1, ... }
+        const reactionCounts = (log.reactions || []).reduce((acc, r) => {
+            acc[r.symbol] = (acc[r.symbol] || 0) + 1;
+            return acc;
+        }, {});
+
         const safeLog = {
             ...log,
             turns: safeTurns,
             writers: safeWriters,
+            reactions: reactionCounts,
             isCreator,
             isMyTurn,
             nextWriter: nextWriter ? { id: nextWriter.id, nickname: nextWriter.nickname, colorHex: nextWriter.colorHex, joinOrder: nextWriter.joinOrder } : null,
