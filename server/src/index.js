@@ -15,6 +15,10 @@ const moderationRouter = require('./routes/moderation.routes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+}
+
 app.use(cors({
     origin: process.env.CLIENT_URL || 'http://localhost:5173',
     credentials: true,
@@ -36,7 +40,11 @@ app.use(
         secret: process.env.SESSION_SECRET || 'secret',
         resave: false,
         saveUninitialized: false,
-        cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
+        cookie: { 
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+        }, // 30 days
     })
 );
 app.use(passport.initialize());
