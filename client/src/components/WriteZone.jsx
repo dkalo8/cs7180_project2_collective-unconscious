@@ -11,21 +11,27 @@ function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit, myWriter = nu
     const [nickname, setNickname] = useState(myWriter?.nickname || '');
     const [placeholderNick] = useState(() => randomNick(lang));
     const [selectedColor, setSelectedColor] = useState(myWriter?.colorHex || colorHex || '#000000');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const isReturningWriter = !!myWriter;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isSubmitting) return;
 
         if (!content.trim() || content.length > perTurnLengthLimit) {
             return;
         }
 
-        if (onSubmit) {
-            await onSubmit({ content, nickname: nickname.trim() || placeholderNick, colorHex: selectedColor });
+        setIsSubmitting(true);
+        try {
+            if (onSubmit) {
+                await onSubmit({ content, nickname: nickname.trim() || placeholderNick, colorHex: selectedColor });
+            }
+            setContent('');
+            setNickname('');
+        } finally {
+            setIsSubmitting(false);
         }
-
-        setContent('');
-        setNickname('');
     };
 
     const isOverLimit = content.length > perTurnLengthLimit;
@@ -75,7 +81,7 @@ function WriteZone({ colorHex, perTurnLengthLimit = 500, onSubmit, myWriter = nu
                     </div>
                     <button
                         type="submit"
-                        disabled={!content.trim() || isOverLimit}
+                        disabled={!content.trim() || isOverLimit || isSubmitting}
                         className="submit-button"
                     >
                         {t.log.submit}

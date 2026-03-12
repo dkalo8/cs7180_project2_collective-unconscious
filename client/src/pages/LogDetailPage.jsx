@@ -155,9 +155,9 @@ export default function LogDetailPage() {
         <div className="log-detail">
             {/* Header */}
             <div style={{ borderBottom: '2px solid #ccc', paddingBottom: 16, marginBottom: 24 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div className="log-detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 8 }}>
                     <h1 style={{ margin: '0 0 8px 0', fontSize: 24 }}>{log.title}</h1>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <div className="log-detail-actions" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                         <button
                             onClick={toggleColors}
                             style={{
@@ -304,16 +304,14 @@ export default function LogDetailPage() {
                         />
                     ) : (
                         <div style={{ padding: '20px 0', color: '#888', fontStyle: 'italic', fontSize: 14 }}>
-                            {log.nextWriter && (log.writers || []).length > 1
-                                ? <><strong style={{ color: log.nextWriter.colorHex }}>{t.log.turnOf(log.nextWriter.nickname || 'Anonymous')}</strong></>
-                                : log.nextWriter
-                                    ? t.log.waitingNext
-                                    : t.log.waitingFirst}
+                            {log.turnMode === 'STRUCTURED' && (log.writers || []).length > 1 && log.nextWriter
+                                ? <strong style={{ color: log.nextWriter.colorHex }}>{t.log.turnOf(log.nextWriter.nickname || 'Anonymous')}</strong>
+                                : t.log.waitingNext}
                         </div>
                     )}
 
                     {/* Bug 4 + 5 fix: Skip button below WriteZone, no emoji, with dropdown */}
-                    {log.isCreator && log.turnMode === 'STRUCTURED' && skipableWriters.length > 0 && (
+                    {log.isCreator && log.turnMode === 'STRUCTURED' && skipableWriters.length > 1 && (
                         <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                             <span style={{ fontSize: 13, color: '#555' }}>Skip the next turn of:</span>
                             <select

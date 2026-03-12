@@ -241,8 +241,10 @@ const getLogById = async (req, res) => {
                 const lastTurnAny = log.turns.length > 0 ? log.turns[log.turns.length - 1] : null;
                 isMyTurn = !lastTurnAny || lastTurnAny.writerId !== myWriter.id;
             } else {
-                // STRUCTURED: must be my joinOrder
-                isMyTurn = nextExpectedJoinOrder !== null && myWriter.joinOrder === nextExpectedJoinOrder;
+                // STRUCTURED: must be my joinOrder AND not consecutive
+                const lastTurnAny = log.turns.length > 0 ? log.turns[log.turns.length - 1] : null;
+                const wouldBeConsecutive = lastTurnAny && !lastTurnAny.isSkip && lastTurnAny.writerId === myWriter.id;
+                isMyTurn = !wouldBeConsecutive && nextExpectedJoinOrder !== null && myWriter.joinOrder === nextExpectedJoinOrder;
             }
         }
 

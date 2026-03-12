@@ -134,15 +134,13 @@ const submitTurn = async (req, res) => {
 
             let isOutOfRotation = false;
 
-            // ── FREESTYLE validation ──
-            if (log.turnMode === 'FREESTYLE') {
-                // Can't submit twice in a row (check the very last turn of any kind)
-                if (lastTurn && lastTurn.writerId === currentWriter.id) {
-                    throw new Error('CONSECUTIVE_TURNS_NOT_ALLOWED');
-                }
+            // ── Universal: block consecutive turns by the same writer ──
+            if (!isNewJoin && lastTurn && !lastTurn.isSkip && lastTurn.writerId === currentWriter.id) {
+                throw new Error('CONSECUTIVE_TURNS_NOT_ALLOWED');
             }
+
             // ── STRUCTURED validation ──
-            else if (log.turnMode === 'STRUCTURED') {
+            if (log.turnMode === 'STRUCTURED') {
                 if (isNewJoin) {
                     // A new joiner's turn is out-of-rotation ONLY if there's already an active
                     // rotation queue to disrupt. If nobody is in rotation yet, this turn
@@ -156,16 +154,6 @@ const submitTurn = async (req, res) => {
                     if (expectJoinOrder !== null && currentWriter.joinOrder !== expectJoinOrder) {
                         throw new Error('NOT_YOUR_TURN');
                     }
-                }
-            }
-
-            // ── Update writer nickname/color if provided ──
-            if (!isNewJoin) {
-                const updates = {};
-                if (nickname && currentWriter.nickname !== nickname) updates.nickname = nickname;
-                if (colorHex && currentWriter.colorHex !== colorHex) updates.colorHex = colorHex;
-                if (Object.keys(updates).length > 0) {
-                    await tx.writer.update({ where: { id: currentWriter.id }, data: updates });
                 }
             }
 
@@ -216,7 +204,7 @@ const submitTurn = async (req, res) => {
         if (error.message === 'ACCESS_CODE_INVALID') return res.status(403).json({ error: 'Invalid access code' });
         if (error.message === 'PARTICIPANT_LIMIT_REACHED') return res.status(403).json({ error: 'Participant limit reached' });
         if (error.message === 'LENGTH_EXCEEDED') return res.status(422).json({ error: 'Content exceeds maximum length' });
-        if (error.message === 'CONSECUTIVE_TURNS_NOT_ALLOWED') return res.status(403).json({ error: 'Consecutive turns are not allowed in Freestyle mode' });
+        if (error.message === 'CONSECUTIVE_TURNS_NOT_ALLOWED') return res.status(403).json({ error: 'Consecutive turns are not allowed' });
         if (error.message === 'NOT_YOUR_TURN') return res.status(403).json({ error: 'Not your turn' });
 
         if (error.code === 'P2002' && error.meta?.target?.includes('turnOrder')) {
