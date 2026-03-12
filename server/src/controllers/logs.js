@@ -267,6 +267,9 @@ const getLogById = async (req, res) => {
             return acc;
         }, {});
 
+        const keeperWriterRecord = log.writers.find(w => w.sessionToken === log.creatorToken);
+        const keeperNickname = keeperWriterRecord?.nickname || null;
+
         const safeLog = {
             ...log,
             turns: safeTurns,
@@ -274,6 +277,7 @@ const getLogById = async (req, res) => {
             reactions: reactionCounts,
             isCreator,
             isMyTurn,
+            keeperNickname,
             nextWriter: nextWriter ? { id: nextWriter.id, nickname: nextWriter.nickname, colorHex: nextWriter.colorHex, joinOrder: nextWriter.joinOrder } : null,
             myWriter: myWriter ? { id: myWriter.id, nickname: myWriter.nickname, colorHex: myWriter.colorHex, joinOrder: myWriter.joinOrder } : null,
         };
