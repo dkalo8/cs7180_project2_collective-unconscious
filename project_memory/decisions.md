@@ -75,6 +75,24 @@
 - Toggle preference persists in `sessionStorage` (key: `colorsHidden`) and restores on mount — no page reload required.
 - The button uses the standard grey `#d4d0c8` / black border style per project conventions.
 
+## 2026-03-11: Structured Rotation Set-Based OOR Skip & Skip Event Notes
+
+### Rotation Logic (`server/src/controllers/turns.js`, `server/src/controllers/logs.js`)
+- **Set-based OOR skip**: `computeNextExpectedJoinOrder` now collects all writers who wrote (non-skip) turns *after* the last in-rotation turn into `alreadyWroteIds`. The pointer advances past all of them, not just the immediate last writer. This prevents any writer from appearing consecutively — e.g. after Red(in-rot)+Green(OOR)+Blue(OOR), next is Red (not Green), because both Green and Blue are in the set.
+- **Rule**: The same player cannot appear in consecutive turns unless the keeper manually skips someone into that slot.
+- **Shared helper**: `computeNextExpectedJoinOrder` is exported from `turns.js` and used by both `submitTurn` and `getLogById` (was previously duplicated with diverging logic).
+- **Example rotation**: `A-B-C-A-B-D-C-D-A-B-C-D` where A(in-rot), B/C join OOR → rotation resumes at A; D joins OOR mid-round during B→C window, takes the slot after C.
+
+### Skip Event Notes (`server/src/controllers/logs.js`, `client/src/pages/LogDetailPage.jsx`)
+- `getLogById` now returns `keeperNickname` (the creator's writer nickname, or null if the keeper hasn't written).
+- `LogDetailPage` renders a line below the writers list for each skip turn: `* {keeperNickname} skipped {skippedWriter} for a turn`.
+- Skip turns are one-time only — the skipped writer re-enters normal rotation the next round.
+
+### Tests (`server/__tests__/creatorJoinScenarios.test.js`)
+- **Scenario 7 updated**: After A(in-rot)+B(OOR)+C(OOR), next is A (not B) — all three joined OOR tests updated to reflect set-based logic.
+- **Scenario 5 updated**: After A1+B1(OOR), pointer lands on A (B in alreadyWroteIds) → keeper skips A; then B and A continue.
+- **Scenario 11 added**: Full B#1-first, A#2/C#3/D#4 join OOR, then B→A→[skip C]→D→B→A→C→D rotation with `keeperNickname` and skip turn assertions.
+
 ## 2026-03-11: Turn Logic Refinement & Terminology Update
 
 ### Completion & Rotation Logic (`PRD.md`, `turns.js`)
