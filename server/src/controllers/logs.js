@@ -1,6 +1,7 @@
 const { z } = require('zod');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { computeNextExpectedJoinOrder } = require('./turns');
 
 // Default palette - index 0 is the Keeper's color
 const KEEPER_COLOR = '#FF0000';
@@ -213,19 +214,8 @@ const getLogById = async (req, res) => {
 
         // ── STRUCTURED: next expected writer in the rotation ──
         let nextExpectedJoinOrder = null;
-        const lastInRotationTurn = [...log.turns].reverse().find(t => !t.isOutOfRotation);
-
         if (participatingWriters.length > 0) {
-            if (lastInRotationTurn) {
-                const lastWriter = participatingWriters.find(w => w.id === lastInRotationTurn.writerId);
-                if (lastWriter) {
-                    const later = participatingWriters.filter(w => w.joinOrder > lastWriter.joinOrder);
-                    nextExpectedJoinOrder = later.length > 0 ? later[0].joinOrder : participatingWriters[0].joinOrder;
-                }
-            } else {
-                // No in-rotation turns yet → first participating writer is next
-                nextExpectedJoinOrder = participatingWriters[0].joinOrder;
-            }
+            nextExpectedJoinOrder = computeNextExpectedJoinOrder(log.turns, participatingWriters);
         }
 
         const nextWriter = nextExpectedJoinOrder !== null
