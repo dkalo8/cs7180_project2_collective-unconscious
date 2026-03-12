@@ -301,5 +301,12 @@ describe('Creator & Join Order Scenarios (Join == First Turn)', () => {
 
         // next = D
         expect((await submitTurn(logId, userCCookie, 'D3')).status).toBe(201);
+
+        // getLogById must include keeperNickname and one skip turn for the skip note UI
+        const logDetail = await request(app).get(`/api/logs/${logId}`).set('Cookie', creatorCookie);
+        expect(logDetail.body.keeperNickname).toBeTruthy();
+        const skipTurns = logDetail.body.turns.filter(t => t.isSkip);
+        expect(skipTurns).toHaveLength(1);
+        expect(skipTurns[0].writerId).toBeTruthy(); // writerId = skipped writer (C)
     });
 });

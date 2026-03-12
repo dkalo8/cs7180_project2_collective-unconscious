@@ -357,6 +357,20 @@ export default function LogDetailPage() {
                 </div>
             )}
 
+            {/* Skip event notes */}
+            {(log.turns || []).some(t => t.isSkip) && (
+                <div style={{ paddingTop: 12, fontSize: 12, color: '#000' }}>
+                    {(log.turns || []).filter(t => t.isSkip).map(t => {
+                        const skippedWriter = (log.writers || []).find(w => w.id === t.writerId);
+                        const keeperName = log.keeperNickname || 'Log Keeper';
+                        const skippedName = skippedWriter?.nickname || 'Anonymous';
+                        return (
+                            <div key={t.id}>* {keeperName} skipped {skippedName} for a turn</div>
+                        );
+                    })}
+                </div>
+            )}
+
             {showShareModal && (
                 <ShareModal log={log} onClose={() => setShowShareModal(false)} />
             )}
