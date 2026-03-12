@@ -266,4 +266,40 @@ describe('Creator & Join Order Scenarios (Join == First Turn)', () => {
         expect(failRes.status).toBe(403);
         expect(failRes.body.error).toMatch(/completed/i);
     });
+
+    it('Scenario 11 (OOR then skip): B#1 first, A#2/C#3/D#4 join OOR, rotation = B→A→[A skips C]→D→B→A→C→D', async () => {
+        const logId = await createLog('STRUCTURED');
+
+        // B submits first → B is #1 (in-rotation)
+        expect((await submitTurn(logId, userACookie, 'B1')).status).toBe(201);
+
+        // A (keeper), C, D join via OOR
+        expect((await submitTurn(logId, creatorCookie, 'A1')).status).toBe(201);
+        expect((await submitTurn(logId, userBCookie, 'C1')).status).toBe(201);
+        expect((await submitTurn(logId, userCCookie, 'D1')).status).toBe(201);
+
+        // alreadyWroteIds={A,C,D} since B1 → pointer skips all → next = B
+        expect((await submitTurn(logId, userACookie, 'B2')).status).toBe(201);
+
+        // next = A
+        expect((await submitTurn(logId, creatorCookie, 'A2')).status).toBe(201);
+
+        // next = C → A (keeper) skips C
+        expect((await skipTurnCall(logId, creatorCookie)).status).toBe(200);
+
+        // next = D (C was skipped)
+        expect((await submitTurn(logId, userCCookie, 'D2')).status).toBe(201);
+
+        // next = B
+        expect((await submitTurn(logId, userACookie, 'B3')).status).toBe(201);
+
+        // next = A
+        expect((await submitTurn(logId, creatorCookie, 'A3')).status).toBe(201);
+
+        // next = C (skip only works for one turn)
+        expect((await submitTurn(logId, userBCookie, 'C2')).status).toBe(201);
+
+        // next = D
+        expect((await submitTurn(logId, userCCookie, 'D3')).status).toBe(201);
+    });
 });
