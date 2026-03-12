@@ -39,7 +39,7 @@ export default function ModerationPage() {
     try {
       const res = await fetch('/api/moderation/action', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'x-admin-secret': adminSecret
         },
@@ -64,11 +64,11 @@ export default function ModerationPage() {
         <h2>Moderation Access</h2>
         <div style={S.fieldGroup}>
           <label style={S.label}>Admin Secret</label>
-          <input 
-            type="password" 
-            style={S.input} 
-            value={adminSecret} 
-            onChange={(e) => setAdminSecret(e.target.value)} 
+          <input
+            type="password"
+            style={S.input}
+            value={adminSecret}
+            onChange={(e) => setAdminSecret(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && fetchQueue(adminSecret)}
           />
         </div>
@@ -90,11 +90,11 @@ export default function ModerationPage() {
                 <b style={{ textTransform: 'uppercase', fontSize: 12 }}>{report.targetType} Report</b>
                 <span style={S.muted}>{new Date(report.createdAt).toLocaleString()}</span>
               </div>
-              
+
               <div style={{ marginBottom: 8 }}>
                 <span style={S.label}>Reason:</span> {report.reason}
               </div>
-              
+
               <div style={{ marginBottom: 16, padding: 8, background: '#f5f5f5', fontStyle: 'italic', fontSize: 14 }}>
                 "{report.targetSummary}"
               </div>

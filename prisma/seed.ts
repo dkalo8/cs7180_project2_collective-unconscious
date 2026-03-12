@@ -133,7 +133,7 @@ async function main() {
       writerId: writerNovel2.id,
     },
   })
-  
+
   // 3. Create a casual, funny Freewriting log
   const logFunny = await prisma.log.create({
     data: {
