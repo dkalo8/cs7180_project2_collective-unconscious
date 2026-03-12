@@ -31,6 +31,17 @@ const googleCallback = async (req, res) => {
 
     const { accessToken, refreshToken } = await generateTokens(user.id);
 
+    // Link existing anonymous writer records to this user
+    const sessionToken = req.sessionToken;
+    if (sessionToken) {
+      await prisma.writer.updateMany({
+        where: { sessionToken, userId: null },
+        data: { userId: user.id }
+      });
+      // Also ensure existing logs created by this session are marked with this user if they were null
+      // (though Log model currently uses creatorToken, we might want to link them in a more formal way later)
+    }
+
     res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTS);
     res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTS);
 
@@ -92,6 +103,16 @@ const getMe = async (req, res) => {
       select: { id: true, displayName: true, email: true, bio: true, avatarUrl: true, createdAt: true },
     });
     if (!user) return res.status(404).json({ error: 'User not found' });
+
+    // Link any orphan writer records from current session to this user
+    const sessionToken = req.sessionToken;
+    if (sessionToken) {
+      await prisma.writer.updateMany({
+        where: { sessionToken, userId: null },
+        data: { userId: user.id }
+      });
+    }
+
     return res.status(200).json(user);
   } catch (err) {
     console.error('getMe error:', err);

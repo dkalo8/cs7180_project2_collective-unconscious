@@ -116,7 +116,8 @@ const submitTurn = async (req, res) => {
                         logId: log.id,
                         nickname: generatedNickname,
                         colorHex: assignedColor,
-                        joinOrder: nextJoinOrder
+                        joinOrder: nextJoinOrder,
+                        userId: req.userId // Link to user if authenticated
                     }
                 });
                 isNewJoin = true;

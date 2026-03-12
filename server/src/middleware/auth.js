@@ -39,6 +39,20 @@ const sessionMiddleware = (req, res, next) => {
 
     // Attach to request for downstream handlers
     req.sessionToken = token;
+
+    // OPTIONAL: If a JWT exists, attach onto request so downstream 
+    // handlers (like turn submission) can link anonymous turns to a User ID.
+    const jwtToken = req.cookies && req.cookies.accessToken;
+    if (jwtToken) {
+        try {
+            const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET);
+            req.userId = decoded.userId;
+        } catch (err) {
+            // Silently fail: we don't want to block the request if the JWT is just expired/invalid
+            // as this is the anonymous session middleware.
+        }
+    }
+
     next();
 };
 
