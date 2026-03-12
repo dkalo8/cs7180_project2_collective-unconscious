@@ -126,6 +126,10 @@ User can create a log with a title.
 | **US-02** | As a participant, I want themed prompts as creative starting points. | Platform titles/seeds appear in discovery feed. Tapping a prompt pre-fills the log creation form. |
 | **US-04** | As a participant, I want to react to completed works. | Symbol reactions available on any public completed log. Reactions are optional and non-blocking. |
 | **US-05** | As a participant, I want my writing distinguished from others through text color. | System assigns each participant a unique text color from the default palette. Color is consistent throughout the log. User can pick a custom color via color picker. |
+| **US-06** | As a user, I want to sign in with Google so my identity is persistent across devices. | Clicking "Sign in" redirects to Google. Successful auth creates/links a user profile. Logout returns user to guest state. |
+| **US-07** | As a user, I want a profile page that shows my bio and contribution history. | Profile accessible via header. Shows display name, bio (editable), and list of all logs joined. |
+| **US-08** | As an Admin, I want to review and moderate reported content. | Moderation dashboard available to users with ADMIN role. Admins can hide logs/turns or dismiss reports. |
+| **US-09** | As a Writer, I want to share my completed work as a beautiful themed image. | "Share as image" button on completed logs. Generates PNG with selectable themes (Minimal, Nocturne, Parchment). |
 
 ---
 

@@ -7,7 +7,7 @@ This report summarizes the code quality, security, and performance metrics for t
 | Metric | Server | Client | Overall |
 | :--- | :--- | :--- | :--- |
 | **Linting Pass Rate** | 100% (12 Warnings) | 100% (9 Warnings) | 100% (21 Warnings) |
-| **Test Coverage (Stmts)** | 82.35% | 58.91% | ~70% |
+| **Test Coverage (Stmts)** | 89.06% | 86.50% | **88.25%** |
 | **Build Status** | Pass | Pass | Pass |
 
 ### Observations:
