@@ -57,10 +57,11 @@ export default function Header({ t, lang, setLang }) {
 
         {/* Auth section */}
         {user === undefined ? null : user ? (
-          <>
+          <span style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <Link to={`/users/${user.id}`} style={{ color: '#0033cc' }}>{user.displayName}</Link>
+            <span style={{ color: '#ccc' }}>|</span>
             <button style={{ ...S.link, color: '#0033cc' }} onClick={handleLogout}>sign out</button>
-          </>
+          </span>
         ) : (
           <a 
             href={`${API_BASE_URL}/api/auth/google`} 
