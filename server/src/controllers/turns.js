@@ -55,7 +55,8 @@ function computeNextExpectedJoinOrder(turns, writers) {
 const submitTurnSchema = z.object({
     content: z.string().min(1, 'Content is required'),
     nickname: z.string().optional(),
-    colorHex: z.string().optional()
+    colorHex: z.string().optional(),
+    lang: z.enum(['en', 'zh', 'es']).optional()
 });
 
 const submitTurn = async (req, res) => {
@@ -72,7 +73,7 @@ const submitTurn = async (req, res) => {
             return res.status(400).json({ errors: parseResult.error.flatten().fieldErrors });
         }
 
-        const { content, nickname, colorHex } = parseResult.data;
+        const { content, nickname, colorHex, lang } = parseResult.data;
 
         const result = await prisma.$transaction(async (tx) => {
             const log = await tx.log.findUnique({
@@ -106,7 +107,7 @@ const submitTurn = async (req, res) => {
 
                 const nextJoinOrder = log.writers.length > 0 ? Math.max(...log.writers.map(w => w.joinOrder)) + 1 : 1;
                 const { randomNick } = require('../utils/nickname');
-                const generatedNickname = nickname && nickname.trim() !== '' ? nickname : randomNick();
+                const generatedNickname = nickname && nickname.trim() !== '' ? nickname : randomNick(lang || 'en');
                 const assignedColor = colorHex || '#d4d0c8';
 
                 currentWriter = await tx.writer.create({

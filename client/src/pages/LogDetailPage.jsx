@@ -10,12 +10,12 @@ import { getLogById, closeLog } from '../services/log.service';
 import { addReaction, removeReaction } from '../services/reaction.service';
 import { useLanguage } from '../context/LanguageContext';
 
-const submitTurnApi = async ({ logId, content, nickname, colorHex, accessCode }) => {
+const submitTurnApi = async ({ logId, content, nickname, colorHex, accessCode, lang }) => {
     const res = await fetch(`${API_BASE_URL}/api/logs/${logId}/turns`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ content, nickname, colorHex, ...(accessCode ? { accessCode } : {}) })
+        body: JSON.stringify({ content, nickname, colorHex, lang, ...(accessCode ? { accessCode } : {}) })
     });
     if (!res.ok) {
         let errorData = {};
@@ -50,7 +50,7 @@ const skipTurnApi = async (logId) => {
 export default function LogDetailPage() {
     const { id } = useParams();
     const queryClient = useQueryClient();
-    const { t } = useLanguage();
+    const { t, lang } = useLanguage();
     const [submitError, setSubmitError] = useState('');
     const [accessCode, setAccessCode] = useState('');
     // Tracks which writer the creator has selected to skip (defaults to nextWriter)
@@ -78,7 +78,7 @@ export default function LogDetailPage() {
     const handleTurnSubmit = async ({ content, nickname, colorHex }) => {
         setSubmitError('');
         try {
-            await submitTurnApi({ logId: id, content, nickname, colorHex, accessCode });
+            await submitTurnApi({ logId: id, content, nickname, colorHex, accessCode, lang });
             queryClient.invalidateQueries({ queryKey: ['log', id] });
         } catch (err) {
             setSubmitError(err.message);
