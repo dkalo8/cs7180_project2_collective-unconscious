@@ -36,7 +36,7 @@ describe('WriteZone Component', () => {
         });
     });
 
-    it('passes an empty nickname if the field is empty on submit', async () => {
+    it('submits a generated placeholder nickname if the field is empty', async () => {
         const mockSubmit = vi.fn();
         renderWithClient(<WriteZone logId="123" colorHex="#000" onSubmit={mockSubmit} />);
 
@@ -49,9 +49,12 @@ describe('WriteZone Component', () => {
         await waitFor(() => {
             expect(mockSubmit).toHaveBeenCalledWith({
                 content: 'This is my turn.',
-                nickname: '',
+                nickname: expect.any(String),
                 colorHex: '#000'
             });
+            // Nickname should be non-empty (a generated placeholder, not '')
+            const calledNick = mockSubmit.mock.calls[0][0].nickname;
+            expect(calledNick.length).toBeGreaterThan(0);
         });
     });
 
