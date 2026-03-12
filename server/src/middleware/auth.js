@@ -31,7 +31,7 @@ const sessionMiddleware = (req, res, next) => {
         
         res.cookie('sessionToken', token, {
             httpOnly: true,
-            sameSite: 'lax', // 'lax' is good for navigation, 'strict' if highly sensitive
+            sameSite: isProduction ? 'none' : 'lax',
             secure: isProduction,
             maxAge: maxAge,
         });
