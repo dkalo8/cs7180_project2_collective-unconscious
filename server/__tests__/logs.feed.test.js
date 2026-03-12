@@ -15,7 +15,7 @@ describe('Discovery Feed API: GET /api/logs', () => {
         await prisma.log.create({
             data: {
                 title: 'Spring Haiku',
-                category: 'Haiku',
+                category: 'HAIKU',
                 status: 'ACTIVE',
                 accessMode: 'OPEN',
                 turnMode: 'FREESTYLE',
@@ -26,7 +26,7 @@ describe('Discovery Feed API: GET /api/logs', () => {
         const privateLog = await prisma.log.create({
             data: {
                 title: 'Secret Diary',
-                category: 'Freewriting',
+                category: 'FREEWRITING',
                 status: 'ACTIVE',
                 accessMode: 'PRIVATE',
                 turnMode: 'FREESTYLE',
@@ -38,7 +38,7 @@ describe('Discovery Feed API: GET /api/logs', () => {
         const completedLog = await prisma.log.create({
             data: {
                 title: 'Finished Novel',
-                category: 'Short Novel',
+                category: 'SHORT_NOVEL',
                 status: 'COMPLETED',
                 accessMode: 'OPEN',
                 turnMode: 'STRUCTURED',
@@ -97,7 +97,7 @@ describe('Discovery Feed API: GET /api/logs', () => {
         await prisma.log.create({
             data: {
                 title: 'Seed Only Log',
-                category: 'Freewriting',
+                category: 'FREEWRITING',
                 status: 'ACTIVE',
                 accessMode: 'OPEN',
                 turnMode: 'FREESTYLE',
@@ -123,7 +123,7 @@ describe('Discovery Feed API: GET /api/logs', () => {
     });
 
     it('should filter by category if provided', async () => {
-        const res = await request(app).get('/api/logs?category=Haiku');
+        const res = await request(app).get('/api/logs?category=HAIKU');
         expect(res.status).toBe(200);
         expect(res.body.data.length).toBe(1);
         expect(res.body.data[0].title).toBe('Spring Haiku');

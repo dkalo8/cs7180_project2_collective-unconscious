@@ -3,10 +3,10 @@ import { T, CAT } from '../utils/i18n';
 
 // Maps API category values → CAT keys
 export const CAT_KEY_MAP = {
-  'Freewriting': 'freewriting',
-  'Haiku': 'haiku',
-  'Poem': 'poem',
-  'Short Novel': 'novel',
+  'FREEWRITING': 'freewriting',
+  'HAIKU': 'haiku',
+  'POEM': 'poem',
+  'SHORT_NOVEL': 'novel',
 };
 
 const LanguageContext = createContext({

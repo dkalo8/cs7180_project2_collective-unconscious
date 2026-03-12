@@ -30,7 +30,7 @@ describe('POST /api/logs', () => {
         expect(res.status).toBe(201);
         expect(res.body).toHaveProperty('id');
         expect(res.body.title).toBe('My Public Log');
-        expect(res.body.category).toBe('Freewriting'); // server-side default
+        expect(res.body.category).toBe('FREEWRITING'); // server-side default
         expect(res.body.accessCode).toBeNull();
         
         // Creator is NOT inserted into Writer table automatically

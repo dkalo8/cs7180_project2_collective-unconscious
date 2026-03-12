@@ -16,11 +16,11 @@ datasource db {
 model Log {
   id                 String   @id @default(uuid())
   title              String
-  category           String   @default("Freewriting")
+  category           Category @default(FREEWRITING)
 
   // Modes
-  accessMode         String   @default("OPEN")      // "OPEN" | "PRIVATE"
-  turnMode           String   @default("FREESTYLE") // "FREESTYLE" | "STRUCTURED"
+  accessMode         AccessMode @default(OPEN)
+  turnMode           TurnMode   @default(FREESTYLE)
   
   // Advanced Settings
   participantLimit   Int?     // null means unlimited
@@ -30,7 +30,7 @@ model Log {
   seed               String?  // Initial prompt or constraint
 
   // State
-  status             String   @default("ACTIVE")    // "ACTIVE" | "COMPLETED"
+  status             LogStatus @default(ACTIVE)
   accessCode         String?  // Shareable code for private logs (e.g., 6-chars)
 
   createdAt          DateTime @default(now())
@@ -49,7 +49,7 @@ model User {
   displayName String
   bio         String?
   avatarUrl   String?
-  role        String   @default("USER") // "USER" | "ADMIN"
+  role        UserRole @default(USER)
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -114,9 +114,9 @@ model Report {
   id            String   @id @default(uuid())
   reporterToken String   // Session token of the reporter
   reason        String
-  targetType    String   // "TURN" | "LOG"
+  targetType    TargetType
   targetId      String
-  status        String   @default("PENDING") // "PENDING" | "DISMISSED" | "ACTIONED"
+  status        ReportStatus @default(PENDING)
   
   createdAt     DateTime @default(now())
   
@@ -138,11 +138,55 @@ model Reaction {
 model ModerationAction {
   id            String   @id @default(uuid())
   moderatorId   String   // User ID of the moderator
-  action        String   // "HIDE_TURN" | "CLOSE_LOG" | "DISMISS"
+  action        ModAction
   reportId      String
   report        Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
   targetId      String
   note          String?
   
   createdAt     DateTime @default(now())
+}
+
+enum AccessMode {
+  OPEN
+  PRIVATE
+}
+
+enum TurnMode {
+  FREESTYLE
+  STRUCTURED
+}
+
+enum LogStatus {
+  ACTIVE
+  COMPLETED
+}
+
+enum Category {
+  FREEWRITING
+  HAIKU
+  POEM
+  SHORT_NOVEL
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum TargetType {
+  TURN
+  LOG
+}
+
+enum ReportStatus {
+  PENDING
+  DISMISSED
+  ACTIONED
+}
+
+enum ModAction {
+  HIDE_TURN
+  CLOSE_LOG
+  DISMISS
 }

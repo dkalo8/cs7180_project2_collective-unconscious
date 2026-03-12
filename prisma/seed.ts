@@ -14,7 +14,7 @@ async function main() {
   const logHaiku = await prisma.log.create({
     data: {
       title: 'Dawn on the Platform',
-      category: 'Haiku',
+      category: 'HAIKU',
       accessMode: 'OPEN',
       turnMode: 'STRUCTURED',
       participantLimit: 3,
@@ -86,7 +86,7 @@ async function main() {
   const logNovel = await prisma.log.create({
     data: {
       title: 'The Clockwork City',
-      category: 'Short Novel',
+      category: 'SHORT_NOVEL',
       accessMode: 'OPEN',
       turnMode: 'FREESTYLE',
       perTurnLengthLimit: 300,
@@ -138,7 +138,7 @@ async function main() {
   const logFunny = await prisma.log.create({
     data: {
       title: 'The Great Subway Sandwich Incident',
-      category: 'Freewriting',
+      category: 'FREEWRITING',
       accessMode: 'OPEN',
       turnMode: 'FREESTYLE',
       status: 'ACTIVE',
