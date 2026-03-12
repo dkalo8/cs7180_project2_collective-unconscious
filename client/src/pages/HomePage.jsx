@@ -4,7 +4,7 @@ import { fetchLogs } from '../services/log.service';
 import { useLanguage } from '../context/LanguageContext';
 import { CAT_KEY_MAP } from '../context/LanguageContext';
 
-const CATEGORIES = ['Freewriting', 'Haiku', 'Poem', 'Short Novel'];
+const CATEGORIES = ['FREEWRITING', 'HAIKU', 'POEM', 'SHORT_NOVEL'];
 
 export default function HomePage() {
   const { t, cat } = useLanguage();

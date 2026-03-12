@@ -1,3 +1,4 @@
+require('dotenv').config();
 const request = require('supertest');
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');

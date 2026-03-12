@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { CAT_KEY_MAP } from '../context/LanguageContext';
 
 // Default category value must match backend schema default
-const CATEGORIES = ['Freewriting', 'Haiku', 'Poem', 'Short Novel'];
+const CATEGORIES = ['FREEWRITING', 'HAIKU', 'POEM', 'SHORT_NOVEL'];
 
 const TIMEOUT_VALUES = ['', '1h', '6h', '12h', '24h', '48h', '7d'];
 const PER_TURN_VALUES = ['', '1_sentence', '2_sentences', '1_paragraph', 'custom_word_count'];
@@ -15,7 +15,7 @@ export default function CreateLogPage() {
 
     // Required fields
     const [title, setTitle] = useState('');
-    const [category, setCategory] = useState('Freewriting');
+    const [category, setCategory] = useState('FREEWRITING');
     const [accessMode, setAccessMode] = useState('OPEN');
     const [turnMode, setTurnMode] = useState('FREESTYLE');
 

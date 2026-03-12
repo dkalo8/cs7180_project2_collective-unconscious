@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -18,7 +19,7 @@ describe('Database Schema Validation (Issue #2)', () => {
     const log = await prisma.log.create({
       data: {
         title: 'Test Log',
-        category: 'Freewriting',
+        category: 'FREEWRITING',
         accessMode: 'OPEN',
         turnMode: 'FREESTYLE',
       },

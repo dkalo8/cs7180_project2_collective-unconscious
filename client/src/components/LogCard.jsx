@@ -1,15 +1,12 @@
 import { Link } from 'react-router-dom';
+import { useLanguage, CAT_KEY_MAP } from '../context/LanguageContext';
 import './LogCard.css';
 
-const CATEGORY_MAP = {
-  'Freewriting': '自由写作',
-  'Haiku': '俳句',
-  'Poem': '诗',
-  'Short Novel': '短篇小说',
-};
-
 const LogCard = ({ log }) => {
-  const categoryChinese = CATEGORY_MAP[log.category] || log.category;
+  const { cat } = useLanguage();
+  const catKey = CAT_KEY_MAP[log.category];
+  const translatedCategory = catKey ? cat[catKey] : log.category;
+  
   const statusSuffix = log.status === 'COMPLETED' ? ', 已完成' : '';
 
   return (
@@ -19,7 +16,7 @@ const LogCard = ({ log }) => {
           {log.title}
         </Link>
         <span className="log-entry-meta">
-          ({categoryChinese}{statusSuffix})
+          ({translatedCategory}{statusSuffix})
         </span>
       </div>
       

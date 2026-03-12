@@ -18,7 +18,7 @@ describe('GET /api/logs/:id', () => {
             title: 'Test Log for Detail API',
             accessMode: 'OPEN',
             turnMode: 'FREESTYLE',
-            category: 'Freewriting'
+            category: 'FREEWRITING'
         });
         
         createdLogId = res.body.id;
@@ -41,7 +41,7 @@ describe('GET /api/logs/:id', () => {
         expect(res.status).toBe(200);
         expect(res.body.id).toBe(createdLogId);
         expect(res.body.title).toBe('Test Log for Detail API');
-        expect(res.body.category).toBe('Freewriting');
+        expect(res.body.category).toBe('FREEWRITING');
         expect(res.body.accessMode).toBe('OPEN');
         expect(res.body.turnMode).toBe('FREESTYLE');
         
