@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { LANG_OPTIONS } from '../utils/i18n';
 import { S } from '../utils/styles';
 import { getMe, logout } from '../services/auth.service';
@@ -14,9 +14,12 @@ export default function Header({ t, lang, setLang }) {
       .catch(() => setUser(null));
   }, []);
 
+  const navigate = useNavigate();
+  
   const handleLogout = async () => {
     await logout();
     setUser(null);
+    navigate('/');
   };
 
   return (

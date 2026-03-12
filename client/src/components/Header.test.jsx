@@ -1,10 +1,19 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import Header from './Header';
 import * as authService from '../services/auth.service';
 import { T } from '../utils/i18n';
+
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 vi.mock('../services/auth.service');
 
@@ -49,11 +58,14 @@ describe('Header', () => {
     expect(setLang).toHaveBeenCalledWith('zh');
   });
 
-  it('handles logout', async () => {
+  it('handles logout and redirects to home', async () => {
     authService.getMe.mockResolvedValue({ id: 'u1', displayName: 'Alice' });
     renderHeader();
     const signOutBtn = await screen.findByText(/sign out/i);
     fireEvent.click(signOutBtn);
     expect(authService.logout).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/');
+    });
   });
 });
