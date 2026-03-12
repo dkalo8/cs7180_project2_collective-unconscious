@@ -98,7 +98,7 @@ describe('LogDetailPage Component', () => {
 
     it('turns are rendered in author colors by default', () => {
         useQuery.mockReturnValue({ isLoading: false, isError: false, data: mockColorLog });
-        const { container } = render(<LogDetailPage />);
+        render(<LogDetailPage />);
         const redTurn = screen.getByText('Red turn');
         const blueTurn = screen.getByText('Blue turn');
         expect(redTurn).toHaveStyle({ color: '#FF0000' });

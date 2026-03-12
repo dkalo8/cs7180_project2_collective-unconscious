@@ -21,7 +21,7 @@ const submitTurnApi = async ({ logId, content, nickname, colorHex, accessCode })
         let errorData = {};
         try {
             errorData = await res.json();
-        } catch (e) {
+        } catch {
             // No JSON body
         }
         throw new Error(errorData.error || 'Failed to submit turn');
@@ -39,7 +39,7 @@ const skipTurnApi = async (logId) => {
         let errorData = {};
         try {
             errorData = await res.json();
-        } catch (e) {
+        } catch {
             // No JSON body
         }
         throw new Error(errorData.error || 'Failed to skip turn');
