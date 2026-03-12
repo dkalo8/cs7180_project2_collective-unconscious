@@ -269,4 +269,4 @@ const skipTurn = async (req, res) => {
     }
 };
 
-module.exports = { submitTurn, skipTurn };
+module.exports = { submitTurn, skipTurn, computeNextExpectedJoinOrder };
