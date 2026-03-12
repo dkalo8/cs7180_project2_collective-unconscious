@@ -5,6 +5,8 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const { passport } = require('./config/passport');
 const { sessionMiddleware } = require('./middleware/auth');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
 const logsRouter = require('./routes/logs');
 const authRouter = require('./routes/auth.routes');
 const usersRouter = require('./routes/users.routes');
@@ -43,6 +45,9 @@ if (process.env.NODE_ENV !== 'production') {
     const devRouter = require('./routes/dev');
     app.use('/api/dev', devRouter);
 }
+
+// Swagger API Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
