@@ -147,17 +147,18 @@ describe('Creator & Join Order Scenarios (Join == First Turn)', () => {
         await submitTurn(logId, userACookie, 'A1'); // A #1 (in-rotation)
         await submitTurn(logId, userBCookie, 'B1'); // B #2 (OOR)
 
-        // Last in-rotation = A1. Next = B. Creator skips B.
+        // After B1(OOR): B is in alreadyWroteIds, pointer advances past B → next = A.
+        // Creator skips A.
         const skipRes = await skipTurnCall(logId, creatorCookie);
         expect(skipRes.status).toBe(200);
 
-        // After skip, last in-rotation (including skip) = B-skip. Next = A.
-        const resA = await submitTurn(logId, userACookie, 'A2');
-        expect(resA.status).toBe(201);
-
-        // Now it's B's turn
+        // After A-skip (in-rotation), alreadyWroteIds since A-skip = {} → next = B.
         const resB = await submitTurn(logId, userBCookie, 'B2');
         expect(resB.status).toBe(201);
+
+        // Now it's A's turn
+        const resA = await submitTurn(logId, userACookie, 'A2');
+        expect(resA.status).toBe(201);
     });
 
     it('Scenario 6 (Edge Case - Non-Creator Skipping Fails): User A tries to skip', async () => {
@@ -177,21 +178,21 @@ describe('Creator & Join Order Scenarios (Join == First Turn)', () => {
         await submitTurn(logId, userACookie, 'A1'); // A #1 (in-rotation)
         await submitTurn(logId, userBCookie, 'B1'); // B #2 (OOR)
 
-        // Next in rotation = B. C joins (OOR — doesn't advance pointer).
+        // C joins (OOR). Now alreadyWroteIds since A1 = {B, C}.
         const resC = await submitTurn(logId, userCCookie, 'C1 jumps in');
         expect(resC.status).toBe(201);
 
-        // Still B's turn (Last in-rotation = A1 → next = B)
+        // B and C both wrote OOR → pointer advances past both → next = A
+        const resA2 = await submitTurn(logId, userACookie, 'A2 rotation turn');
+        expect(resA2.status).toBe(201);
+
+        // After A2 (in-rotation): alreadyWroteIds = {} → next = B
         const resB2 = await submitTurn(logId, userBCookie, 'B2 rotation turn');
         expect(resB2.status).toBe(201);
 
-        // Now it's C's turn (after B in [A, B, C])
+        // Now it's C's turn
         const resC2 = await submitTurn(logId, userCCookie, 'C2 rotation turn');
         expect(resC2.status).toBe(201);
-
-        // Then back to A
-        const resA2 = await submitTurn(logId, userACookie, 'A2');
-        expect(resA2.status).toBe(201);
 
         const writerC = await prisma.writer.findFirst({ where: { logId, sessionToken: global.testTokens.cJoinTok } });
         expect(writerC.joinOrder).toBe(3);
