@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import WriteZone from '../components/WriteZone';
 import ReportButton from '../components/ReportButton';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ShareModal from '../components/ShareModal';
 
 import { getLogById, closeLog } from '../services/log.service';
@@ -119,13 +119,13 @@ export default function LogDetailPage() {
                 const { count } = await removeReaction(id, symbol);
                 setReactions(prev => ({ ...prev, [symbol]: count }));
                 setReacted(prev => ({ ...prev, [symbol]: false }));
-            } catch (_) {}
+            } catch (e) { console.error(e); }
         } else {
             try {
                 const { count } = await addReaction(id, symbol);
                 setReactions(prev => ({ ...prev, [symbol]: count }));
                 setReacted(prev => ({ ...prev, [symbol]: true }));
-            } catch (_) {}
+            } catch (e) { console.error(e); }
         }
     };
 
