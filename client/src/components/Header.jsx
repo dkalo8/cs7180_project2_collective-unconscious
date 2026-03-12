@@ -43,7 +43,7 @@ export default function Header({ t, lang, setLang }) {
         <Link to="/create" style={{ color: '#0033cc' }}>{t.nav.create}</Link>
         <Link to="/about" style={{ color: '#0033cc' }}>{t.nav?.about || 'about'}</Link>
 
-        <div style={{ marginLeft: '20px', fontSize: '14px' }}>
+        <div style={{ fontSize: '14px' }}>
           {LANG_OPTIONS.map((l, i) => (
             <span key={l.code}>
               {i > 0 && <span style={{ color: '#ccc' }}> / </span>}

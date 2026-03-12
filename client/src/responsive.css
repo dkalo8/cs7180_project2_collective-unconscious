@@ -27,10 +27,22 @@
 
 .site-nav {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 12px;
   align-items: center;
   font-size: 16px;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE/Edge */
+  padding-bottom: 4px; /* small padding for any overflow */
+}
+
+.site-nav::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.site-nav > * {
+  flex-shrink: 0;
 }
 
 @media (min-width: 640px) {
