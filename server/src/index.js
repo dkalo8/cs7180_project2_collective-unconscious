@@ -50,6 +50,21 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
+
+// Swagger API Documentation (Serving at /api/docs to work with proxy)
+// Redirect /api/docs to /api/docs/ for stable asset loading
+app.get('/api/docs', (req, res, next) => {
+  if (!req.url.endsWith('/')) {
+    return res.redirect(301, req.originalUrl + '/');
+  }
+  next();
+});
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // API routes
 app.use('/api/logs', logsRouter);
 app.use('/api/auth', authRouter);
@@ -60,14 +75,6 @@ if (process.env.NODE_ENV !== 'production') {
     const devRouter = require('./routes/dev');
     app.use('/api/dev', devRouter);
 }
-
-// Swagger API Documentation (Serving at /api/docs to work with proxy)
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-    res.status(200).json({ status: 'ok' });
-});
 
 // Start server if not in test mode
 if (process.env.NODE_ENV !== 'test') {
