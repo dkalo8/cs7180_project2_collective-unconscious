@@ -25,11 +25,18 @@ app.use(cookieParser());
 // Anonymous session token middleware (Sprint 1 — unchanged)
 app.use(sessionMiddleware);
 
+const PgSession = require('connect-pg-simple')(session);
+
 app.use(
     session({
+        store: new PgSession({
+            conString: process.env.DATABASE_URL,
+            createTableIfMissing: true,
+        }),
         secret: process.env.SESSION_SECRET || 'secret',
         resave: false,
         saveUninitialized: false,
+        cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
     })
 );
 app.use(passport.initialize());
