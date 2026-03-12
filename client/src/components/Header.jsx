@@ -24,16 +24,17 @@ export default function Header({ t, lang, setLang }) {
 
   return (
     <header className="site-header">
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', flexWrap: 'nowrap' }}>
         <Link to="/" style={{
           fontSize: '24px',
           fontWeight: 'bold',
           color: '#000',
-          textDecoration: 'none'
+          textDecoration: 'none',
+          whiteSpace: 'nowrap'
         }}>
           {t.siteName}
         </Link>
-        <span style={{ fontSize: '14px', color: '#999' }}>
+        <span style={{ fontSize: '14px', color: '#999', whiteSpace: 'nowrap' }}>
           {t.tagline}
         </span>
       </div>

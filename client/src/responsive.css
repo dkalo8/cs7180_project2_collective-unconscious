@@ -25,6 +25,16 @@
   margin-bottom: 24px;
 }
 
+/* Ensure title and tagline container doesn't wrap and can scroll if needed */
+.site-header > div:first-child {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.site-header > div:first-child::-webkit-scrollbar {
+  display: none;
+}
+
 .site-nav {
   display: flex;
   flex-wrap: nowrap;
