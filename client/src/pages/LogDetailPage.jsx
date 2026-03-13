@@ -207,7 +207,7 @@ export default function LogDetailPage() {
             <div style={{ paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>
                 <div className="log-detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <h1 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>{log.title}</h1>
-                    <div className="log-detail-actions" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div className="log-detail-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                         <button
                             onClick={toggleColors}
                             style={{
@@ -226,16 +226,16 @@ export default function LogDetailPage() {
                             <button
                                 onClick={() => setIsReportOpen(!isReportOpen)}
                                 style={{
-                                    padding: '4px 10px',
-                                    fontSize: '0.8125rem',
-                                    backgroundColor: '#d4d0c8',
-                                    border: '1px solid #000',
+                                    padding: '0 4px',
+                                    fontSize: '0.75rem',
+                                    backgroundColor: 'transparent',
+                                    border: 'none',
                                     cursor: 'pointer',
-                                    color: '#000',
-                                    minHeight: '32px'
+                                    color: '#999',
+                                    textTransform: 'lowercase'
                                 }}
                             >
-                                {t.log.report}
+                                [{t.log.report}]
                             </button>
                             {isReportOpen && (
                                 <div className="report-dropdown">
