@@ -20,18 +20,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.use(cors({
-    origin: (origin, callback) => {
-        // Allow all origins in non-production environments
-        if (!origin || process.env.NODE_ENV !== 'production') {
-            return callback(null, true);
-        }
-        const allowedOrigins = [process.env.CLIENT_URL || 'http://localhost:5173'];
-        if (allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
     credentials: true,
 }));
 app.use(express.json());
