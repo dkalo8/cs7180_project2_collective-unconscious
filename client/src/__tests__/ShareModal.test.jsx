@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ShareModal from '../components/ShareModal';
+import { LanguageProvider } from '../context/LanguageContext';
 
 // Mock html-to-image
 vi.mock('html-to-image', () => ({
@@ -23,26 +24,38 @@ const mockLog = {
 
 describe('ShareModal', () => {
   it('renders log title and turns', () => {
-    render(<ShareModal log={mockLog} onClose={() => {}} />);
+    render(
+      <LanguageProvider>
+        <ShareModal log={mockLog} onClose={() => {}} />
+      </LanguageProvider>
+    );
     expect(screen.getByText('Test Collective Log')).toBeDefined();
     expect(screen.getByText('Turn one')).toBeDefined();
     expect(screen.getByText('Turn two')).toBeDefined();
   });
 
   it('allows switching themes', () => {
-    render(<ShareModal log={mockLog} onClose={() => {}} />);
+    render(
+      <LanguageProvider>
+        <ShareModal log={mockLog} onClose={() => {}} />
+      </LanguageProvider>
+    );
     
-    // Default theme (Minimal) should have white background in container style
-    const nocturneBtn = screen.getByText('Nocturne');
-    fireEvent.click(nocturneBtn);
+    // Switch to Stardew theme
+    const stardewBtn = screen.getByText('Stardew').closest('button');
+    fireEvent.click(stardewBtn);
     
-    // Theme switching should update the state (indirectly checked by button bolding or similar)
-    expect(nocturneBtn.style.background).toBe('rgb(238, 238, 238)'); // #eee as rendered in test env
+    // Theme switching should update the state (indirectly checked by button background)
+    expect(stardewBtn.style.backgroundColor).toBe('rgb(240, 240, 240)'); // #f0f0f0
   });
 
   it('calls onClose when clicking close button', () => {
     const onClose = vi.fn();
-    render(<ShareModal log={mockLog} onClose={onClose} />);
+    render(
+      <LanguageProvider>
+        <ShareModal log={mockLog} onClose={onClose} />
+      </LanguageProvider>
+    );
     const closeBtn = screen.getByText('×');
     fireEvent.click(closeBtn);
     expect(onClose).toHaveBeenCalled();

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { toPng } from 'html-to-image';
+import { useLanguage } from '../context/LanguageContext';
 
 const THEMES = {
   plain: {
@@ -25,7 +26,7 @@ const WIDTHS = {
 };
 
 const PREVIEW_SCALE_MOBILE = 0.4;
-const PREVIEW_SCALE_DESKTOP = 0.75;
+const PREVIEW_SCALE_DESKTOP = 0.5;
 
 function ThemePlain({ log, turns, colorMode }) {
   return (
@@ -47,9 +48,7 @@ function ThemePlain({ log, turns, colorMode }) {
         style={{
           fontSize: 48,
           fontWeight: 'bold',
-          marginBottom: 36,
-          paddingBottom: 16,
-          borderBottom: '2px solid #000',
+          marginBottom: 24,
           lineHeight: 1.2,
         }}
       >
@@ -374,6 +373,7 @@ const THEME_COMPONENTS = {
 };
 
 export default function ShareModal({ log, onClose }) {
+  const { t } = useLanguage();
   const [theme, setTheme] = useState('plain');
   const [widthMode, setWidthMode] = useState('mobile');
   const [colorMode, setColorMode] = useState('color');
@@ -468,7 +468,7 @@ export default function ShareModal({ log, onClose }) {
         style={{
           backgroundColor: '#fff',
           borderRadius: 8,
-          maxWidth: 1200,
+          maxWidth: isMobileLayout ? '100%' : (theme === 'stardew' ? 1100 : 900),
           width: '100%',
           maxHeight: isMobileLayout ? 'none' : '92vh', // No height limit on mobile
           display: 'flex',
@@ -486,7 +486,7 @@ export default function ShareModal({ log, onClose }) {
             alignItems: 'center',
           }}
         >
-          <h2 style={{ margin: 0, fontSize: 18 }}>Share as Image</h2>
+          <h2 style={{ margin: 0, fontSize: 18 }}>{t.shareModal.title}</h2>
           <button
             onClick={onClose}
             style={{
@@ -514,7 +514,7 @@ export default function ShareModal({ log, onClose }) {
           <div style={{ width: isMobileLayout ? '100%' : 220, flexShrink: 0 }}>
             {/* Theme picker */}
             <h3 style={{ fontSize: 13, marginBottom: 8, color: '#666' }}>
-              Theme
+              {t.shareModal.theme}
             </h3>
             <div
               style={{
@@ -525,26 +525,26 @@ export default function ShareModal({ log, onClose }) {
                 marginBottom: 20,
               }}
             >
-              {Object.values(THEMES).map((t) => (
+              {Object.values(THEMES).map((themeObj) => (
                 <button
-                  key={t.id}
-                  onClick={() => setTheme(t.id)}
+                  key={themeObj.id}
+                  onClick={() => setTheme(themeObj.id)}
                   style={{
                     flex: isMobileLayout ? '1 1 auto' : 'none',
                     padding: '8px 10px',
                     textAlign: 'left',
                     borderRadius: 4,
                     border:
-                      theme === t.id ? '1px solid #000' : '1px solid #ddd',
-                    background: theme === t.id ? '#f0f0f0' : '#fff',
+                      theme === themeObj.id ? '1px solid #000' : '1px solid #ddd',
+                    background: theme === themeObj.id ? '#f0f0f0' : '#fff',
                     cursor: 'pointer',
                     fontSize: 13,
                   }}
                 >
-                  <strong>{t.label}</strong>
+                  <strong>{t.shareModal[themeObj.id]}</strong>
                   {!isMobileLayout && (
                     <span style={{ color: '#999', marginLeft: 6 }}>
-                      {t.desc}
+                      {themeObj.desc}
                     </span>
                   )}
                 </button>
@@ -553,7 +553,7 @@ export default function ShareModal({ log, onClose }) {
 
             {/* Width picker */}
             <h3 style={{ fontSize: 13, marginBottom: 8, color: '#666' }}>
-              Width
+              {t.shareModal.width}
             </h3>
             <div
               style={{
@@ -578,15 +578,15 @@ export default function ShareModal({ log, onClose }) {
                     fontSize: 12,
                   }}
                 >
-                  <div style={{ fontWeight: 'bold' }}>{w.label}</div>
-                  <div style={{ fontSize: 10, color: '#999' }}>{w.desc}</div>
+                  <div style={{ fontWeight: 'bold' }}>{t.shareModal[w.id]}</div>
+                  <div style={{ fontSize: 10, color: '#999' }}>{t.shareModal[`${w.id}Desc`]}</div>
                 </button>
               ))}
             </div>
 
             {/* Color toggle */}
             <h3 style={{ fontSize: 13, marginBottom: 8, color: '#666' }}>
-              Color
+              {t.shareModal.color}
             </h3>
             <div
               style={{
@@ -596,8 +596,8 @@ export default function ShareModal({ log, onClose }) {
               }}
             >
               {[
-                { key: 'color', label: 'Authors' },
-                { key: 'mono', label: 'Single' },
+                { key: 'color', label: t.shareModal.authors },
+                { key: 'mono', label: t.shareModal.single },
               ].map((opt) => (
                 <button
                   key={opt.key}
@@ -627,18 +627,18 @@ export default function ShareModal({ log, onClose }) {
               disabled={exporting}
               style={{
                 width: '100%',
-                padding: 14,
+                padding: '10px 14px',
                 backgroundColor: '#000',
                 color: '#fff',
                 border: 'none',
                 borderRadius: 4,
                 cursor: exporting ? 'wait' : 'pointer',
                 fontWeight: 'bold',
-                fontSize: 14,
+                fontSize: 13,
                 marginBottom: isMobileLayout ? 20 : 0,
               }}
             >
-              {exporting ? 'Generating...' : 'Download PNG'}
+              {exporting ? t.shareModal.exporting : t.shareModal.download}
             </button>
           </div>
 
