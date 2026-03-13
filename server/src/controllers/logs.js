@@ -84,20 +84,21 @@ const createLog = async (req, res) => {
     }
 };
 
+const getLogsQuerySchema = z.object({
+    page:     z.coerce.number().int().min(1).default(1),
+    limit:    z.coerce.number().int().min(1).max(100).default(20),
+    category: z.string().optional(),
+    canWrite: z.string().optional(),
+});
+
 const getLogs = async (req, res) => {
     try {
-        const { category, page = '1', limit = '20', canWrite } = req.query;
-
-        const pageNum = parseInt(page, 10);
-        const limitNum = parseInt(limit, 10);
-
-        if (isNaN(pageNum) || pageNum < 1) {
-            return res.status(400).json({ error: 'Invalid page number' });
-        }
-        if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
-            return res.status(400).json({ error: 'Invalid limit parameter' });
+        const parseResult = getLogsQuerySchema.safeParse(req.query);
+        if (!parseResult.success) {
+            return res.status(400).json({ errors: parseResult.error.flatten().fieldErrors });
         }
 
+        const { page: pageNum, limit: limitNum, category, canWrite } = parseResult.data;
         const skip = (pageNum - 1) * limitNum;
 
         const whereClause = {};
@@ -157,11 +158,11 @@ const getLogs = async (req, res) => {
 
         return res.status(200).json({
             data: formattedLogs,
-            meta: {
-                totalCount,
-                currentPage: pageNum,
+            pagination: {
+                page: pageNum,
+                limit: limitNum,
+                total: totalCount,
                 totalPages: Math.ceil(totalCount / limitNum),
-                hasNextPage: skip + formattedLogs.length < totalCount
             }
         });
 

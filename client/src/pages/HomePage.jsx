@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import LogCard from '../components/LogCard';
+import Pagination from '../components/Pagination';
 import { fetchLogs } from '../services/log.service';
 import { useLanguage } from '../context/LanguageContext';
 import { CAT_KEY_MAP } from '../context/LanguageContext';
@@ -8,6 +10,9 @@ const CATEGORIES = ['FREEWRITING', 'HAIKU', 'POEM', 'SHORT_NOVEL'];
 
 export default function HomePage() {
   const { t, cat } = useLanguage();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = parseInt(searchParams.get('page') || '1', 10);
+
   const [logs, setLogs] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -15,13 +20,29 @@ export default function HomePage() {
   const [canWriteOnly, setCanWriteOnly] = useState(false);
   const [category, setCategory] = useState('');
 
+  const setPage = (p) => setSearchParams(prev => {
+    const next = new URLSearchParams(prev);
+    next.set('page', String(p));
+    return next;
+  });
+
+  const handleCategoryChange = (val) => {
+    setCategory(val);
+    setPage(1);
+  };
+
+  const handleCanWriteToggle = () => {
+    setCanWriteOnly(v => !v);
+    setPage(1);
+  };
+
   useEffect(() => {
     const loadLogs = async () => {
       try {
         setLoading(true);
-        const data = await fetchLogs({ page: 1, limit: 20, canWrite: canWriteOnly, category });
+        const data = await fetchLogs({ page, limit: 20, canWrite: canWriteOnly, category });
         setLogs(data.data);
-        setTotal(data.meta.totalCount);
+        setTotal(data.pagination.total);
         setError(null);
       } catch (err) {
         console.error('Failed to load logs', err);
@@ -33,7 +54,7 @@ export default function HomePage() {
 
     loadLogs();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canWriteOnly, category]);
+  }, [page, canWriteOnly, category]);
 
   return (
     <div style={{ maxWidth: '720px' }}>
@@ -42,7 +63,7 @@ export default function HomePage() {
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <select
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => handleCategoryChange(e.target.value)}
             style={{
               fontSize: '13px',
               padding: '4px 8px',
@@ -58,7 +79,7 @@ export default function HomePage() {
             ))}
           </select>
           <button
-            onClick={() => setCanWriteOnly(v => !v)}
+            onClick={handleCanWriteToggle}
             style={{
               fontSize: '13px',
               padding: '4px 12px',
@@ -87,6 +108,12 @@ export default function HomePage() {
       </div>
 
       {loading && <p style={{ color: '#999' }}>{t.feed.loading}</p>}
+
+      <Pagination
+        page={page}
+        totalPages={Math.ceil(total / 20)}
+        onPageChange={setPage}
+      />
     </div>
   );
 }

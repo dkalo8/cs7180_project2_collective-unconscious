@@ -134,13 +134,51 @@ describe('Discovery Feed API: GET /api/logs', () => {
         const resPage1 = await request(app).get('/api/logs?page=1&limit=2');
         expect(resPage1.status).toBe(200);
         expect(resPage1.body.data.length).toBe(2);
-        expect(resPage1.body.meta.currentPage).toBe(1);
-        expect(resPage1.body.meta.hasNextPage).toBe(true);
+        expect(resPage1.body.pagination.page).toBe(1);
+        expect(resPage1.body.pagination.totalPages).toBeGreaterThan(1);
 
         const resPage2 = await request(app).get('/api/logs?page=2&limit=2');
         expect(resPage2.status).toBe(200);
         expect(resPage2.body.data.length).toBe(2);
-        expect(resPage2.body.meta.currentPage).toBe(2);
-        expect(resPage2.body.meta.hasNextPage).toBe(false);
+        expect(resPage2.body.pagination.page).toBe(2);
+        expect(resPage2.body.pagination.totalPages).toBe(2);
+    });
+
+    it('should return pagination key with page, limit, total, totalPages', async () => {
+        const res = await request(app).get('/api/logs?page=1&limit=5');
+        expect(res.status).toBe(200);
+        expect(res.body.pagination).toBeDefined();
+        expect(res.body.pagination.page).toBe(1);
+        expect(res.body.pagination.limit).toBe(5);
+        expect(typeof res.body.pagination.total).toBe('number');
+        expect(typeof res.body.pagination.totalPages).toBe('number');
+        expect(res.body.pagination.totalPages).toBe(Math.ceil(res.body.pagination.total / 5));
+    });
+
+    it('should paginate correctly when combined with category filter', async () => {
+        // Only 1 HAIKU log exists, so page=1&limit=1 should show totalPages=1
+        const res = await request(app).get('/api/logs?category=HAIKU&page=1&limit=1');
+        expect(res.status).toBe(200);
+        expect(res.body.data.length).toBe(1);
+        expect(res.body.pagination.total).toBe(1);
+        expect(res.body.pagination.totalPages).toBe(1);
+    });
+
+    it('should return empty data array (not 400) when page exceeds totalPages', async () => {
+        const res = await request(app).get('/api/logs?page=9999&limit=20');
+        expect(res.status).toBe(200);
+        expect(res.body.data).toEqual([]);
+        expect(res.body.pagination.page).toBe(9999);
+    });
+
+    it('should return 400 for invalid params: page=abc, limit=0, limit=101', async () => {
+        const resPageAbc = await request(app).get('/api/logs?page=abc');
+        expect(resPageAbc.status).toBe(400);
+
+        const resLimitZero = await request(app).get('/api/logs?limit=0');
+        expect(resLimitZero.status).toBe(400);
+
+        const resLimitOver = await request(app).get('/api/logs?limit=101');
+        expect(resLimitOver.status).toBe(400);
     });
 });
