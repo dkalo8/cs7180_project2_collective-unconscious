@@ -154,10 +154,10 @@ export default function LogDetailPage() {
     return (
         <div className="log-detail">
             {/* Header */}
-            <div style={{ paddingBottom: 8, marginBottom: 24 }}>
-                <div className="log-detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 8 }}>
-                    <h1 style={{ margin: '0 0 8px 0', fontSize: '1.5rem' }}>{log.title}</h1>
-                    <div className="log-detail-actions" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>
+                <div className="log-detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <h1 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>{log.title}</h1>
+                    <div className="log-detail-actions" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                         <button
                             onClick={toggleColors}
                             style={{
@@ -197,12 +197,12 @@ export default function LogDetailPage() {
 
             {/* Turns content */}
             {visibleTurns.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 40 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '2.5rem' }}>
                     {visibleTurns.map((turn, index) => {
                         const writer = log.writers?.find(w => w.id === turn.writerId);
                         const textColor = colorsHidden ? '#000000' : (writer?.colorHex || '#000');
                         return (
-                            <div key={turn.id || index} style={{ marginBottom: 12 }}>
+                            <div key={turn.id || index} style={{ marginBottom: '0.75rem' }}>
                                 <div style={{ fontSize: '1.25rem', lineHeight: 1.6, whiteSpace: 'pre-wrap', color: textColor, display: 'inline' }}>
                                     {turn.content}
                                 </div>
@@ -212,7 +212,7 @@ export default function LogDetailPage() {
                     })}
                 </div>
             ) : (
-                <p style={{ color: '#666', fontStyle: 'italic', marginBottom: 40 }}>{t.log.empty}</p>
+                <p style={{ color: '#666', fontStyle: 'italic', marginBottom: '2.5rem' }}>{t.log.empty}</p>
             )}
 
             {/* Write zone / completed state */}
