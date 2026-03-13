@@ -105,18 +105,10 @@
 - **Colored Content:** Confirmed decision to color turn text directly rather than using colored left margins.
 - **Anonymous/Clean Log:** Nicknames are removed from the log body to keep the focus on the text, but are displayed at the bottom of the log in the participant gallery.
 - **Dynamic Skip UI:** The skip button was moved below the `WriteZone`, removed of its emoji, and upgraded with a dynamic dropdown allowing the Keeper to select the target writer.
-- **Manual Closure:** Added the ability for the Keeper to manually close any log (`PATCH /api/logs/:id/close`).
 
-## 2026-03-12: Mobile Safari Third-Party Cookie Fix
-
-### Problem
-All 5 bug fixes from PR #54 (user identity bugs) work on desktop but fail on mobile Safari. Root cause: the UI (`collective-unconscious-ui.onrender.com`) and API (`collective-unconscious-api.onrender.com`) are deployed as separate Render services on different subdomains. Since `onrender.com` is a **Public Suffix**, the browser treats them as completely separate sites. Mobile Safari (iOS 17+) blocks third-party cookies entirely via Intelligent Tracking Prevention (ITP), so the session cookie set by the API is never sent back from the UI domain. Every API request from mobile gets a fresh session → server never recognizes returning writers → identity-dependent features break.
-
-### Option A: Single-Origin Service (Rejected)
-Merge both Render services into one: have Express serve the client's built static files in production. All requests go to the same domain, making cookies first-party. Requires changes to `render.yaml`, `server/src/index.js`, `config.js`, and `responsive.css`.
-
-### Option B: Render Rewrite Proxy (Chosen)
-Keep the two-service architecture (static site for frontend, web service for backend). Configure Render's built-in **Rewrite rules** on the static site to proxy `/api/*` requests through the UI domain to the backend service. The browser only sees the UI domain for all requests, making cookies first-party. No code changes needed — configuration only on Render dashboard.
-
-### Decision
-Going with **Option B** (Render Rewrite Proxy). Teammate already has the two-service setup running and this approach requires no code changes — only Render dashboard configuration. Keeps frontend and backend deployments independent.
+## 2026-03-12: AI Modality Standardization
+- **Standardized on 3 modalities** for project development to maximize efficiency and rigor:
+    - **Claude 4.6 Sonnet (Web)**: High-level reasoning, PRD drafting, and strategic pivot planning (e.g., the Proxy Pivot solution).
+    - **Antigravity (IDE)**: Primary implementation engine, TDD enforcement (81%+ coverage), and automated environment setup.
+    - **GitHub Copilot**: Tactical inline completions, Tailwind class ordering, and boilerplate acceleration.
+- **Verification**: This multi-modal approach allowed a 2-person team to maintain professional engineering standards (CI/CD, Swagger docs, high test coverage) at rapid pace.
