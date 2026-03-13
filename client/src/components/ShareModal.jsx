@@ -47,9 +47,7 @@ function ThemePlain({ log, turns, colorMode }) {
         style={{
           fontSize: 48,
           fontWeight: 'bold',
-          marginBottom: 36,
-          paddingBottom: 16,
-          borderBottom: '2px solid #000',
+          marginBottom: 24,
           lineHeight: 1.2,
         }}
       >
