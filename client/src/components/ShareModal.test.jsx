@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ShareModal from './ShareModal';
+import { LanguageProvider } from '../context/LanguageContext';
 import * as htmlToImage from 'html-to-image';
 
 vi.mock('html-to-image', () => ({
@@ -25,14 +26,22 @@ describe('ShareModal', () => {
   });
 
   it('renders modal with title and visible turns', () => {
-    render(<ShareModal log={mockLog} onClose={mockOnClose} />);
+    render(
+      <LanguageProvider>
+        <ShareModal log={mockLog} onClose={mockOnClose} />
+      </LanguageProvider>
+    );
     expect(screen.getByText('Test Log')).toBeInTheDocument();
     expect(screen.getByText('Hello')).toBeInTheDocument();
     expect(screen.queryByText('World')).not.toBeInTheDocument();
   });
 
   it('handles theme switching', () => {
-    render(<ShareModal log={mockLog} onClose={mockOnClose} />);
+    render(
+      <LanguageProvider>
+        <ShareModal log={mockLog} onClose={mockOnClose} />
+      </LanguageProvider>
+    );
 
     ['Plain', 'Notepad', 'Stardew'].forEach(theme => {
       const btn = screen.getByRole('button', { name: new RegExp(theme, 'i') });
@@ -45,17 +54,21 @@ describe('ShareModal', () => {
     htmlToImage.toPng.mockResolvedValue('data:image/png;base64,123');
     const linkClickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
 
-    render(<ShareModal log={mockLog} onClose={mockOnClose} />);
-    const downloadBtn = screen.getByRole('button', { name: /download png/i });
+    render(
+      <LanguageProvider>
+        <ShareModal log={mockLog} onClose={mockOnClose} />
+      </LanguageProvider>
+    );
+    const downloadBtn = screen.getByRole('button', { name: /download image/i });
     fireEvent.click(downloadBtn);
 
-    expect(downloadBtn).toHaveTextContent(/generating/i);
+    expect(downloadBtn).toHaveTextContent(/exporting/i);
 
     await waitFor(() => {
       expect(htmlToImage.toPng).toHaveBeenCalled();
     });
 
-    expect(downloadBtn).toHaveTextContent(/download png/i);
+    expect(downloadBtn).toHaveTextContent(/download image/i);
     linkClickSpy.mockRestore();
   });
 
@@ -63,8 +76,12 @@ describe('ShareModal', () => {
     const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     htmlToImage.toPng.mockRejectedValue(new Error('Fail'));
 
-    render(<ShareModal log={mockLog} onClose={mockOnClose} />);
-    fireEvent.click(screen.getByRole('button', { name: /download png/i }));
+    render(
+      <LanguageProvider>
+        <ShareModal log={mockLog} onClose={mockOnClose} />
+      </LanguageProvider>
+    );
+    fireEvent.click(screen.getByRole('button', { name: /download image/i }));
 
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith('Failed to generate image. Please try again.');
@@ -73,7 +90,11 @@ describe('ShareModal', () => {
   });
 
   it('calls onClose when Close button is clicked', () => {
-    render(<ShareModal log={mockLog} onClose={mockOnClose} />);
+    render(
+      <LanguageProvider>
+        <ShareModal log={mockLog} onClose={mockOnClose} />
+      </LanguageProvider>
+    );
     const closeBtn = screen.getByRole('button', { name: /×/i });
     fireEvent.click(closeBtn);
     expect(mockOnClose).toHaveBeenCalled();

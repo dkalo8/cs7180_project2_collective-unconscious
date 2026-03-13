@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ShareModal from '../components/ShareModal';
+import { LanguageProvider } from '../context/LanguageContext';
 
 // Mock html-to-image
 vi.mock('html-to-image', () => ({
@@ -23,14 +24,22 @@ const mockLog = {
 
 describe('ShareModal', () => {
   it('renders log title and turns', () => {
-    render(<ShareModal log={mockLog} onClose={() => {}} />);
+    render(
+      <LanguageProvider>
+        <ShareModal log={mockLog} onClose={() => {}} />
+      </LanguageProvider>
+    );
     expect(screen.getByText('Test Collective Log')).toBeDefined();
     expect(screen.getByText('Turn one')).toBeDefined();
     expect(screen.getByText('Turn two')).toBeDefined();
   });
 
   it('allows switching themes', () => {
-    render(<ShareModal log={mockLog} onClose={() => {}} />);
+    render(
+      <LanguageProvider>
+        <ShareModal log={mockLog} onClose={() => {}} />
+      </LanguageProvider>
+    );
     
     // Switch to Stardew theme
     const stardewBtn = screen.getByText('Stardew').closest('button');
@@ -42,7 +51,11 @@ describe('ShareModal', () => {
 
   it('calls onClose when clicking close button', () => {
     const onClose = vi.fn();
-    render(<ShareModal log={mockLog} onClose={onClose} />);
+    render(
+      <LanguageProvider>
+        <ShareModal log={mockLog} onClose={onClose} />
+      </LanguageProvider>
+    );
     const closeBtn = screen.getByText('×');
     fireEvent.click(closeBtn);
     expect(onClose).toHaveBeenCalled();
