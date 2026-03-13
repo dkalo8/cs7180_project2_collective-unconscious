@@ -154,7 +154,7 @@ export default function LogDetailPage() {
     return (
         <div className="log-detail">
             {/* Header */}
-            <div style={{ borderBottom: '2px solid #ccc', paddingBottom: 16, marginBottom: 24 }}>
+            <div style={{ paddingBottom: 8, marginBottom: 24 }}>
                 <div className="log-detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 8 }}>
                     <h1 style={{ margin: '0 0 8px 0', fontSize: 24 }}>{log.title}</h1>
                     <div className="log-detail-actions" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -190,7 +190,7 @@ export default function LogDetailPage() {
                     </div>
                 </div>
                 <div style={{ color: '#666', fontSize: 14 }}>
-                    {t.log.mode(log.turnMode?.toLowerCase())} &middot; {log.status}
+                    {t.log.mode(log.turnMode?.toLowerCase())} &middot; {t.log.status(log.status)}
                     {log.turnLimit && <span> &middot; {t.log.round(log.turns?.length ?? 0, log.turnLimit)}</span>}
                 </div>
             </div>
@@ -217,19 +217,18 @@ export default function LogDetailPage() {
 
             {/* Write zone / completed state */}
             {isCompleted ? (
-                <div style={{ padding: 24, textAlign: 'center', backgroundColor: '#f9f9f9', borderTop: '2px solid #ccc', fontWeight: 'bold' }}>
-                    <p style={{ margin: '0 0 16px 0' }}>{t.log.completed}</p>
+                <div style={{ padding: '24px 0', textAlign: 'center', fontWeight: 'bold' }}>
+                    <p style={{ margin: '0 0 16px 0', fontSize: 20 }}>{t.log.completed}</p>
                     <button 
                         onClick={() => setShowShareModal(true)}
                         style={{
                             marginBottom: 24,
-                            padding: '10px 20px',
-                            backgroundColor: '#000',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: 4,
+                            padding: '10px 24px',
+                            backgroundColor: '#d4d0c8',
+                            color: '#000',
+                            border: '2px solid #000',
                             cursor: 'pointer',
-                            fontSize: 14,
+                            fontSize: 16,
                             fontWeight: 'bold'
                         }}
                     >
