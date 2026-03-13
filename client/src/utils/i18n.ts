@@ -23,6 +23,8 @@ export const T: any = {
       empty: "还没有内容。", completed: "这篇 Log 已完结。",
       status: (s: string) => s === 'OPEN' ? '进行中' : '已完成',
       shareAsImage: "分享为图片",
+      showColors: "显示颜色",
+      hideColors: "隐藏颜色",
     },
     create: {
       title: "新建 Log", logTitle: "标题", logTitlePh: "给这篇起个名字",
@@ -64,6 +66,8 @@ export const T: any = {
       empty: "No turns written yet.", completed: "This log has been completed.",
       status: (s: string) => s === 'OPEN' ? 'active' : 'completed',
       shareAsImage: "share as image",
+      showColors: "show colors",
+      hideColors: "hide colors",
     },
     create: {
       title: "New Log", logTitle: "Title", logTitlePh: "give it a name",
@@ -108,6 +112,8 @@ export const T: any = {
       empty: "Aún no hay turnos.", completed: "Este log ha sido completado.",
       status: (s: string) => s === 'OPEN' ? 'en curso' : 'completado',
       shareAsImage: "compartir como imagen",
+      showColors: "mostrar colores",
+      hideColors: "ocultar colores",
     },
     create: {
       title: "Nuevo Log", logTitle: "Título", logTitlePh: "dale un nombre",

@@ -168,7 +168,7 @@ export default function LogDetailPage() {
                                 cursor: 'pointer',
                             }}
                         >
-                            {colorsHidden ? 'Show colors' : 'Hide colors'}
+                            {colorsHidden ? t.log.showColors : t.log.hideColors}
                         </button>
                     {log.isCreator && !isCompleted && (
                         <button
@@ -223,13 +223,12 @@ export default function LogDetailPage() {
                         <button 
                             onClick={() => setShowShareModal(true)}
                             style={{
-                                padding: '3px 10px',
+                                padding: '4px 10px',
                                 backgroundColor: '#d4d0c8',
                                 color: '#000',
-                                border: '2px solid #000',
+                                border: '1px solid #000',
                                 cursor: 'pointer',
-                                fontSize: 12,
-                                fontWeight: 'bold'
+                                fontSize: 13,
                             }}
                         >
                             {t.log.shareAsImage}
