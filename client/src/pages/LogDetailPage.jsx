@@ -205,18 +205,32 @@ export default function LogDetailPage() {
         <div className="log-detail">
             {/* Header */}
             <div style={{ paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>
-                <div className="log-detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <h1 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>{log.title}</h1>
-                    <div className="log-detail-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <h1 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>{log.title}</h1>
+                <div 
+                    className="log-detail-header-sub" 
+                    style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center', 
+                        flexWrap: 'wrap', 
+                        gap: '0.5rem' 
+                    }}
+                >
+                    <div style={{ color: '#666', fontSize: '0.8125rem', whiteSpace: 'nowrap' }}>
+                        {t.log.mode(log.turnMode?.toLowerCase())} &middot; {t.log.status(log.status)}
+                        {log.turnLimit && <span className="hide-on-mobile"> &middot; {t.log.round(log.turns?.length ?? 0, log.turnLimit)}</span>}
+                    </div>
+
+                    <div className="log-detail-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                         <button
                             onClick={toggleColors}
                             style={{
-                                padding: '4px 10px',
-                                fontSize: '0.8125rem',
+                                padding: '2px 8px',
+                                fontSize: '0.75rem',
                                 backgroundColor: '#d4d0c8',
                                 border: '1px solid #000',
                                 cursor: 'pointer',
-                                minHeight: '32px'
+                                minHeight: '26px'
                             }}
                         >
                             {colorsHidden ? t.log.showColors : t.log.hideColors}
@@ -326,24 +340,20 @@ export default function LogDetailPage() {
                             <button
                                 onClick={handleCloseLog}
                                 style={{
-                                    padding: '6px 14px',
-                                    fontSize: '0.8125rem',
+                                    padding: '4px 8px',
+                                    fontSize: '0.75rem',
                                     backgroundColor: '#fff',
                                     border: '1px solid #ccc',
                                     borderRadius: 4,
                                     cursor: 'pointer',
                                     color: '#c00',
-                                    minHeight: '32px'
+                                    minHeight: '26px'
                                 }}
                             >
                                 {t.log.close}
                             </button>
                         )}
                     </div>
-                </div>
-                <div style={{ color: '#666', fontSize: '0.875rem' }}>
-                    {t.log.mode(log.turnMode?.toLowerCase())} &middot; {t.log.status(log.status)}
-                    {log.turnLimit && <span> &middot; {t.log.round(log.turns?.length ?? 0, log.turnLimit)}</span>}
                 </div>
             </div>
 

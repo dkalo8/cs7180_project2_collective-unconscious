@@ -130,8 +130,18 @@
     gap: 8px;
   }
   .log-detail-actions {
-    width: 100%;
-    justify-content: flex-start;
+    /* Auto width to allow side-by-side with status */
+    justify-content: flex-end;
+  }
+}
+
+.hide-on-mobile {
+  display: inline;
+}
+
+@media (max-width: 479px) {
+  .hide-on-mobile {
+    display: none;
   }
 }
 
