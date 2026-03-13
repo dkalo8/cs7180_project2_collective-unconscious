@@ -32,12 +32,12 @@ describe('ShareModal', () => {
   it('allows switching themes', () => {
     render(<ShareModal log={mockLog} onClose={() => {}} />);
     
-    // Default theme (Minimal) should have white background in container style
-    const nocturneBtn = screen.getByText('Nocturne');
-    fireEvent.click(nocturneBtn);
+    // Switch to Stardew theme
+    const stardewBtn = screen.getByText('Stardew').closest('button');
+    fireEvent.click(stardewBtn);
     
-    // Theme switching should update the state (indirectly checked by button bolding or similar)
-    expect(nocturneBtn.style.background).toBe('rgb(238, 238, 238)'); // #eee as rendered in test env
+    // Theme switching should update the state (indirectly checked by button background)
+    expect(stardewBtn.style.backgroundColor).toBe('rgb(240, 240, 240)'); // #f0f0f0
   });
 
   it('calls onClose when clicking close button', () => {

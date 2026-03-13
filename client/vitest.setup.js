@@ -7,3 +7,11 @@ vi.mock('./src/config', () => ({
 }));
 
 vi.stubEnv('VITE_API_URL', 'http://127.0.0.1:3000');
+
+// Mock ResizeObserver for components that use it (like ShareModal)
+global.ResizeObserver = class {
+  constructor(callback) {}
+  disconnect() {}
+  observe() {}
+  unobserve() {}
+};

@@ -34,10 +34,10 @@ describe('ShareModal', () => {
   it('handles theme switching', () => {
     render(<ShareModal log={mockLog} onClose={mockOnClose} />);
 
-    ['Minimal', 'Nocturne', 'Parchment'].forEach(theme => {
+    ['Plain', 'Notepad', 'Stardew'].forEach(theme => {
       const btn = screen.getByRole('button', { name: new RegExp(theme, 'i') });
       fireEvent.click(btn);
-      expect(btn).toHaveStyle({ fontWeight: 'bold' });
+      expect(btn).toHaveStyle({ backgroundColor: 'rgb(240, 240, 240)' });
     });
   });
 
