@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import WriteZone from '../components/WriteZone';
-import ReportButton from '../components/ReportButton';
 import { useState } from 'react';
 import ShareModal from '../components/ShareModal';
 
@@ -70,6 +69,13 @@ export default function LogDetailPage() {
     const [reactions, setReactions] = useState({});
     const [reacted, setReacted] = useState({});
 
+    // Report states
+    const [isReportOpen, setIsReportOpen] = useState(false);
+    const [reportingTurnIds, setReportingTurnIds] = useState([]);
+    const [reportReason, setReportReason] = useState('spam');
+    const [isReporting, setIsReporting] = useState(false);
+    const [reportSuccess, setReportSuccess] = useState(false);
+
     const { data: log, isLoading, isError, error } = useQuery({
         queryKey: ['log', id],
         queryFn: () => getLogById(id),
@@ -104,6 +110,50 @@ export default function LogDetailPage() {
         } catch (err) {
             setSubmitError(err.message);
         }
+    };
+
+    const handleBulkReport = async (e) => {
+        e.preventDefault();
+        setIsReporting(true);
+        try {
+            const targets = [];
+            if (reportingTurnIds.length > 0) {
+                for (const turnId of reportingTurnIds) {
+                    targets.push({ targetType: 'TURN', targetId: turnId });
+                }
+            } else {
+                targets.push({ targetType: 'LOG', targetId: id });
+            }
+
+            await Promise.all(targets.map(t => 
+                fetch(`${API_BASE_URL}/api/reports`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ ...t, reason: reportReason }),
+                })
+            ));
+
+            setReportSuccess(true);
+            setTimeout(() => {
+                setReportSuccess(false);
+                setIsReportOpen(false);
+                setReportingTurnIds([]);
+            }, 2000);
+        } catch (err) {
+            console.error('Report failed', err);
+            alert('Failed to submit reports');
+        } finally {
+            setIsReporting(false);
+        }
+    };
+
+    const toggleTurnSelection = (turnId) => {
+        setReportingTurnIds(prev => 
+            prev.includes(turnId) 
+                ? prev.filter(tid => tid !== turnId) 
+                : [...prev, turnId]
+        );
     };
 
     if (isLoading) return <div style={{ padding: 48 }}>Loading log...</div>;
@@ -158,18 +208,132 @@ export default function LogDetailPage() {
                 <div className="log-detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <h1 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>{log.title}</h1>
                     <div className="log-detail-actions" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                        <button
-                            onClick={toggleColors}
-                            style={{
-                                padding: '4px 10px',
-                                fontSize: '0.8125rem',
-                                backgroundColor: '#d4d0c8',
-                                border: '1px solid #000',
-                                cursor: 'pointer',
-                            }}
-                        >
-                            {colorsHidden ? t.log.showColors : t.log.hideColors}
-                        </button>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                            <button
+                                onClick={toggleColors}
+                                style={{
+                                    padding: '4px 10px',
+                                    fontSize: '0.8125rem',
+                                    backgroundColor: '#d4d0c8',
+                                    border: '1px solid #000',
+                                    cursor: 'pointer',
+                                    width: '100%'
+                                }}
+                            >
+                                {colorsHidden ? t.log.showColors : t.log.hideColors}
+                            </button>
+                            <div style={{ position: 'relative' }}>
+                                <button
+                                    onClick={() => setIsReportOpen(!isReportOpen)}
+                                    style={{
+                                        padding: '4px 10px',
+                                        fontSize: '0.8125rem',
+                                        backgroundColor: '#fff',
+                                        border: '1px solid #ddd',
+                                        cursor: 'pointer',
+                                        color: '#999',
+                                        width: '100%'
+                                    }}
+                                >
+                                    {t.log.report}
+                                </button>
+                                {isReportOpen && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '100%',
+                                        right: 0,
+                                        width: '280px',
+                                        backgroundColor: '#fff',
+                                        border: '1px solid #ccc',
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                        zIndex: 100,
+                                        padding: '12px',
+                                        borderRadius: 4,
+                                        marginTop: '4px'
+                                    }}>
+                                        {reportSuccess ? (
+                                            <div style={{ textAlign: 'center', padding: '10px', color: 'green', fontSize: '0.8125rem' }}>
+                                                {t.log.reportSent}
+                                            </div>
+                                        ) : (
+                                            <form onSubmit={handleBulkReport}>
+                                                <h4 style={{ margin: '0 0 10px 0', fontSize: '0.875rem' }}>{t.log.reportTurns}</h4>
+                                                
+                                                <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #eee', marginBottom: '10px', padding: '4px' }}>
+                                                    {visibleTurns.map((turn, i) => (
+                                                        <label key={turn.id || i} style={{ 
+                                                            display: 'flex', 
+                                                            alignItems: 'flex-start', 
+                                                            gap: '8px', 
+                                                            fontSize: '0.75rem', 
+                                                            padding: '4px',
+                                                            cursor: 'pointer',
+                                                            borderBottom: '1px solid #f9f9f9',
+                                                            textAlign: 'left'
+                                                        }}>
+                                                            <input 
+                                                                type="checkbox" 
+                                                                checked={reportingTurnIds.includes(turn.id)}
+                                                                onChange={() => toggleTurnSelection(turn.id)}
+                                                            />
+                                                            <span style={{ 
+                                                                overflow: 'hidden', 
+                                                                textOverflow: 'ellipsis', 
+                                                                display: '-webkit-box',
+                                                                WebkitLineClamp: 2,
+                                                                WebkitBoxOrient: 'vertical',
+                                                                lineHeight: 1.2,
+                                                                flex: 1
+                                                            }}>
+                                                                {turn.content}
+                                                            </span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+
+                                                <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                                                    <select 
+                                                        style={{ flex: 1, fontSize: '0.75rem', padding: '2px' }}
+                                                        value={reportReason}
+                                                        onChange={e => setReportReason(e.target.value)}
+                                                    >
+                                                        <option value="spam">Spam</option>
+                                                        <option value="hateful">Hateful</option>
+                                                        <option value="off-topic">Off-topic</option>
+                                                        <option value="other">Other</option>
+                                                    </select>
+                                                </div>
+
+                                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={() => setIsReportOpen(false)}
+                                                        style={{ fontSize: '0.75rem', background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button 
+                                                        type="submit" 
+                                                        disabled={isReporting}
+                                                        style={{ 
+                                                            fontSize: '0.75rem', 
+                                                            padding: '2px 8px', 
+                                                            backgroundColor: '#000', 
+                                                            color: '#fff', 
+                                                            border: 'none', 
+                                                            borderRadius: 2,
+                                                            cursor: 'pointer'
+                                                        }}
+                                                    >
+                                                        {isReporting ? '...' : t.log.submitReport}
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     {log.isCreator && !isCompleted && (
                         <button
                             onClick={handleCloseLog}
@@ -186,7 +350,6 @@ export default function LogDetailPage() {
                             {t.log.close}
                         </button>
                     )}
-                    {!log.isCreator && <ReportButton targetType="LOG" targetId={id} />}
                     </div>
                 </div>
                 <div style={{ color: '#666', fontSize: '0.875rem' }}>
@@ -206,7 +369,6 @@ export default function LogDetailPage() {
                                 <div style={{ fontSize: '1rem', lineHeight: 1.6, whiteSpace: 'pre-wrap', color: textColor, display: 'inline' }}>
                                     {turn.content}
                                 </div>
-                                {!turn.isHidden && <ReportButton targetType="TURN" targetId={turn.id} />}
                             </div>
                         );
                     })}
