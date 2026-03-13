@@ -166,4 +166,4 @@ All architectural decisions are logged in [`project_memory/decisions.md`](./proj
 | Evaluation dashboard | ✅ [evaluation_report.md](./project_memory/sprint2_evaluation.md) |
 | Complete documentation package | ✅ [documentation_package.md](./project_memory/documentation_package.md) |
 | 10-minute demo video | 🔜 S2-9 |
-| 1500-word technical blog post | [Daniel's LinkedIn Post](https://www.linkedin.com/pulse/minimalist-stack-engineering-collective-unconscious-async-daniel-kalo-2jt7e) |
+| 1500-word technical blog post | [Daniel's LinkedIn Post](https://www.linkedin.com/posts/danielkalo_just-published-a-technical-write-up-on-a-activity-7438356593835970560-Airy?utm_source=share&utm_medium=member_desktop&rcm=ACoAACRTDbsBftSlgjpxa8HwGjF56uS4rZ9mwO8) |
