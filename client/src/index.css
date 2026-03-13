@@ -5,13 +5,20 @@
   --color-blue-link: #0033cc;
   --color-text-main: #333333;
   --color-text-secondary: #999999;
+  --base-font-size: 16px;
 }
 
 @layer base {
+  html {
+    font-size: var(--base-font-size);
+    transition: font-size 0.2s ease-in-out;
+  }
+
   body {
     background-color: #ffffff;
     color: var(--color-text-main);
     font-family: 'Noto Serif SC', 'STSong', 'SimSun', serif;
+    font-size: 1rem;
     margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;

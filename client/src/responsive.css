@@ -40,7 +40,7 @@
   flex-wrap: nowrap;
   gap: 12px;
   align-items: center;
-  font-size: 16px;
+  font-size: 1rem;
   overflow-x: auto;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none;  /* IE/Edge */
@@ -130,8 +130,49 @@
     gap: 8px;
   }
   .log-detail-actions {
+    /* Auto width to allow side-by-side with status */
+    justify-content: flex-end;
+  }
+}
+
+.hide-on-mobile {
+  display: inline;
+}
+
+@media (max-width: 479px) {
+  .hide-on-mobile {
+    display: none;
+  }
+}
+
+.report-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 320px;
+  background-color: #fff;
+  border: 1px solid #000;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+  z-index: 100;
+  padding: 16px;
+  margin-top: 8px;
+}
+
+@media (max-width: 479px) {
+  .report-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
     width: 100%;
-    justify-content: flex-start;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-top: 2px solid #000;
+    border-left: none;
+    border-right: none;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.15);
+    margin-top: 0;
   }
 }
 
@@ -142,7 +183,7 @@
   input[type="email"],
   select,
   textarea {
-    font-size: 16px; /* prevents iOS auto-zoom */
+    font-size: 1rem; /* prevents iOS auto-zoom */
     min-height: 44px;
     padding: 10px 8px;
     box-sizing: border-box;
