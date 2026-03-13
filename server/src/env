@@ -1,0 +1,18 @@
+# Database
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/collective_unconscious?schema=public"
+
+# Google OAuth
+GOOGLE_CLIENT_SECRET=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
+GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
+
+# JWT
+JWT_SECRET=cu-jwt-secret-change-in-production
+JWT_REFRESH_SECRET=cu-jwt-refresh-secret-change-in-production
+
+# Session
+SESSION_SECRET=cu-session-secret-change-in-production
+
+# App
+PORT=3000
+NODE_ENV=development
+CLIENT_URL=http://localhost:5173
