@@ -223,12 +223,12 @@ export default function LogDetailPage() {
                         <button 
                             onClick={() => setShowShareModal(true)}
                             style={{
-                                padding: '6px 16px',
+                                padding: '3px 10px',
                                 backgroundColor: '#d4d0c8',
                                 color: '#000',
                                 border: '2px solid #000',
                                 cursor: 'pointer',
-                                fontSize: 14,
+                                fontSize: 12,
                                 fontWeight: 'bold'
                             }}
                         >
