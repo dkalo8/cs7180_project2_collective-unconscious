@@ -203,7 +203,7 @@ export default function LogDetailPage() {
                         const textColor = colorsHidden ? '#000000' : (writer?.colorHex || '#000');
                         return (
                             <div key={turn.id || index} style={{ marginBottom: '0.75rem' }}>
-                                <div style={{ fontSize: '1.25rem', lineHeight: 1.6, whiteSpace: 'pre-wrap', color: textColor, display: 'inline' }}>
+                                <div style={{ fontSize: '1rem', lineHeight: 1.6, whiteSpace: 'pre-wrap', color: textColor, display: 'inline' }}>
                                     {turn.content}
                                 </div>
                                 {!turn.isHidden && <ReportButton targetType="TURN" targetId={turn.id} />}
@@ -219,7 +219,7 @@ export default function LogDetailPage() {
             {isCompleted ? (
                 <div style={{ padding: '24px 0', textAlign: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 24 }}>
-                        <p style={{ margin: 0, fontSize: '1.125rem', fontWeight: 'bold'}}>{t.log.completed}</p>
+                        <p style={{ margin: 0, fontSize: '1rem', fontWeight: 'bold'}}>{t.log.completed}</p>
                         <button 
                             onClick={() => setShowShareModal(true)}
                             style={{
