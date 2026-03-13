@@ -105,4 +105,10 @@
 - **Colored Content:** Confirmed decision to color turn text directly rather than using colored left margins.
 - **Anonymous/Clean Log:** Nicknames are removed from the log body to keep the focus on the text, but are displayed at the bottom of the log in the participant gallery.
 - **Dynamic Skip UI:** The skip button was moved below the `WriteZone`, removed of its emoji, and upgraded with a dynamic dropdown allowing the Keeper to select the target writer.
-- **Manual Closure:** Added the ability for the Keeper to manually close any log (`PATCH /api/logs/:id/close`).
+
+## 2026-03-12: AI Modality Standardization
+- **Standardized on 3 modalities** for project development to maximize efficiency and rigor:
+    - **Claude 4.6 Sonnet (Web)**: High-level reasoning, PRD drafting, and strategic pivot planning (e.g., the Proxy Pivot solution).
+    - **Antigravity (IDE)**: Primary implementation engine, TDD enforcement (81%+ coverage), and automated environment setup.
+    - **GitHub Copilot**: Tactical inline completions, Tailwind class ordering, and boilerplate acceleration.
+- **Verification**: This multi-modal approach allowed a 2-person team to maintain professional engineering standards (CI/CD, Swagger docs, high test coverage) at rapid pace.

@@ -107,6 +107,7 @@ cd cs7180_project2_collective-unconscious
 # Start all services (DB, server, client)
 docker compose up
 
+
 # Or run individually:
 cd server && npm install && npm run dev
 cd client && npm install && npm run dev
@@ -139,7 +140,7 @@ This project uses AI tooling at three layers:
 |---|---|
 | **Claude (Web)** | Product definition, PRD drafting, sprint planning, architectural decisions |
 | **IDE-Centric AI (Antigravity)** | Code generation, TDD, refactoring, CI/CD setup, enforcing `.antigravityrules` |
-| **Search-Enabled AI** | Documentation research, troubleshooting deployment edge cases, security audit guidance |
+| **GitHub Copilot** | Inline code completion, syntax standardization, boilerplate reduction, localized snippet translation |
 
 All architectural decisions are logged in [`project_memory/decisions.md`](./project_memory/decisions.md).
 
