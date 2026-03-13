@@ -218,22 +218,23 @@ export default function LogDetailPage() {
             {/* Write zone / completed state */}
             {isCompleted ? (
                 <div style={{ padding: '24px 0', textAlign: 'center', fontWeight: 'bold' }}>
-                    <p style={{ margin: '0 0 16px 0', fontSize: 20 }}>{t.log.completed}</p>
-                    <button 
-                        onClick={() => setShowShareModal(true)}
-                        style={{
-                            marginBottom: 24,
-                            padding: '6px 16px',
-                            backgroundColor: '#d4d0c8',
-                            color: '#000',
-                            border: '2px solid #000',
-                            cursor: 'pointer',
-                            fontSize: 14,
-                            fontWeight: 'bold'
-                        }}
-                    >
-                        {t.log.shareAsImage}
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 24 }}>
+                        <p style={{ margin: 0, fontSize: 18 }}>{t.log.completed}</p>
+                        <button 
+                            onClick={() => setShowShareModal(true)}
+                            style={{
+                                padding: '6px 16px',
+                                backgroundColor: '#d4d0c8',
+                                color: '#000',
+                                border: '2px solid #000',
+                                cursor: 'pointer',
+                                fontSize: 14,
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            {t.log.shareAsImage}
+                        </button>
+                    </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: 24, fontSize: 28, fontWeight: 'normal', color: '#666' }}>
                         {['✦', '◎', '∿', '⌖'].map(sym => (
                             <button
