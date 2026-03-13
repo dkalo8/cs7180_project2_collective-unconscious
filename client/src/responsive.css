@@ -40,7 +40,7 @@
   flex-wrap: nowrap;
   gap: 12px;
   align-items: center;
-  font-size: 16px;
+  font-size: 1rem;
   overflow-x: auto;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none;  /* IE/Edge */
@@ -142,7 +142,7 @@
   input[type="email"],
   select,
   textarea {
-    font-size: 16px; /* prevents iOS auto-zoom */
+    font-size: 1rem; /* prevents iOS auto-zoom */
     min-height: 44px;
     padding: 10px 8px;
     box-sizing: border-box;

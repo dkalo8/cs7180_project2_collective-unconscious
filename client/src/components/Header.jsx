@@ -4,8 +4,10 @@ import { LANG_OPTIONS } from '../utils/i18n';
 import { S } from '../utils/styles';
 import { getMe, logout } from '../services/auth.service';
 import { API_BASE_URL } from '../config';
+import { useSettings } from '../context/SettingsContext';
 
 export default function Header({ t, lang, setLang }) {
+  const { fontSize, setFontSize } = useSettings();
   const [user, setUser] = useState(undefined); // undefined = loading
 
   useEffect(() => {
@@ -26,7 +28,7 @@ export default function Header({ t, lang, setLang }) {
     <header className="site-header">
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', flexWrap: 'nowrap' }}>
         <Link to="/" style={{
-          fontSize: '24px',
+          fontSize: '1.5rem',
           fontWeight: 'bold',
           color: '#000',
           textDecoration: 'none',
@@ -34,7 +36,7 @@ export default function Header({ t, lang, setLang }) {
         }}>
           {t.siteName}
         </Link>
-        <span style={{ fontSize: '14px', color: '#999', whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: '0.875rem', color: '#999', whiteSpace: 'nowrap' }}>
           {t.tagline}
         </span>
       </div>
@@ -44,15 +46,40 @@ export default function Header({ t, lang, setLang }) {
         <Link to="/create" style={{ color: '#0033cc' }}>{t.nav.create}</Link>
         <Link to="/about" style={{ color: '#0033cc' }}>{t.nav?.about || 'about'}</Link>
 
-        <div style={{ fontSize: '14px' }}>
-          {LANG_OPTIONS.map((l, i) => (
-            <span key={l.code}>
-              {i > 0 && <span style={{ color: '#ccc' }}> / </span>}
-              <button style={S.langBtn(lang === l.code)} onClick={() => setLang(l.code)}>
-                {l.label}
+        <div style={{ fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div>
+            {LANG_OPTIONS.map((l, i) => (
+              <span key={l.code}>
+                {i > 0 && <span style={{ color: '#ccc' }}> / </span>}
+                <button style={S.langBtn(lang === l.code)} onClick={() => setLang(l.code)}>
+                  {l.label}
+                </button>
+              </span>
+            ))}
+          </div>
+          
+          <div style={{ 
+            marginLeft: '8px', 
+            paddingLeft: '12px', 
+            borderLeft: '1px solid #eee',
+            display: 'flex',
+            gap: '8px',
+            alignItems: 'center'
+          }}>
+            {['small', 'medium', 'large'].map((size) => (
+              <button
+                key={size}
+                onClick={() => setFontSize(size)}
+                style={{
+                  ...S.langBtn(fontSize === size),
+                  fontSize: size === 'small' ? '0.6875rem' : size === 'large' ? '0.9375rem' : '0.8125rem',
+                }}
+                title={t.settings?.[size]}
+              >
+                {t.settings?.[size]}
               </button>
-            </span>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* Auth section */}

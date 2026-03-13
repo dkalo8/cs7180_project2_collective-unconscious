@@ -6,15 +6,18 @@ import './index.css'
 import './responsive.css'
 import { router } from './router'
 import { LanguageProvider } from './context/LanguageContext'
+import { SettingsProvider } from './context/SettingsContext'
 
 const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
-        <RouterProvider router={router} />
-      </LanguageProvider>
+      <SettingsProvider>
+        <LanguageProvider>
+          <RouterProvider router={router} />
+        </LanguageProvider>
+      </SettingsProvider>
     </QueryClientProvider>
   </StrictMode>,
 )

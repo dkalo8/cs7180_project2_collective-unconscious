@@ -156,13 +156,13 @@ export default function LogDetailPage() {
             {/* Header */}
             <div style={{ paddingBottom: 8, marginBottom: 24 }}>
                 <div className="log-detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 8 }}>
-                    <h1 style={{ margin: '0 0 8px 0', fontSize: 24 }}>{log.title}</h1>
+                    <h1 style={{ margin: '0 0 8px 0', fontSize: '1.5rem' }}>{log.title}</h1>
                     <div className="log-detail-actions" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                         <button
                             onClick={toggleColors}
                             style={{
                                 padding: '4px 10px',
-                                fontSize: 13,
+                                fontSize: '0.8125rem',
                                 backgroundColor: '#d4d0c8',
                                 border: '1px solid #000',
                                 cursor: 'pointer',
@@ -175,7 +175,7 @@ export default function LogDetailPage() {
                             onClick={handleCloseLog}
                             style={{
                                 padding: '6px 14px',
-                                fontSize: 13,
+                                fontSize: '0.8125rem',
                                 backgroundColor: '#fff',
                                 border: '1px solid #ccc',
                                 borderRadius: 4,
@@ -189,7 +189,7 @@ export default function LogDetailPage() {
                     {!log.isCreator && <ReportButton targetType="LOG" targetId={id} />}
                     </div>
                 </div>
-                <div style={{ color: '#666', fontSize: 14 }}>
+                <div style={{ color: '#666', fontSize: '0.875rem' }}>
                     {t.log.mode(log.turnMode?.toLowerCase())} &middot; {t.log.status(log.status)}
                     {log.turnLimit && <span> &middot; {t.log.round(log.turns?.length ?? 0, log.turnLimit)}</span>}
                 </div>
@@ -203,7 +203,7 @@ export default function LogDetailPage() {
                         const textColor = colorsHidden ? '#000000' : (writer?.colorHex || '#000');
                         return (
                             <div key={turn.id || index} style={{ marginBottom: 12 }}>
-                                <div style={{ fontSize: 20, lineHeight: 1.6, whiteSpace: 'pre-wrap', color: textColor, display: 'inline' }}>
+                                <div style={{ fontSize: '1.25rem', lineHeight: 1.6, whiteSpace: 'pre-wrap', color: textColor, display: 'inline' }}>
                                     {turn.content}
                                 </div>
                                 {!turn.isHidden && <ReportButton targetType="TURN" targetId={turn.id} />}
@@ -219,7 +219,7 @@ export default function LogDetailPage() {
             {isCompleted ? (
                 <div style={{ padding: '24px 0', textAlign: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 24 }}>
-                        <p style={{ margin: 0, fontSize: 18, fontWeight: 'bold'}}>{t.log.completed}</p>
+                        <p style={{ margin: 0, fontSize: '1.125rem', fontWeight: 'bold'}}>{t.log.completed}</p>
                         <button 
                             onClick={() => setShowShareModal(true)}
                             style={{
@@ -228,7 +228,7 @@ export default function LogDetailPage() {
                                 color: '#000',
                                 border: '1px solid #000',
                                 cursor: 'pointer',
-                                fontSize: 13,
+                                fontSize: '0.8125rem',
 
 
                             }}
@@ -236,14 +236,14 @@ export default function LogDetailPage() {
                             {t.log.shareAsImage}
                         </button>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: 24, fontSize: 28, fontWeight: 'normal', color: '#666' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: 24, fontSize: '1.75rem', fontWeight: 'normal', color: '#666' }}>
                         {['✦', '◎', '∿', '⌖'].map(sym => (
                             <button
                                 key={sym}
                                 onClick={() => handleReact(sym)}
                                 style={{
                                     background: 'none', border: 'none', fontFamily: 'inherit',
-                                    fontSize: 28, cursor: 'pointer',
+                                    fontSize: '1.75rem', cursor: 'pointer',
                                     opacity: reacted[sym] ? 1 : 0.4,
                                     padding: '2px 4px',
                                     display: 'flex', alignItems: 'center', gap: 4,
@@ -251,7 +251,7 @@ export default function LogDetailPage() {
                             >
                                 {sym}
                                 {(reactions[sym] || 0) > 0 && (
-                                    <span style={{ fontSize: 12, color: '#888' }}>{reactions[sym]}</span>
+                                    <span style={{ fontSize: '0.75rem', color: '#888' }}>{reactions[sym]}</span>
                                 )}
                             </button>
                         ))}
@@ -268,7 +268,7 @@ export default function LogDetailPage() {
                     {/* Bug 1 fix: only render WriteZone when it is the user's turn */}
                     {log.isMyTurn && log.accessMode === 'PRIVATE' && !log.myWriter ? (
                         <div style={{ marginBottom: 16 }}>
-                            <p style={{ fontSize: 14, color: '#555', marginBottom: 8 }}>
+                            <p style={{ fontSize: '0.875rem', color: '#555', marginBottom: 8 }}>
                                 {t.access.title}. {t.access.desc}
                             </p>
                             <input
@@ -278,7 +278,7 @@ export default function LogDetailPage() {
                                 placeholder={t.access.placeholder}
                                 style={{
                                     padding: '6px 10px',
-                                    fontSize: 14,
+                                    fontSize: '0.875rem',
                                     border: '1px solid #ccc',
                                     borderRadius: 4,
                                     marginRight: 8,
@@ -304,7 +304,7 @@ export default function LogDetailPage() {
                             myWriter={log.myWriter || null}
                         />
                     ) : (
-                        <div style={{ padding: '20px 0', color: '#888', fontStyle: 'italic', fontSize: 14 }}>
+                        <div style={{ padding: '20px 0', color: '#888', fontStyle: 'italic', fontSize: '0.875rem' }}>
                             {log.turnMode === 'STRUCTURED' && (log.writers || []).length > 1 && log.nextWriter
                                 ? <strong style={{ color: log.nextWriter.colorHex }}>{t.log.turnOf(log.nextWriter.nickname || 'Anonymous')}</strong>
                                 : t.log.waitingNext}
@@ -314,12 +314,12 @@ export default function LogDetailPage() {
                     {/* Bug 4 + 5 fix: Skip button below WriteZone, no emoji, with dropdown */}
                     {log.isCreator && log.turnMode === 'STRUCTURED' && skipableWriters.length > 1 && (
                         <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                            <span style={{ fontSize: 13, color: '#555' }}>Skip the next turn of:</span>
+                            <span style={{ fontSize: '0.8125rem', color: '#555' }}>Skip the next turn of:</span>
                             <select
                                 value={resolvedSkipTarget}
                                 onChange={e => setSkipTargetId(e.target.value)}
                                 style={{
-                                    fontSize: 13,
+                                    fontSize: '0.8125rem',
                                     padding: '3px 8px',
                                     border: '1px solid #ccc',
                                     borderRadius: 4,
@@ -338,7 +338,7 @@ export default function LogDetailPage() {
                                 onClick={handleSkipTurn}
                                 style={{
                                     padding: '4px 12px',
-                                    fontSize: 13,
+                                    fontSize: '0.8125rem',
                                     backgroundColor: '#f0f0f0',
                                     border: '1px solid #ccc',
                                     borderRadius: 4,
@@ -355,7 +355,7 @@ export default function LogDetailPage() {
 
             {/* Writers list at the bottom — Bug 2 fix: only shows writers with actual turns */}
             {log.writers && log.writers.length > 0 && (
-                <div style={{ paddingTop: 40, marginTop: 40, borderTop: '1px solid #eee', fontSize: 14, textAlign: 'left' }}>
+                <div style={{ paddingTop: 40, marginTop: 40, borderTop: '1px solid #eee', fontSize: '0.875rem', textAlign: 'left' }}>
                     {log.writers.map((w, index) => (
                         <span key={w.id} style={{ display: 'inline-flex', alignItems: 'center' }}>
                             <span style={{ color: w.colorHex, fontWeight: 'bold' }}>{w.nickname || 'Anonymous'}</span>
@@ -371,7 +371,7 @@ export default function LogDetailPage() {
 
             {/* Skip event notes */}
             {(log.turns || []).some(t => t.isSkip) && (
-                <div style={{ paddingTop: 12, fontSize: 12, color: '#000' }}>
+                <div style={{ paddingTop: 12, fontSize: '0.75rem', color: '#000' }}>
                     {(log.turns || []).filter(t => t.isSkip).map(t => {
                         const skippedWriter = (log.writers || []).find(w => w.id === t.writerId);
                         const keeperName = log.keeperNickname || 'Log Keeper';
