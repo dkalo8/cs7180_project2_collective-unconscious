@@ -7,7 +7,7 @@ export default function AboutPage() {
   return (
     <div style={S.body}>
       <h2 style={{ fontSize: 24, margin: "0 0 16px 0" }}>{t.nav.about}</h2>
-      <p style={{ fontSize: 16, color: "#333", lineHeight: "1.6", marginBottom: "32px" }}>
+      <p style={{ fontSize: 16, color: "#333", lineHeight: "1.6", marginBottom: "32px", whiteSpace: "pre-wrap" }}>
         {t.about}
       </p>
 

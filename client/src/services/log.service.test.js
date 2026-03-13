@@ -11,18 +11,18 @@ describe('log.service', () => {
   it('fetchLogs handles parameters correctly', async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ logs: [], totalPages: 1 })
+      json: async () => ({ data: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 1 } })
     });
 
     const result = await logService.fetchLogs({ category: 'HAIKU', page: 2, limit: 10, canWrite: true });
-    
+
     const [calledUrl] = fetch.mock.calls[0];
     expect(calledUrl).toContain('category=HAIKU');
     expect(calledUrl).toContain('page=2');
     expect(calledUrl).toContain('limit=10');
     expect(calledUrl).toContain('canWrite=true');
     expect(fetch).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ credentials: 'include' }));
-    expect(result.totalPages).toBe(1);
+    expect(result.pagination.totalPages).toBe(1);
   });
 
   it('getLogById handles success and 404', async () => {
