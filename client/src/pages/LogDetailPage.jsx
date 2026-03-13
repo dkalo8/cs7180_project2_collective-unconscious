@@ -223,16 +223,16 @@ export default function LogDetailPage() {
                         onClick={() => setShowShareModal(true)}
                         style={{
                             marginBottom: 24,
-                            padding: '10px 24px',
+                            padding: '6px 16px',
                             backgroundColor: '#d4d0c8',
                             color: '#000',
                             border: '2px solid #000',
                             cursor: 'pointer',
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: 'bold'
                         }}
                     >
-                        Share as Image
+                        {t.log.shareAsImage}
                     </button>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: 24, fontSize: 28, fontWeight: 'normal', color: '#666' }}>
                         {['✦', '◎', '∿', '⌖'].map(sym => (

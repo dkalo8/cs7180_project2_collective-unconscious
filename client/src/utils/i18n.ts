@@ -21,6 +21,8 @@ export const T: any = {
       mode: (m: any) => m === "structured" ? "回合制" : "自由模式",
       close: "关闭 Log", waitingFirst: "等待第一位写作者...", waitingNext: "等待下一位写作者...",
       empty: "还没有内容。", completed: "这篇 Log 已完结。",
+      status: (s: string) => s === 'OPEN' ? '进行中' : '已完成',
+      shareAsImage: "分享为图片",
     },
     create: {
       title: "新建 Log", logTitle: "标题", logTitlePh: "给这篇起个名字",
@@ -60,6 +62,8 @@ export const T: any = {
       mode: (m: any) => m === "structured" ? "structured" : "freestyle",
       close: "Close Log", waitingFirst: "Waiting for the first writer...", waitingNext: "Waiting for the next one...",
       empty: "No turns written yet.", completed: "This log has been completed.",
+      status: (s: string) => s === 'OPEN' ? 'active' : 'completed',
+      shareAsImage: "share as image",
     },
     create: {
       title: "New Log", logTitle: "Title", logTitlePh: "give it a name",
@@ -102,6 +106,8 @@ export const T: any = {
       mode: (m: any) => m === "structured" ? "por turnos" : "libre",
       close: "Cerrar Log", waitingFirst: "Esperando al primer escritor...", waitingNext: "Esperando al siguiente...",
       empty: "Aún no hay turnos.", completed: "Este log ha sido completado.",
+      status: (s: string) => s === 'OPEN' ? 'en curso' : 'completado',
+      shareAsImage: "compartir como imagen",
     },
     create: {
       title: "Nuevo Log", logTitle: "Título", logTitlePh: "dale un nombre",
